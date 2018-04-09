@@ -1,14 +1,7 @@
-var config = {
-	db: {
-		user: 'ADMIN',
-		password: 'SECRET'		
-	},
+/*
+	Non-private settings to be stored
+*/
 
-	twitch: {
-		APP_CLIENT_ID: 'MY_CLIENT_ID',
-		OAUTH_ACCESS_TOKEN: 'MY_ACCESS_TOKEN'
-	}
-
-};
+var config = {};
 
 module.exports = config;

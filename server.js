@@ -1,5 +1,6 @@
 
 var config 		= require('./config');
+var config 		= require('./keys');
 var express		= require('express');
 var app			= express();
 var bodyParser	= require('body-parser');
