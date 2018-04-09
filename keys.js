@@ -9,8 +9,8 @@ var keys = {
 	},
 
 	twitch: {
-		APP_CLIENT_ID: 'MY_CLIENT_ID',
-		OAUTH_ACCESS_TOKEN: 'MY_ACCESS_TOKEN'
+		APP_CLIENT_ID: 'dzt383jaafjbqeb526frp2zche1ikl',
+		OAUTH_ACCESS_TOKEN: 'p4jyz0xip0ltgb0puvf35hd2u15vom'
 	}
 
 };
