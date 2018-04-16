@@ -7,6 +7,9 @@ const bodyParser	= require('body-parser');
 const request 		= require('request');
 //var sql 		= require('sql');
 
+let Game 			= require('./models/game');
+let Streamer 		= require('./models/streamer');
+
 let baseRequest = request.defaults({
 	headers: keys.twitch,
 	baseUrl: 'https://api.twitch.tv/'
@@ -27,36 +30,8 @@ router.get('/', function(req, res) {
 	//res.send('Hello world!');
 })
 
-
 app.use('/', router);
-
 app.listen(3000);
-
-
-class Game {
-	constructor (game) {
-		this.id = Number(game.id);
-		this.name = game.name;
-		this.box_art_url = game.box_art_url
-		this.viewers = game.viewers;
-		this.channels = game.channels;
-	}
-}
-
-class Streamer {
-	constructor (stream) {
-		this.id = Number(stream.id);
-		this.user_id = Number(stream.user_id);
-		this.title = stream.title;
-		this.viewer_count = stream.viewer_count;
-		this.game_id = Number(stream.game_id);
-		this.thumbnail_url = stream.thumbnail_url;
-	}
-
-	setName(name) {
-		this.login = name;
-	}
-}
 
 var games = new Map();
 var streamers = new Map();
