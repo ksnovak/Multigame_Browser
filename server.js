@@ -1,18 +1,159 @@
 
-var config 		= require('./config');
-var config 		= require('./keys');
-var express		= require('express');
-var app			= express();
-var bodyParser	= require('body-parser');
+const config 		= require('./config');
+const keys 			= require('./keys');
+const express		= require('express');
+const app			= express();
+const bodyParser	= require('body-parser');
+const request 		= require('request');
 //var sql 		= require('sql');
 
+let baseRequest = request.defaults({
+	headers: keys.twitch,
+	baseUrl: 'https://api.twitch.tv/'
+})
 
 
 app.use(bodyParser.urlencoded({ extended: true}));
 app.use(bodyParser.json());
 
-app.get('/', function(req, res){
-	res.send('Hello world!');
+var router = express.Router();
+
+router.use(function(req, res, next) {
+	next();
 })
 
+router.get('/', function(req, res) {
+	querySpecificGames(res);
+	//res.send('Hello world!');
+})
+
+
+app.use('/', router);
+
 app.listen(3000);
+
+
+class Game {
+	constructor (game) {
+		this.id = Number(game.id);
+		this.name = game.name;
+		this.box_art_url = game.box_art_url
+		this.viewers = game.viewers;
+		this.channels = game.channels;
+	}
+}
+
+class Streamer {
+	constructor (stream) {
+		this.id = Number(stream.id);
+		this.user_id = Number(stream.user_id);
+		this.title = stream.title;
+		this.viewer_count = stream.viewer_count;
+		this.game_id = Number(stream.game_id);
+		this.thumbnail_url = stream.thumbnail_url;
+	}
+
+	setName(name) {
+		this.login = name;
+	}
+}
+
+var games = new Map();
+var streamers = new Map();
+
+// Gets the most popular streamers (of any game)
+function queryTopStreams(res) {
+	baseRequest.get({
+		uri: 'kraken/games/top'
+	}, function(error, response, body) {
+		res.send(body);  
+	})
+}
+
+// Gets the most popular streamers for a specific game
+function queryGameStreamers(res) {
+	baseRequest.get({
+		uri: 'helix/streams',
+		qs: {
+			game_id: Array.from(games.keys()),
+			language: 'en',
+			first: 100
+		}
+	}, function(error, response, body) {
+		buildStreamerList(JSON.parse(response.body).data);
+
+		queryStreamerDetails(res);
+	})
+}
+
+// Gets details on specified streamers
+function queryStreamerDetails(res) {
+	baseRequest.get({	
+		uri: 'helix/users',
+		qs: {
+			id: Array.from(streamers.keys())
+		}
+	}, function(error, response, body) {
+
+		let data = JSON.parse(response.body).data;
+		
+		data.forEach(function(streamer) {
+			let streamerObject = streamers.get(streamer.id);
+			streamerObject.setName(streamer.login);
+
+			streamers.set(streamer.id, streamerObject);
+		})
+
+		res.send('boom!')
+
+	})
+}
+
+// Gets the most popular games
+function queryTopGames(res) {
+	baseRequest.get({
+		uri: 'kraken/games/top',
+		qs: {
+			limit: 3
+		}
+	}, function(error, response, body) {
+		res.send(body)
+	})
+}
+
+// Gets details on specific games
+function querySpecificGames(res) {
+	baseRequest.get({
+		uri: 'helix/games',
+		qs: {
+			name: ['always on']
+			//id: [394568, 495636, 499973]	//Same as above, but the ID form
+		}
+	}, function(error, response, body) {
+		
+		buildGameList(JSON.parse(response.body).data);
+
+		queryGameStreamers(res);
+	})
+}
+
+
+
+function buildGameList(gameArray) {
+
+	gameArray.forEach(function(game) { setGame(game); })
+	return games;
+}
+
+function setGame(game) {
+	games.set(game.id, new Game(game));
+}
+
+function buildStreamerList(streamerArray) {
+	streamerArray.forEach(function(streamer) { setStreamer(streamer); })
+	return streamers;
+}
+
+function setStreamer(streamer) {
+	streamers.set(streamer.user_id, new Streamer(streamer));
+}

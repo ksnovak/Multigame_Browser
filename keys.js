@@ -2,17 +2,14 @@
 	Private settings to be stored
 */
 
-var keys = {
+module.exports = {
 	db: {
 		user: 'ADMIN',
 		password: 'SECRET'		
 	},
 
 	twitch: {
-		APP_CLIENT_ID: 'dzt383jaafjbqeb526frp2zche1ikl',
-		OAUTH_ACCESS_TOKEN: 'p4jyz0xip0ltgb0puvf35hd2u15vom'
+		'Client-ID': '[your ID here]',
+		'Authorization': 'Bearer [your authorization here]'
 	}
-
 };
-
-module.exports = keys;
