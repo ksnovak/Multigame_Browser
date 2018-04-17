@@ -77,7 +77,7 @@ function queryStreamerDetails(res) {
 		let data = JSON.parse(response.body).data;
 		
 		data.forEach(function(streamer) {
-			let streamerObject = streamers.get(streamer.id);
+			let streamerObject = streamers.get(Number(streamer.id));
 			streamerObject.setName(streamer.login);
 
 			streamers.set(streamer.id, streamerObject);
@@ -89,8 +89,12 @@ function queryStreamerDetails(res) {
 }
 
 function doMagic(res) {
+	const StreamWidth = 230;
+	const StreamAspectRatio = 1.75;
 
-	console.log(streamers);
+	const GameWidth = 90;
+	const GameAspectRatio = 0.75;
+
 	res.render('home', {
 		helpers: {
 			eachInMap: function (map, block) {
@@ -101,11 +105,23 @@ function doMagic(res) {
 				}
 			  
 				return output;
+			},
+			getStreamArt: (thumbnail_url) => {
+				return changeImagePlaceholders(thumbnail_url, StreamWidth, StreamAspectRatio)
+			},
+			getGameName: (game_id) => {return games.get(game_id).name},
+			getGameArt: (game_id) => {
+				return changeImagePlaceholders(games.get(game_id).box_art_url, GameWidth, GameAspectRatio)
 			}
+
 		},
 		games: games,
 		streamers: streamers
 	});
+}
+
+function changeImagePlaceholders(image_url, width, ratio) {
+	return image_url.replace("{width}", width).replace('{height}', parseInt(width/ratio));
 }
 
 // Gets the most popular games
@@ -143,7 +159,7 @@ function buildGameList(gameArray) {
 }
 
 function setGame(game) {
-	games.set(game.id, new Game(game));
+	games.set(Number(game.id), new Game(game));
 }
 
 function buildStreamerList(streamerArray) {
@@ -152,5 +168,5 @@ function buildStreamerList(streamerArray) {
 }
 
 function setStreamer(streamer) {
-	streamers.set(streamer.user_id, new Streamer(streamer));
+	streamers.set(Number(streamer.user_id), new Streamer(streamer));
 }
