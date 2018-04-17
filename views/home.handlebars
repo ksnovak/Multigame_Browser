@@ -1,28 +1,47 @@
-<h1>Example: Home! {{boop}}</h1>
 
-<div>{{porkchop}}</div>
-
-<div id='streamers'>
-    {{#eachInMap streamers}}
-    <div class='row'>
-        <div class='col-sm-2'>
-            <img src={{getStreamArt value.thumbnail_url}}/>
+<div class='row'>
+    <div class='form-group col-sm-6'>                
+        <div id='filters' class="custom-control custom-checkbox">
+            <input class="custom-control-input" id="englishOnly" checked type="checkbox">
+            <label class="custom-control-label" for="englishOnly">English only?</label>
         </div>
-        <div class='col-sm-10'><div class='row'>
-            <div class='col-lg-9 col-sm-12'>
-                <a href='https://twitch.tv/{{value.login}}'>{{value.login}}</a>
-            </div>
-            <div class='col-lg-1 col-sm-6'>
-                {{value.viewer_count}} viewers
-            </div>
-            <div class='col-lg-2 col-sm-6'>
-                <div class='d-none d-lg-block'>
-                    <img src={{getGameArt value.game_id}}/> <!-- Obviously change to game deets -->
-                    <br>
-                    {{getGameName value.game_id}} <!-- change to game deets -->
-                </div>
-            </div>
-        </div></div>
+        <label>Top games: <select id='gameList' multiple="multiple" class='form-control col-sm-8'></select></label>
+        <br/>
+        <label for='customGames'>Additional games: </label>
+        <input type='text' id='customGames' class='form-control col-sm-8'/>
+
+        <div id='actionButtons'>
+            <button id='search' class='btn btn-primary'>Search</button>
+            <button id='clearTable' class='btn btn-secondary'>Clear Results</button>
+            <button id='clearSearch' class='btn btn-secondary'>Clear Search</button>
+        </div>
     </div>
-    {{/eachInMap}}
+</div>
+<div id='main' class='container-fluid'>   
+
+    <div id='streamers'>
+        {{#eachInMap streamers}}
+        <div class='row border border-secondary'>
+            <div class='col-sm-2' style='padding: 0px;'>
+                <img src={{getStreamArt value.thumbnail_url}} style='width: 100%;'/>
+            </div>
+            <div class='col-sm-10'><div class='row'>
+                <div class='col-lg-9 col-sm-12 border border-dark'>
+                    <a href='https://twitch.tv/{{value.login}}'>{{value.login}}</a><br>
+                    {{value.title}}
+                </div>
+                <div class='col-lg-1 col-sm-6 border border-dark'>
+                    {{value.viewer_count}} viewers
+                </div>
+                <div class='col-lg-2 col-sm-6 border border-dark'>
+                    <div class='d-none d-lg-block'>
+                        <img src={{getGameArt value.game_id}} style='width: 100%; max-width: 90px;'/> <!-- Obviously change to game deets -->
+                        <br>
+                        {{getGameName value.game_id}} <!-- change to game deets -->
+                    </div>
+                </div>
+            </div></div>
+        </div>
+        {{/eachInMap}}
+    </div>
 </div>

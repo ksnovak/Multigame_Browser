@@ -3,6 +3,8 @@ Immediately:
 
 Short-term:
 * Pass in games as a querystring
+* Handling for 0 results (either no games or no streamers)
+* Get rid of re-initializing maps. That's crappy
 * Inclusion/Exclusion list of streamers
 * Async API calls
 * Move router to its own appropriate file

@@ -29,12 +29,17 @@ router.use(function(req, res, next) {
 })
 
 router.get('/', function(req, res) {
-	querySpecificGames(res);		//TODO: Async calls
+
+	//TODO: This re-initialization is done because the maps stay populated between service calls
+	//Ideally that's good. We just need to figure out how to handle that
+	
+	games = new Map();
+	streamers = new Map();
+	
+	querySpecificGames(res, req.query);		//TODO: Async calls
 })
 
 app.use('/', router);
-
-
 app.listen(3000);
 
 var games = new Map();
@@ -59,7 +64,7 @@ function queryGameStreamers(res) {
 			first: 100
 		}
 	}, function(error, response, body) {
-		buildStreamerList(JSON.parse(response.body).data);
+		buildStreamerList(JSON.parse(body).data);
 
 		queryStreamerDetails(res);
 	})
@@ -74,21 +79,24 @@ function queryStreamerDetails(res) {
 		}
 	}, function(error, response, body) {
 
-		let data = JSON.parse(response.body).data;
+		let data = JSON.parse(response.body).data; 
 		
-		data.forEach(function(streamer) {
-			let streamerObject = streamers.get(Number(streamer.id));
-			streamerObject.setName(streamer.login);
+		
+		if (data) {
+			data.forEach(function(streamer) {
+				let streamerObject = streamers.get(Number(streamer.id));
+				streamerObject.setName(streamer.login);
 
-			streamers.set(streamer.id, streamerObject);
-		})
+				streamers.set(streamer.id, streamerObject);
+			})
+		}
 
-		doMagic(res);
+		generateHTML(res);
 
 	})
 }
 
-function doMagic(res) {
+function generateHTML(res) {
 	const StreamWidth = 230;
 	const StreamAspectRatio = 1.75;
 
@@ -106,13 +114,9 @@ function doMagic(res) {
 			  
 				return output;
 			},
-			getStreamArt: (thumbnail_url) => {
-				return changeImagePlaceholders(thumbnail_url, StreamWidth, StreamAspectRatio)
-			},
-			getGameName: (game_id) => {return games.get(game_id).name},
-			getGameArt: (game_id) => {
-				return changeImagePlaceholders(games.get(game_id).box_art_url, GameWidth, GameAspectRatio)
-			}
+			getGameName: (game_id) =>  games.get(game_id).name,
+			getGameArt: (game_id) => changeImagePlaceholders(games.get(game_id).box_art_url, GameWidth, GameAspectRatio),
+			getStreamArt: (thumbnail_url) => changeImagePlaceholders(thumbnail_url, StreamWidth, StreamAspectRatio)
 
 		},
 		games: games,
@@ -129,7 +133,7 @@ function queryTopGames(res) {
 	baseRequest.get({
 		uri: 'kraken/games/top',
 		qs: {
-			limit: 3
+			limit: 10
 		}
 	}, function(error, response, body) {
 		res.send(body)
@@ -137,18 +141,28 @@ function queryTopGames(res) {
 }
 
 // Gets details on specific games
-function querySpecificGames(res) {
+function querySpecificGames(res, queryString) {
+
+	let qs = {}
+	if (queryString) {
+		if (queryString.name)
+			qs.name = queryString.name;
+		
+		if (queryString.id)
+			qs.id = queryString.id;
+	}
+
+	if (qs == {}) {
+		qs.name = 'Always On'
+	}
+
 	baseRequest.get({
 		uri: 'helix/games',
-		qs: {
-			// name: ['always on']
-			id: [394568, 495636, 499973]	//Same as above, but the ID form
-		}
+		qs: qs
 	}, function(error, response, body) {
-		
 		buildGameList(JSON.parse(response.body).data);
 
-		queryGameStreamers(res);
+		queryGameStreamers(res); 
 	})
 }
 
