@@ -9,7 +9,7 @@ module.exports = {
 	},
 
 	twitch: {
-		'Client-ID': 'dzt383jaafjbqeb526frp2zche1ikl',
-		'Authorization': 'Bearer p4jyz0xip0ltgb0puvf35hd2u15vom'
+		'Client-ID': '[your ID here]',
+		'Authorization': 'Bearer [your authorization here]'
 	}
 };
