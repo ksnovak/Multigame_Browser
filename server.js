@@ -2,6 +2,7 @@
 const config 		= require('./config');
 const keys 			= require('./keys');
 const express		= require('express');
+const exphbs		= require('express-handlebars');
 const app			= express();
 const bodyParser	= require('body-parser');
 const request 		= require('request');
@@ -15,6 +16,8 @@ let baseRequest = request.defaults({
 	baseUrl: 'https://api.twitch.tv/'
 })
 
+app.engine('handlebars', exphbs({defaultLayout: 'main'}));
+app.set('view engine', 'handlebars');
 
 app.use(bodyParser.urlencoded({ extended: true}));
 app.use(bodyParser.json());
@@ -26,11 +29,12 @@ router.use(function(req, res, next) {
 })
 
 router.get('/', function(req, res) {
-	querySpecificGames(res);
-	//res.send('Hello world!');
+	querySpecificGames(res);		//TODO: Async calls
 })
 
 app.use('/', router);
+
+
 app.listen(3000);
 
 var games = new Map();
@@ -79,9 +83,29 @@ function queryStreamerDetails(res) {
 			streamers.set(streamer.id, streamerObject);
 		})
 
-		res.send('boom!')
+		doMagic(res);
 
 	})
+}
+
+function doMagic(res) {
+
+	console.log(streamers);
+	res.render('home', {
+		helpers: {
+			eachInMap: function (map, block) {
+				let output = '';
+  
+				for (const [ key, value ] of map) {
+				  output += block.fn({ key, value });
+				}
+			  
+				return output;
+			}
+		},
+		games: games,
+		streamers: streamers
+	});
 }
 
 // Gets the most popular games
@@ -101,8 +125,8 @@ function querySpecificGames(res) {
 	baseRequest.get({
 		uri: 'helix/games',
 		qs: {
-			name: ['always on']
-			//id: [394568, 495636, 499973]	//Same as above, but the ID form
+			// name: ['always on']
+			id: [394568, 495636, 499973]	//Same as above, but the ID form
 		}
 	}, function(error, response, body) {
 		
@@ -111,8 +135,6 @@ function querySpecificGames(res) {
 		queryGameStreamers(res);
 	})
 }
-
-
 
 function buildGameList(gameArray) {
 
