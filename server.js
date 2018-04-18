@@ -9,7 +9,7 @@ const request 		= require('request');
 //var sql 		= require('sql');
 
 let Game 			= require('./models/game');
-let Streamer 		= require('./models/streamer');
+let Stream 			= require('./models/stream');
 
 let baseRequest = request.defaults({
 	headers: keys.twitch,
@@ -32,21 +32,20 @@ router.get('/', function(req, res) {
 
 	//TODO: This re-initialization is done because the maps stay populated between service calls
 	//Ideally that's good. We just need to figure out how to handle that
-	
 	games = new Map();
-	streamers = new Map();
+	streams = new Map();
 	
-	querySpecificGames(res, req.query);		//TODO: Async calls
+	queryGamesSpecific(res, req.query);		//TODO: Async calls
 })
 
 app.use('/', router);
 app.listen(3000);
 
 var games = new Map();
-var streamers = new Map();
+var streams = new Map();
 
-// Gets the most popular streamers (of any game)
-function queryTopStreams(res) {
+// Gets the most popular streams (of any game)
+function queryStreamsTop(res) {
 	baseRequest.get({
 		uri: 'kraken/games/top'
 	}, function(error, response, body) {
@@ -54,8 +53,8 @@ function queryTopStreams(res) {
 	})
 }
 
-// Gets the most popular streamers for a specific game
-function queryGameStreamers(res) {
+// Gets the most popular streams for a specific game
+function queryStreamsForSpecificGames(res) {
 	baseRequest.get({
 		uri: 'helix/streams',
 		qs: {
@@ -64,30 +63,30 @@ function queryGameStreamers(res) {
 			first: 100
 		}
 	}, function(error, response, body) {
-		buildStreamerList(JSON.parse(body).data);
+		buildStreamList(JSON.parse(body).data);
 
-		queryStreamerDetails(res);
+		queryStreamsDetails(res);
 	})
 }
 
-// Gets details on specified streamers
-function queryStreamerDetails(res) {
+// Gets details on specified streams
+function queryStreamsDetails(res) {
 	baseRequest.get({	
 		uri: 'helix/users',
 		qs: {
-			id: Array.from(streamers.keys())
+			id: Array.from(streams.keys())
 		}
 	}, function(error, response, body) {
 
-		let data = JSON.parse(response.body).data; 
+		let data = JSON.parse(body).data; 
 		
 		
 		if (data) {
-			data.forEach(function(streamer) {
-				let streamerObject = streamers.get(Number(streamer.id));
-				streamerObject.setName(streamer.login);
+			data.forEach(function(stream) {
+				let streamObject = streams.get(Number(stream.id));
+				streamObject.setName(stream.login);
 
-				streamers.set(streamer.id, streamerObject);
+				streams.set(stream.id, streamObject);
 			})
 		}
 
@@ -102,8 +101,9 @@ function generateHTML(res) {
 
 	const GameWidth = 90;
 	const GameAspectRatio = 0.75;
-
+	console.log(games);
 	res.render('home', {
+
 		helpers: {
 			eachInMap: function (map, block) {
 				let output = '';
@@ -114,13 +114,21 @@ function generateHTML(res) {
 			  
 				return output;
 			},
-			getGameName: (game_id) =>  games.get(game_id).name,
-			getGameArt: (game_id) => changeImagePlaceholders(games.get(game_id).box_art_url, GameWidth, GameAspectRatio),
+			getGameName: (game_id) => {
+				
+				const game = games.get(game_id)
+				return game ? game.name : 'Unknown'
+			},
+			getGameArt: (game_id) => {
+				const game = games.get(game_id)
+				return game ? changeImagePlaceholders(game.box_art_url, GameWidth, GameAspectRatio) : ''
+			},
+			getGame: (game_id) => games.get(game_id),
 			getStreamArt: (thumbnail_url) => changeImagePlaceholders(thumbnail_url, StreamWidth, StreamAspectRatio)
 
 		},
 		games: games,
-		streamers: streamers
+		streams: streams
 	});
 }
 
@@ -129,7 +137,7 @@ function changeImagePlaceholders(image_url, width, ratio) {
 }
 
 // Gets the most popular games
-function queryTopGames(res) {
+function queryGamesTop(res) {
 	baseRequest.get({
 		uri: 'kraken/games/top',
 		qs: {
@@ -141,34 +149,41 @@ function queryTopGames(res) {
 }
 
 // Gets details on specific games
-function querySpecificGames(res, queryString) {
+function queryGamesSpecific(res, queryString) {
 
 	let qs = {}
 	if (queryString) {
+
 		if (queryString.name)
 			qs.name = queryString.name;
+		else if (queryString.game)	//Since 'game' might be a bit more natural.. TODO: combine game and name
+			qs.name = queryString.game;
 		
 		if (queryString.id)
 			qs.id = queryString.id;
 	}
 
-	if (qs == {}) {
-		qs.name = 'Always On'
+	//If no games are specified, then we can just skip this api call (since it will just return an error)
+	if (!(qs.id || qs.name)) {
+		queryStreamsForGames(res)
 	}
-
+	else {
 	baseRequest.get({
 		uri: 'helix/games',
 		qs: qs
 	}, function(error, response, body) {
-		buildGameList(JSON.parse(response.body).data);
 
-		queryGameStreamers(res); 
+			buildGameList(JSON.parse(body).data);
+
+		queryStreamsForSpecificGames(res); 
 	})
+}
 }
 
 function buildGameList(gameArray) {
+	if (gameArray)
+		gameArray.forEach(function(game) { setGame(game); })
 
-	gameArray.forEach(function(game) { setGame(game); })
 	return games;
 }
 
@@ -176,11 +191,11 @@ function setGame(game) {
 	games.set(Number(game.id), new Game(game));
 }
 
-function buildStreamerList(streamerArray) {
-	streamerArray.forEach(function(streamer) { setStreamer(streamer); })
-	return streamers;
+function buildStreamList(streamArray) {
+	streamArray.forEach(function(stream) { setStream(stream); })
+	return streams;
 }
 
-function setStreamer(streamer) {
-	streamers.set(Number(streamer.user_id), new Streamer(streamer));
+function setStream(stream) {
+	streams.set(Number(stream.user_id), new Stream(stream));
 }

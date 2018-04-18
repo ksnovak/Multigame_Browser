@@ -1,4 +1,4 @@
-module.exports = class Streamer {
+module.exports = class Stream {
 	constructor (stream) {
 		this.id = Number(stream.id);
 		this.user_id = Number(stream.user_id);
