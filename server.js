@@ -11,6 +11,21 @@ const request 		= require('request');
 let Game 			= require('./models/game');
 let Stream 			= require('./models/stream');
 
+
+let router = express.Router();
+
+let games = new Map();
+let streams = new Map();
+
+let serviceCalls = {
+	streamsTop: false,
+	streamsForSpecificGames: false, 
+	streamsDetails: false, 
+	
+	gamesTop: false,	
+	gamesSpecific: false
+}
+
 let baseRequest = request.defaults({
 	headers: keys.twitch,
 	baseUrl: 'https://api.twitch.tv/'
@@ -22,7 +37,6 @@ app.set('view engine', 'handlebars');
 app.use(bodyParser.urlencoded({ extended: true}));
 app.use(bodyParser.json());
 
-var router = express.Router();
 
 router.use(function(req, res, next) {
 	next();
@@ -41,9 +55,11 @@ router.get('/', function(req, res) {
 app.use('/', router);
 app.listen(3000);
 
-var games = new Map();
-var streams = new Map();
 
+
+
+// --------------------------------------------
+// Service calls
 // Gets the most popular streams (of any game)
 function queryStreamsTop(res) {
 	baseRequest.get({
@@ -95,13 +111,85 @@ function queryStreamsDetails(res) {
 	})
 }
 
+// Gets the most popular games
+function queryGamesTop(res) {
+	baseRequest.get({
+		uri: 'kraken/games/top',
+		qs: {
+			limit: 10
+		}
+	}, function(error, response, body) {
+		res.send(body)
+	})
+}
+
+// Gets details on specific games
+function queryGamesSpecific(res, queryString) {
+
+	let qs = {}
+	if (queryString) {
+
+		if (queryString.name)
+			qs.name = queryString.name;
+		else if (queryString.game)	//Since 'game' might be a bit more natural.. TODO: combine game and name, in ccase of both
+			qs.name = queryString.game;
+		
+		if (queryString.id)
+			qs.id = queryString.id;
+	}
+
+	//If no games are specified, then we can just skip this api call (since it will just return an error)
+	if (!(qs.id || qs.name)) {
+		queryStreamsForSpecificGames(res)
+	}
+	else {
+		baseRequest.get({
+			uri: 'helix/games',
+			qs: qs
+		}, function(error, response, body) {
+			buildGameList(JSON.parse(body).data);
+
+			queryStreamsForSpecificGames(res); 
+		})
+	}
+}
+// --------------------------------------------
+
+
+
+// --------------------------------------------
+// Interpreting service call returns
+function buildGameList(gameArray) {
+	if (gameArray)
+		gameArray.forEach(function(game) { setGame(game); })
+
+	return games;
+}
+
+function setGame(game) {
+	games.set(Number(game.id), new Game(game));
+}
+
+function buildStreamList(streamArray) {
+	streamArray.forEach(function(stream) { setStream(stream); })
+	return streams;
+}
+
+function setStream(stream) {
+	streams.set(Number(stream.user_id), new Stream(stream));
+}
+// --------------------------------------------
+
+
+// --------------------------------------------
+// Building structures to send to client
 function generateHTML(res) {
 	const StreamWidth = 230;
 	const StreamAspectRatio = 1.75;
 
 	const GameWidth = 90;
 	const GameAspectRatio = 0.75;
-	console.log(games);
+
 	res.render('home', {
 
 		helpers: {
@@ -128,74 +216,12 @@ function generateHTML(res) {
 
 		},
 		games: games,
-		streams: streams
+		streams: streams,
+		gridView: true
 	});
 }
 
 function changeImagePlaceholders(image_url, width, ratio) {
 	return image_url.replace("{width}", width).replace('{height}', parseInt(width/ratio));
 }
-
-// Gets the most popular games
-function queryGamesTop(res) {
-	baseRequest.get({
-		uri: 'kraken/games/top',
-		qs: {
-			limit: 10
-		}
-	}, function(error, response, body) {
-		res.send(body)
-	})
-}
-
-// Gets details on specific games
-function queryGamesSpecific(res, queryString) {
-
-	let qs = {}
-	if (queryString) {
-
-		if (queryString.name)
-			qs.name = queryString.name;
-		else if (queryString.game)	//Since 'game' might be a bit more natural.. TODO: combine game and name
-			qs.name = queryString.game;
-		
-		if (queryString.id)
-			qs.id = queryString.id;
-	}
-
-	//If no games are specified, then we can just skip this api call (since it will just return an error)
-	if (!(qs.id || qs.name)) {
-		queryStreamsForGames(res)
-	}
-	else {
-	baseRequest.get({
-		uri: 'helix/games',
-		qs: qs
-	}, function(error, response, body) {
-
-			buildGameList(JSON.parse(body).data);
-
-		queryStreamsForSpecificGames(res); 
-	})
-}
-}
-
-function buildGameList(gameArray) {
-	if (gameArray)
-		gameArray.forEach(function(game) { setGame(game); })
-
-	return games;
-}
-
-function setGame(game) {
-	games.set(Number(game.id), new Game(game));
-}
-
-function buildStreamList(streamArray) {
-	streamArray.forEach(function(stream) { setStream(stream); })
-	return streams;
-}
-
-function setStream(stream) {
-	streams.set(Number(stream.user_id), new Stream(stream));
-}
+// --------------------------------------------

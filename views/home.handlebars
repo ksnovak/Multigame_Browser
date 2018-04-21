@@ -25,6 +25,30 @@
 <div id='main' class='container-fluid'>   
 
     <div id='streams'>
+    {{#if gridView}}
+        <div class='row border border-secondary'>
+        {{#eachInMap streams}}
+            <div class='col-lg-2 col-md-3 col-sm-4 col-xs-6 py-1'>
+                <div class='row py-1 px-1'>
+                    <a href='https://twitch.tv/{{value.login}}'><img src={{getStreamArt value.thumbnail_url}} style='width: 100%;'/></a>
+                </div>   
+
+                <div class='row'>
+                    <a href='https://twitch.tv/{{value.login}}'>{{value.login}}</a>, {{value.viewer_count}} viewers <br/>
+                </div>    
+                <div class='row px-1'>
+                    <div class='col-sm-2 px-0'>
+                        <a href='https://www.twitch.tv/directory/game/{{getGameName value.game_id}}'><img src={{getGameArt value.game_id}}  class='align-middle' style='width: 100%; max-width: 90px;'/></a>
+                    </div>
+                    <div class='col-sm-10'>
+                        <span style='font-style: italic;'>{{value.title}}</span><br/>
+                        {{getGameName value.game_id}}
+                    </div>
+                </div>
+            </div>
+        {{/eachInMap}}
+        </div>
+    {{else}}        
         {{#eachInMap streams}}
         <div class='row border border-secondary'>
             <div class='col-sm-2' style='padding: 0px;'>
@@ -48,5 +72,6 @@
             </div></div>
         </div>
         {{/eachInMap}}
+    {{/if}}
     </div>
 </div>
