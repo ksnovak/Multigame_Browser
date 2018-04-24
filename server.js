@@ -8,6 +8,8 @@ const bodyParser	= require('body-parser');
 const request 		= require('request');
 //var sql 		= require('sql');
 
+const GameRouter 	= require('./routes/games');
+
 let Game 			= require('./models/game');
 let Stream 			= require('./models/stream');
 
@@ -16,15 +18,6 @@ let router = express.Router();
 
 let games = new Map();
 let streams = new Map();
-
-let serviceCalls = {
-	streamsTop: false,
-	streamsForSpecificGames: false, 
-	streamsDetails: false, 
-	
-	gamesTop: false,	
-	gamesSpecific: false
-}
 
 let baseRequest = request.defaults({
 	headers: keys.twitch,
@@ -39,10 +32,12 @@ app.use(bodyParser.json());
 
 
 router.use(function(req, res, next) {
+	console.log(`Request for ${req.originalUrl} incoming`)
 	next();
 })
 
-router.get('/', function(req, res) {
+//Note this is APP get, so this responds to root directory, not
+app.get('/', function(req, res) {
 
 	//TODO: This re-initialization is done because the maps stay populated between service calls
 	//Ideally that's good. We just need to figure out how to handle that
@@ -52,7 +47,9 @@ router.get('/', function(req, res) {
 	queryGamesSpecific(res, req.query);		//TODO: Async calls
 })
 
-app.use('/', router);
+require('./routes/games')(router);
+
+app.use('/api', router);
 app.listen(3000);
 
 
@@ -60,14 +57,6 @@ app.listen(3000);
 
 // --------------------------------------------
 // Service calls
-// Gets the most popular streams (of any game)
-function queryStreamsTop(res) {
-	baseRequest.get({
-		uri: 'kraken/games/top'
-	}, function(error, response, body) {
-		res.send(body);  
-	})
-}
 
 // Gets the most popular streams for a specific game
 function queryStreamsForSpecificGames(res) {
@@ -94,15 +83,13 @@ function queryStreamsDetails(res) {
 		}
 	}, function(error, response, body) {
 
-		let data = JSON.parse(body).data; 
-		
-		
+		let data = JSON.parse(body).data; 	
 		if (data) {
 			data.forEach(function(stream) {
 				let streamObject = streams.get(Number(stream.id));
 				streamObject.setName(stream.login);
 
-				streams.set(stream.id, streamObject);
+				streams.set(Number(stream.id), streamObject);
 			})
 		}
 
@@ -125,33 +112,11 @@ function queryGamesTop(res) {
 
 // Gets details on specific games
 function queryGamesSpecific(res, queryString) {
-
-	let qs = {}
-	if (queryString) {
-
-		if (queryString.name)
-			qs.name = queryString.name;
-		else if (queryString.game)	//Since 'game' might be a bit more natural.. TODO: combine game and name, in ccase of both
-			qs.name = queryString.game;
-		
-		if (queryString.id)
-			qs.id = queryString.id;
-	}
-
-	//If no games are specified, then we can just skip this api call (since it will just return an error)
-	if (!(qs.id || qs.name)) {
-		queryStreamsForSpecificGames(res)
-	}
-	else {
-		baseRequest.get({
-			uri: 'helix/games',
-			qs: qs
-		}, function(error, response, body) {
-			buildGameList(JSON.parse(body).data);
-
+	GameRouter.querySpecificGames(queryString)
+		.then((gamesArray) => {
+			gamesArray.forEach((game) => { games.set(game.id, game); })
 			queryStreamsForSpecificGames(res); 
 		})
-	}
 }
 // --------------------------------------------
 
@@ -209,7 +174,7 @@ function generateHTML(res) {
 			},
 			getGameArt: (game_id) => {
 				const game = games.get(game_id)
-				return game ? changeImagePlaceholders(game.box_art_url, GameWidth, GameAspectRatio) : ''
+				return game ? changeImagePlaceholders(game.box_art, GameWidth, GameAspectRatio) : ''
 			},
 			getGame: (game_id) => games.get(game_id),
 			getStreamArt: (thumbnail_url) => changeImagePlaceholders(thumbnail_url, StreamWidth, StreamAspectRatio)

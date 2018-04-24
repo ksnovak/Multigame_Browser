@@ -1,3 +1,10 @@
+<script>
+    function search() {
+        var selectedGames = $('#gameList').val();
+    }
+
+</script>
+
 
 <div class='row'>
     <div class='form-group col-sm-6'>                
@@ -16,7 +23,7 @@
         <input type='text' id='customGames' class='form-control col-sm-8'/>
 
         <div id='actionButtons'>
-            <button id='search' class='btn btn-primary'>Search</button>
+            <button id='search' class='btn btn-primary' onclick='search()'>Search</button>
             <button id='clearTable' class='btn btn-secondary'>Clear Results</button>
             <button id='clearSearch' class='btn btn-secondary'>Clear Search</button>
         </div>
