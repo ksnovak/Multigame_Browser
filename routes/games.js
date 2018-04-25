@@ -19,11 +19,12 @@ module.exports = function(router) {
     router.get('/games/specific', (req, res) => {
         querySpecificGames(req.query).then((value) => { res.send(value); })
     })
+
+    
 }
 
 module.exports.queryTopGames = queryTopGames;
 module.exports.querySpecificGames = querySpecificGames;
-
 
 function queryTopGames (options) {
     return new Promise((resolve, reject) => {
@@ -35,11 +36,17 @@ function queryTopGames (options) {
                 reject(Error(`Error on topGames, ${error}`));
             }
             else {
-                resolve(JSON.parse(body).top.map(game => Game.newGameFromKraken(game)));    
+                try {
+                    resolve(JSON.parse(body).top.map(game => Game.newGameFromKraken(game)));    
+                }
+                catch (error) {
+                    reject(Error(`Error parsing topGames, ${error}`));
+                }
             }
         })
     })
 }
+
 
 function querySpecificGames (options) {
     return new Promise((resolve, reject) => {
@@ -49,8 +56,14 @@ function querySpecificGames (options) {
 		}, (error, response, body) => {
             if (error) 
                 reject(Error(`Error on specificGames, ${error}`))
-            else
-		    	resolve(JSON.parse(body).data.map(game => new Game(game)));
+            else {
+                try {
+                    resolve(JSON.parse(body).data.map(game => new Game(game)));
+                }
+                catch (error) {
+                    reject(Error(`Error parsing specificGames, ${error}`));
+                }
+            }
 		});
     })
 }

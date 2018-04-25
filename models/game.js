@@ -3,16 +3,9 @@ module.exports = class Game {
 		if (game) {
 			this.id = Number(game.id);
 			this.name = game.name;
-			this.box_art = game.box_art_url
+			this.box_art = game.box_art_url;
 			this.viewers = game.viewers;
 			this.channels = game.channels;
-		}
-		else {
-			this.id = 0;
-			this.name = '';
-			this.box_art = '';
-			this.viewers = 0;
-			this.channels = 0;
 		}
 	}
 

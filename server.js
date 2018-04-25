@@ -9,6 +9,7 @@ const request 		= require('request');
 //var sql 		= require('sql');
 
 const GameRouter 	= require('./routes/games');
+const StreamRouter	= require('./routes/streams');
 
 let Game 			= require('./models/game');
 let Stream 			= require('./models/stream');
@@ -44,10 +45,21 @@ app.get('/', function(req, res) {
 	games = new Map();
 	streams = new Map();
 	
-	queryGamesSpecific(res, req.query);		//TODO: Async calls
+	// queryGamesSpecific(res, req.query);		//TODO: Async calls
+	queryGamesSpecific(req.query)
+		.then(() => { 
+			return queryStreamsForSpecificGames()
+		})
+		.then(() => {
+			return queryStreamsDetails()
+		})
+		.then(() => {
+			generateHTML(res);
+		})
 })
 
 require('./routes/games')(router);
+require('./routes/streams')(router);
 
 app.use('/api', router);
 app.listen(3000);
@@ -58,65 +70,59 @@ app.listen(3000);
 // --------------------------------------------
 // Service calls
 
-// Gets the most popular streams for a specific game
-function queryStreamsForSpecificGames(res) {
-	baseRequest.get({
-		uri: 'helix/streams',
-		qs: {
-			game_id: Array.from(games.keys()),
-			language: 'en',
-			first: 100
-		}
-	}, function(error, response, body) {
-		buildStreamList(JSON.parse(body).data);
-
-		queryStreamsDetails(res);
-	})
-}
-
-// Gets details on specified streams
-function queryStreamsDetails(res) {
-	baseRequest.get({	
-		uri: 'helix/users',
-		qs: {
-			id: Array.from(streams.keys())
-		}
-	}, function(error, response, body) {
-
-		let data = JSON.parse(body).data; 	
-		if (data) {
-			data.forEach(function(stream) {
-				let streamObject = streams.get(Number(stream.id));
-				streamObject.setName(stream.login);
-
-				streams.set(Number(stream.id), streamObject);
-			})
-		}
-
-		generateHTML(res);
-
-	})
-}
 
 // Gets the most popular games
 function queryGamesTop(res) {
-	baseRequest.get({
-		uri: 'kraken/games/top',
-		qs: {
-			limit: 10
-		}
-	}, function(error, response, body) {
-		res.send(body)
-	})
+	GameRouter.queryTopGames(queryString)
+		.then(res.send(body));
 }
 
 // Gets details on specific games
-function queryGamesSpecific(res, queryString) {
-	GameRouter.querySpecificGames(queryString)
+function queryGamesSpecific(queryString) {
+
+	return new Promise((resolve, reject) => {
+		GameRouter.querySpecificGames(queryString)
 		.then((gamesArray) => {
-			gamesArray.forEach((game) => { games.set(game.id, game); })
-			queryStreamsForSpecificGames(res); 
+			buildGameList(gamesArray);
+			resolve();
 		})
+	})
+}
+
+// Gets the most popular streams for a specific game
+function queryStreamsForSpecificGames() {
+	return new Promise((resolve, reject) => {
+		StreamRouter.queryStreamsForSpecificGames({
+			game_id: Array.from(games.keys()),
+			language: 'en',
+			first: 100
+		})
+		.then(streamsArray => {
+			streamsArray.forEach(stream => {streams.set(stream.user_id, stream)})
+			resolve();
+		})
+	})
+
+	
+}
+
+// Gets details on specified streams
+function queryStreamsDetails() {
+	return new Promise((resolve, reject) => {
+		StreamRouter.queryStreamsDetails({
+			id: Array.from(streams.keys())
+		})
+		.then(streamsArray => {
+			streamsArray.forEach(stream => {
+				
+				let streamObject = streams.get(stream.user_id);
+				streamObject.setName(stream.login);
+	
+				streams.set(stream.user_id, streamObject);
+			})
+			resolve();
+		})
+	})
 }
 // --------------------------------------------
 
@@ -126,17 +132,17 @@ function queryGamesSpecific(res, queryString) {
 // Interpreting service call returns
 function buildGameList(gameArray) {
 	if (gameArray)
-		gameArray.forEach(function(game) { setGame(game); })
+		gameArray.forEach(game => { setGame(game) })
 
 	return games;
 }
 
 function setGame(game) {
-	games.set(Number(game.id), new Game(game));
+	games.set(Number(game.id), game);
 }
 
 function buildStreamList(streamArray) {
-	streamArray.forEach(function(stream) { setStream(stream); })
+	streamArray.forEach(stream => { setStream(stream) })
 	return streams;
 }
 
@@ -154,6 +160,8 @@ function generateHTML(res) {
 
 	const GameWidth = 90;
 	const GameAspectRatio = 0.75;
+
+	// console.log(streams);
 
 	res.render('home', {
 
@@ -173,7 +181,9 @@ function generateHTML(res) {
 				return game ? game.name : 'Unknown'
 			},
 			getGameArt: (game_id) => {
+				
 				const game = games.get(game_id)
+				console.log(game);
 				return game ? changeImagePlaceholders(game.box_art, GameWidth, GameAspectRatio) : ''
 			},
 			getGame: (game_id) => games.get(game_id),
