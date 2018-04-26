@@ -17,9 +17,6 @@ let Stream 			= require('./models/stream');
 
 let router = express.Router();
 
-let games = new Map();
-let streams = new Map();
-
 let baseRequest = request.defaults({
 	headers: keys.twitch,
 	baseUrl: 'https://api.twitch.tv/'
@@ -47,14 +44,14 @@ app.get('/', function(req, res) {
 	
 	// queryGamesSpecific(res, req.query);		//TODO: Async calls
 	queryGamesSpecific(req.query)
-		.then(() => { 
-			return queryStreamsForSpecificGames()
+		.then(games => { 
+			return queryStreamsForSpecificGames(games)
 		})
-		.then(() => {
-			return queryStreamsDetails()
+		.then(data => {
+			return queryStreamsDetails(data.games, data.streams)
 		})
-		.then(() => {
-			generateHTML(res);
+		.then(data => {
+			res.render('home', generateTemplate(data.games, data.streams));
 		})
 })
 
@@ -83,14 +80,13 @@ function queryGamesSpecific(queryString) {
 	return new Promise((resolve, reject) => {
 		GameRouter.querySpecificGames(queryString)
 		.then((gamesArray) => {
-			buildGameList(gamesArray);
-			resolve();
+			resolve(buildGameList(gamesArray));
 		})
 	})
 }
 
 // Gets the most popular streams for a specific game
-function queryStreamsForSpecificGames() {
+function queryStreamsForSpecificGames(games) {
 	return new Promise((resolve, reject) => {
 		StreamRouter.queryStreamsForSpecificGames({
 			game_id: Array.from(games.keys()),
@@ -98,8 +94,9 @@ function queryStreamsForSpecificGames() {
 			first: 100
 		})
 		.then(streamsArray => {
+			let streams = new Map();
 			streamsArray.forEach(stream => {streams.set(stream.user_id, stream)})
-			resolve();
+			resolve({streams: streams, games: games});
 		})
 	})
 
@@ -107,7 +104,7 @@ function queryStreamsForSpecificGames() {
 }
 
 // Gets details on specified streams
-function queryStreamsDetails() {
+function queryStreamsDetails(games, streams) {
 	return new Promise((resolve, reject) => {
 		StreamRouter.queryStreamsDetails({
 			id: Array.from(streams.keys())
@@ -120,7 +117,7 @@ function queryStreamsDetails() {
 	
 				streams.set(stream.user_id, streamObject);
 			})
-			resolve();
+			resolve({games: games, streams: streams});
 		})
 	})
 }
@@ -131,14 +128,11 @@ function queryStreamsDetails() {
 // --------------------------------------------
 // Interpreting service call returns
 function buildGameList(gameArray) {
+	let games = new Map();
 	if (gameArray)
-		gameArray.forEach(game => { setGame(game) })
+		gameArray.forEach(game => { games.set(Number(game.id), game) })
 
 	return games;
-}
-
-function setGame(game) {
-	games.set(Number(game.id), game);
 }
 
 function buildStreamList(streamArray) {
@@ -154,17 +148,14 @@ function setStream(stream) {
 
 // --------------------------------------------
 // Building structures to send to client
-function generateHTML(res) {
+function generateTemplate(games, streams) {
 	const StreamWidth = 230;
 	const StreamAspectRatio = 1.75;
 
 	const GameWidth = 90;
 	const GameAspectRatio = 0.75;
 
-	// console.log(streams);
-
-	res.render('home', {
-
+	return({
 		helpers: {
 			eachInMap: function (map, block) {
 				let output = '';
@@ -183,7 +174,6 @@ function generateHTML(res) {
 			getGameArt: (game_id) => {
 				
 				const game = games.get(game_id)
-				console.log(game);
 				return game ? changeImagePlaceholders(game.box_art, GameWidth, GameAspectRatio) : ''
 			},
 			getGame: (game_id) => games.get(game_id),
