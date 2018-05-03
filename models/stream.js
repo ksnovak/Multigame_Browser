@@ -7,6 +7,7 @@ module.exports = class Stream {
 			this.viewer_count = stream.viewer_count;
 			this.game_id = Number(stream.game_id);
 			this.thumbnail_url = stream.thumbnail_url;
+			this.selected = false;
 		}
 	}
 
