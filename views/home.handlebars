@@ -9,7 +9,7 @@
                 <label class="custom-control-label" for="englishOnly">English only?</label>
             </div>
             <label for='gameList'>Top games:</label>
-            <select id='gameList' multiple="multiple" class='form-control'>
+            <select id='gameList' multiple="multiple" class='form-control' size='20'>
                 {{#eachInMap games}}
                     <option value='{{value.id}}' {{#if value.selected}}selected{{/if}}>{{value.name}}</option>
                 {{/eachInMap}}

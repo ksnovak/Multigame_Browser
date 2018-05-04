@@ -39,7 +39,7 @@ app.get('/', function(req, res) {
 
 	Promise.all([queryGamesTop(req.query),
 		queryGamesSpecific(req.query)
-			.then(games => { return queryStreamsForSpecificGames(games) })
+			.then(games => { return queryStreamsForSpecificGames(games, req.query) })
 			.then(data => { return queryStreamsDetails(data.games, data.streams) })
 	])
 	.then(data => {
@@ -92,12 +92,12 @@ function queryGamesSpecific(queryString) {
 }
 
 // Gets the most popular streams for a specific game
-function queryStreamsForSpecificGames(games) {
+function queryStreamsForSpecificGames(games, queryString) {
 	return new Promise((resolve, reject) => {
 		StreamRouter.queryStreamsForSpecificGames({
 			game_id: Array.from(games.keys()),
-			language: 'en',
-			first: 100
+			language: queryString.language,
+			first: queryString.first || 100
 		})
 		.then(streamsArray => {
 			let streams = new Map();
