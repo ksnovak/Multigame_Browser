@@ -3,6 +3,7 @@ Tweaks:
 * Change promises to async, for clarity     https://medium.com/@bluepnume/learn-about-promises-before-you-start-using-async-await-eb148164a9c8
 * using window.location.search, find ways to update the querystring without completely deleting and replacing it (e.g. update the games list without changing the language setting)
 * make case insensitive querystrings, using proxy https://stackoverflow.com/questions/15521876/nodejs-express-is-it-possible-to-have-case-insensitive-querystring
+* Find a way to throw plaintext javascript in handlebars, so we can initialize some objects on client
 
 Functionality:
 * Different display styles

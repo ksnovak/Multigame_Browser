@@ -5,15 +5,24 @@ $(function() {
     let streams = new Map();
 
     $('#search').click(() => {
-        // alert($('#customGames').val().split(', '));
-        // alert($('#gameList').val())
-
-        updateGamesList( $('#customGames').val().split(', '), $('#gameList').val(), $('#englishOnly').prop('checked') ? 'en' : '');
-        
+        searchSelectedGames(getCustomGames(), getSelectedGames(), getLanguages(), getIncludeTop());
     })
     
 
-    function updateGamesList (nameArray, idArray, language) {
+    function getCustomGames() {
+        return $('#customGames').val().split(', ');
+    }
+    function getSelectedGames() {
+        return $('#gameList').val();
+    }
+    function getLanguages() {
+        return $('#englishOnly').prop('checked') ? 'en' : '';
+    }
+    function getIncludeTop() {
+        return $('#includeTop').prop('checked')
+    }
+
+    function searchSelectedGames (nameArray, idArray, languages, includeTop) {
         $.get({
             url: './api/games/specific',
             data: { 
@@ -23,14 +32,38 @@ $(function() {
             error: response => { console.log (`Error: ${response}`) },
             success: gameArray => {
                 let queryString = '?';
+
+                if (includeTop)
+                    queryString += `includeTop=${includeTop}&`;
+                
+                if (languages)
+                    queryString += `language=en&`
+
+
                 gameArray.forEach(game => {
                     queryString += `name=${game.name}&`;
+
+                    game.selected = true;
+                    games.set(game.id, game);
                 });
-                queryString += language ? `language=${language}` : ''
+
 
                 pushNewState(addQueryString (window.location, queryString));
+            }
+        })
+    }
 
-                games = buildGamesList(gameArray);
+    function getTopGames (first) {
+        $.get({
+            url: './api/games/top',
+            data: { 
+                first: first
+            },
+            error: response => { console.log (`Error: ${response}`) },
+            success: gameArray => { 
+                gameArray.forEach(game => {
+                    games.set(game.id, game);
+                })
             }
         })
     }
