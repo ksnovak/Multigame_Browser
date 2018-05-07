@@ -4,6 +4,7 @@ Tweaks:
 * using window.location.search, find ways to update the querystring without completely deleting and replacing it (e.g. update the games list without changing the language setting)
 * make case insensitive querystrings, using proxy https://stackoverflow.com/questions/15521876/nodejs-express-is-it-possible-to-have-case-insensitive-querystring
 * Find a way to throw plaintext javascript in handlebars, so we can initialize some objects on client
+* Share handlebars templates on server & client http://initialdigital.com/sharing-handlebars-templates-on-both-server-client-in-node-js-express-with-webpack/
 
 Functionality:
 * Different display styles

@@ -5,7 +5,17 @@ $(function() {
     let streams = new Map();
 
     $('#search').click(() => {
-        searchSelectedGames(getCustomGames(), getSelectedGames(), getLanguages(), getIncludeTop());
+
+        Promise.all([
+            searchSelectedGames(getCustomGames(), getSelectedGames(), getLanguages(), getIncludeTop()),
+            getTopGames(5)
+        ])
+        .then(results => {
+            const selectedGames = results[0];
+            const topGames = results[1];
+
+            rebuildGameSelect();
+        })
     })
     
 
@@ -22,8 +32,8 @@ $(function() {
         return $('#includeTop').prop('checked')
     }
 
-    function searchSelectedGames (nameArray, idArray, languages, includeTop) {
-        $.get({
+    async function searchSelectedGames (nameArray, idArray, languages, includeTop) {
+        const result = await $.get({
             url: './api/games/specific',
             data: { 
                 name: nameArray,
@@ -39,22 +49,20 @@ $(function() {
                 if (languages)
                     queryString += `language=en&`
 
-
                 gameArray.forEach(game => {
                     queryString += `name=${game.name}&`;
 
                     game.selected = true;
                     games.set(game.id, game);
                 });
-
-
                 pushNewState(addQueryString (window.location, queryString));
             }
         })
+        return result;
     }
 
-    function getTopGames (first) {
-        $.get({
+    async function getTopGames (first) {
+        const result = await $.get({
             url: './api/games/top',
             data: { 
                 first: first
@@ -66,16 +74,19 @@ $(function() {
                 })
             }
         })
+
+        return result
     }
 
-    function buildGamesList (gameArray) {
-        let games = new Map();
-        gameArray.forEach(game => {
-            games.set(game.id, game);
+    function rebuildGameSelect() {
+        var $gameSelect = $('#gameList');
+
+        var optionsMarkup = '';
+        games.forEach(game => {
+            optionsMarkup += `<option value="${game.id}" ${game.selected ? 'selected' : ''}>${game.name}</option>`
         })
 
-        logIfDebugging(games);
-        return games;
+        $gameSelect.html(optionsMarkup); 
     }
 
     function addQueryString (location, queryString) {
