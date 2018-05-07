@@ -30,7 +30,7 @@ app.use(bodyParser.json());
 
 
 router.use(function(req, res, next) {
-	console.log(`Request for ${req.originalUrl} incoming`)
+	console.log(`Request for ${decodeURIComponent(req.originalUrl)} incoming`)
 	next();
 })
 
@@ -43,10 +43,12 @@ app.get('/', function(req, res) {
 			.then(data => { return queryStreamsDetails(data.games, data.streams) })
 	])
 	.then(data => {
-		let games = combineGames(data[0], data[1].games);	//Combines Top Games and Specific Games
+
+		
+		let games = data[0]? combineGames(data[0], data[1].games) : data[1].games;	//Combines Top Games and Specific Games
 		let streams = data[1].streams;
 
-		res.render('home', generateTemplate(games, streams));
+		res.render('home', generateTemplate(games, streams, req.query.language, req.query.includeTop));
 	})
 })
 
@@ -66,18 +68,23 @@ require('./routes/streams')(router);
 
 app.use('/static', express.static('static'));
 app.use('/api', router);
-app.listen(3000);1
+app.listen(3000);
 
 // --------------------------------------------
 // Gets the most popular games
 function queryGamesTop(queryString) {
 	return new Promise((resolve, reject) => {
-		GameRouter.queryTopGames(queryString)
-			.then((gamesArray) => {
-				let games = new Map();
-				gamesArray.forEach(game => { games.set(game.id, game)})
-				resolve(games)
-			})
+		if (queryString.includeTop && stringIsTrue(queryString.includeTop)) {
+			GameRouter.queryTopGames(queryString)
+				.then((gamesArray) => {
+					let games = new Map();
+					gamesArray.forEach(game => { games.set(game.id, game)})
+					resolve(games)
+				})
+		}
+		else {
+			resolve()
+		}
 	})
 }
 
@@ -151,7 +158,7 @@ function setStream(stream) {
 
 // --------------------------------------------
 // Building structures to send to client
-function generateTemplate(games, streams) {
+function generateTemplate(games, streams, language, includeTop) {
 	const StreamWidth = 230;
 	const StreamAspectRatio = 1.75;
 
@@ -181,11 +188,18 @@ function generateTemplate(games, streams) {
 		},
 		games: games,
 		streams: streams,
+		englishOnly: (language == 'en') ? true : false,
+		includeTop: stringIsTrue(includeTop),
 		gridView: true
 	});
 }
 
 function changeImagePlaceholders(image_url, width, ratio) {
 	return image_url.replace("{width}", width).replace('{height}', parseInt(width/ratio));
+}
+
+function stringIsTrue(str) {
+
+	return str && str.toLowerCase() == 'true';
 }
 // --------------------------------------------

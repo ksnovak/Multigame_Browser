@@ -5,8 +5,13 @@
     <div class='row'>
         <div class='form-group col-sm-2 col-lg-3'>                
             <div id='filters' class="custom-control custom-checkbox">
-                <input class="custom-control-input" id="englishOnly" checked type="checkbox">
+                <input class="custom-control-input" id="englishOnly" {{#if englishOnly}}checked{{/if}} type="checkbox">
                 <label class="custom-control-label" for="englishOnly">English only?</label>
+                <br/>
+                <input class="custom-control-input" id="includeTop" {{#if includeTop}}checked{{/if}} type="checkbox">
+                <label class="custom-control-label" for="includeTop">Include Top games?</label>
+
+                
             </div>
             <label for='gameList'>Top games:</label>
             <select id='gameList' multiple="multiple" class='form-control' size='20'>
@@ -76,3 +81,4 @@
         </div>
     </div>
 </div>
+

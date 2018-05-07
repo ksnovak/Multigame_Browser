@@ -1,27 +1,18 @@
-Immediately:
-* Serve up actual details
 
-Querystring options:
-* Game name/id
-* Language
-* Display as cards or list
+Tweaks:
+* Change promises to async, for clarity     https://medium.com/@bluepnume/learn-about-promises-before-you-start-using-async-await-eb148164a9c8
+* using window.location.search, find ways to update the querystring without completely deleting and replacing it (e.g. update the games list without changing the language setting)
+* make case insensitive querystrings, using proxy https://stackoverflow.com/questions/15521876/nodejs-express-is-it-possible-to-have-case-insensitive-querystring
 
-Short-term:
-* Pass in games as a querystring
-* Separate arrays for games. One for an overall list, one for the list of requested ones
+Functionality:
+* Different display styles
 * Handling for 0 results (either no games or no streams)
-* Get rid of re-initializing maps. That's crappy
 * Inclusion/Exclusion list of streams
-* Async API calls
-* Move router to its own appropriate file
-* "name" and "game" querystring combination
-* There must be some way for handlebars to use variables...
-
-Long-term:
-* Save game details in a database
-* Cache stream details
-* Have a service regularly getting game/stream details, and then when users want to view the site, just serve up that latest data
+* Store game lists on server to reduce service calls if possible
 * Accounts, with default games/streams to show
+
+
+
 
 Uses:
 * "Get me all of the streamers for games X, Y, and Z"

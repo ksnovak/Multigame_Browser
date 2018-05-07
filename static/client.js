@@ -1,4 +1,8 @@
 $(function() {
+    const DEBUGGING = true;
+
+    let games = new Map();
+    let streams = new Map();
 
     $('#search').click(() => {
         // alert($('#customGames').val().split(', '));
@@ -7,8 +11,9 @@ $(function() {
         updateGamesList( $('#customGames').val().split(', '), $('#gameList').val(), $('#englishOnly').prop('checked') ? 'en' : '');
         
     })
+    
 
-    let updateGamesList = function(nameArray, idArray, language) {
+    function updateGamesList (nameArray, idArray, language) {
         $.get({
             url: './api/games/specific',
             data: { 
@@ -16,18 +21,45 @@ $(function() {
                 id: idArray
             },
             error: response => { console.log (`Error: ${response}`) },
-            success: response => {
-                let querystring = '?';
-                response.forEach(game => {
-                    querystring += `name=${game.name}&`;
+            success: gameArray => {
+                let queryString = '?';
+                gameArray.forEach(game => {
+                    queryString += `name=${game.name}&`;
                 });
-                querystring += language ? `language=${language}` : ''
-                window.location.href = window.location.protocol + "//" + window.location.host + window.location.pathname + querystring;
+                queryString += language ? `language=${language}` : ''
+
+                pushNewState(addQueryString (window.location, queryString));
+
+                games = buildGamesList(gameArray);
             }
         })
     }
 
-    let setGame = function(game) {
+    function buildGamesList (gameArray) {
+        let games = new Map();
+        gameArray.forEach(game => {
+            games.set(game.id, game);
+        })
 
+        logIfDebugging(games);
+        return games;
     }
+
+    function addQueryString (location, queryString) {
+        return location.protocol + "//" + location.host + location.pathname + queryString;
+    }
+
+    //Attempts to update the URL without reload, if possible. But falls back to reloading if necessary
+    function pushNewState (newUrl) {
+        if (history.pushState)
+            window.history.pushState({path: newUrl }, '', newUrl);
+        else 
+            window.location.href = newUrl;
+    }
+
+    function logIfDebugging (logStatement) {
+        if (DEBUGGING)
+            console.log(logStatement);
+    }
+
 })
