@@ -89,6 +89,20 @@ $(function() {
         $gameSelect.html(optionsMarkup); 
     }
 
+    function testHandlebarFunction() {
+        // var source   = $("#some-template").html();
+        // var template = Handlebars.compile(source);  
+        // var data =  {users: [  
+        //     {username: "alan", firstName: "Alan", lastName: "Johnson", email: "alan@test.com" },  
+        //     {username: "allison", firstName: "Allison", lastName: "House", email: "allison@test.com" },  
+        //     {username: "ryan", firstName: "Ryan", lastName: "Carson", email: "ryan@test.com" }  
+        //   ]};
+
+        //   var asdf = template(data);
+  
+        // $("#content-placeholder").html(template(data));
+    }
+
     function addQueryString (location, queryString) {
         return location.protocol + "//" + location.host + location.pathname + queryString;
     }

@@ -74,7 +74,7 @@ app.listen(3000);
 // Gets the most popular games
 function queryGamesTop(queryString) {
 	return new Promise((resolve, reject) => {
-		if (queryString.includeTop && stringIsTrue(queryString.includeTop)) {
+		if (queryString.includeTop && stringIsTrue(queryString.includeTop, true)) {
 			GameRouter.queryTopGames(queryString)
 				.then((gamesArray) => {
 					let games = new Map();
@@ -189,7 +189,7 @@ function generateTemplate(games, streams, language, includeTop) {
 		games: games,
 		streams: streams,
 		englishOnly: (language == 'en') ? true : false,
-		includeTop: stringIsTrue(includeTop),
+		includeTop: stringIsTrue(includeTop, true),
 		gridView: true
 	});
 }
@@ -198,8 +198,9 @@ function changeImagePlaceholders(image_url, width, ratio) {
 	return image_url.replace("{width}", width).replace('{height}', parseInt(width/ratio));
 }
 
-function stringIsTrue(str) {
-
-	return str && str.toLowerCase() == 'true';
+//Check if a string value matches "true" (e.g. boolean string). 
+//defaultVal used for empty strings, whether an empty string counts as true or false
+function stringIsTrue(str, defaultVal = false) {
+	return (str && str.toLowerCase() == 'true') || (!str && defaultVal);
 }
 // --------------------------------------------
