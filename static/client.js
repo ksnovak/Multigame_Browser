@@ -6,6 +6,14 @@ $(function() {
 
     $('#search').click(() => {
 
+        
+        let selectedGames =  $('#gameList').val();
+        games.forEach(game => {
+            game.selected = (selectedGames.includes(game.id.toString()));
+            
+            games.set(game.id, game);
+        })
+
         Promise.all([
             searchSelectedGames(getCustomGames(), getSelectedGames(), getLanguages(), getIncludeTop()),
             getTopGames(5)
@@ -118,6 +126,11 @@ $(function() {
     function logIfDebugging (logStatement) {
         if (DEBUGGING)
             console.log(logStatement);
+    }
+
+    function alertIfDebugging(alertStatement) {
+        if (DEBUGGING)
+            alert(alertStatement);
     }
 
 })
