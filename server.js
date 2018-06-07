@@ -39,14 +39,14 @@ app.get('/', function(req, res) {
 
 	Promise.all([queryGamesTop(req.query),
 		queryGamesSpecific(req.query)
-			.then(games => { return queryStreamsForSpecificGames(games, req.query) })
-			.then(data => { return queryStreamsDetails(data.games, data.streams) })
+			.then(games => { return games ? queryStreamsForSpecificGames(games, req.query) : null })
+			.then(data => { return data ? queryStreamsDetails(data.games, data.streams) : null })
 	])
 	.then(data => {
-
-		
-		let games = data[0]? combineGames(data[0], data[1].games) : data[1].games;	//Combines Top Games and Specific Games
-		let streams = data[1].streams;
+		//Data[0] is top games.
+		//Data[1] is selected games+streams
+		let games = data[0] ? (data[1] ? combineGames(data[0], data[1].games) : data[0]) : data[1].games;	//Combines Top Games and Specific Games
+		let streams = data[1] ? data[1].streams : null;
 
 		res.render('home', generateTemplate(games, streams, req.query.language, req.query.includeTop));
 	})
@@ -94,6 +94,8 @@ function queryGamesSpecific(queryString) {
 		GameRouter.querySpecificGames(queryString)
 		.then((gamesArray) => {
 			resolve(buildGameList(gamesArray));
+		}, (error) => {
+			resolve();
 		})
 	})
 }
@@ -170,8 +172,10 @@ function generateTemplate(games, streams, language, includeTop) {
 			eachInMap: function (map, block) {
 				let output = '';
   
-				for (const [ key, value ] of map) {
-				  output += block.fn({ key, value });
+				if (map) {
+					for (const [ key, value ] of map) {
+					output += block.fn({ key, value });
+					}
 				}
 				return output;
 			},
