@@ -1,3 +1,10 @@
+/**
+ * 
+ * Helix reference: https://dev.twitch.tv/docs/api/reference/
+ * Kraken reference: https://dev.twitch.tv/docs/v5/reference/games/
+ */
+
+
 const request 		= require('request');
 const keys 			= require('../keys');
 const Game         = require('../models/game');
@@ -24,6 +31,10 @@ module.exports = function(router) {
 module.exports.queryTopGames = queryTopGames;
 module.exports.querySpecificGames = querySpecificGames;
 
+/* Get details for top games
+    Querystring params: first, after
+    https://dev.twitch.tv/docs/api/reference/#get-top-games
+*/
 function queryTopGames (options) {
     return new Promise((resolve, reject) => {
         baseRequest.get({
@@ -45,7 +56,11 @@ function queryTopGames (options) {
     })
 }
 
+/*  Get details for specific games
+    Querystring params: id, name
 
+    https://dev.twitch.tv/docs/api/reference/#get-games
+*/
 function querySpecificGames (options) {
     return new Promise((resolve, reject) => {
         baseRequest.get({

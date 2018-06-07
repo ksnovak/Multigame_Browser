@@ -34,31 +34,33 @@ router.use(function(req, res, next) {
 	next();
 })
 
-//Note this is APP get, so this responds to root directory, not
 app.get('/', function(req, res) {
 
-	Promise.all([queryGamesTop(req.query),
-		queryGamesSpecific(req.query)
+	//Get a list of top games, and get details on specified games, as appropriate.
+	Promise.all([
+		queryGamesTop(req.query),
+		queryGamesSpecific(req.query)	//For specified games, you have to get the game details -> list of streamers -> streamers' details
 			.then(games => { return games ? queryStreamsForSpecificGames(games, req.query) : null })
 			.then(data => { return data ? queryStreamsDetails(data.games, data.streams) : null })
 	])
+	//Once you have top + specific details, combine as appropriate and render the page
 	.then(data => {
-		//Data[0] is top games.
-		//Data[1] is selected games+streams
-		let games = data[0] ? (data[1] ? combineGames(data[0], data[1].games) : data[0]) : data[1].games;	//Combines Top Games and Specific Games
+		let games = combineGames(data[0], data[1]);
 		let streams = data[1] ? data[1].streams : null;
 
 		res.render('home', generateTemplate(games, streams, req.query.language, req.query.includeTop));
 	})
 })
 
-function combineGames(topGames, selectedGames) {
-	let combinedGames = topGames;
+function combineGames(topGames, selectedDetails) {	
+	let combinedGames = topGames || new Map();
 
-	selectedGames.forEach(game => {
-		game.selected = true;
-		combinedGames.set(game.id, game);
-	})
+	if (selectedDetails) {
+		selectedDetails.games.forEach(game => {
+			game.selected = true;
+			combinedGames.set(game.id, game);
+		})
+	}
 
 	return combinedGames;
 }

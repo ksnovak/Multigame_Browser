@@ -1,3 +1,9 @@
+/**
+ * 
+ * Helix reference: https://dev.twitch.tv/docs/api/reference/
+ * Kraken reference: https://dev.twitch.tv/docs/v5/reference/games/
+ */
+
 const request 		= require('request');
 const keys 			= require('../keys');
 const Stream         = require('../models/stream');
@@ -22,6 +28,11 @@ module.exports = function(router) {
 module.exports.queryStreamsDetails = queryStreamsDetails;
 module.exports.queryStreamsForSpecificGames = queryStreamsForSpecificGames;
 
+
+/* Get details for specified users
+    Querystring params: id, login
+    https://dev.twitch.tv/docs/api/reference/#get-users
+*/
 function queryStreamsDetails (options) {
     return new Promise((resolve, reject) => {
         baseRequest.get({	
@@ -49,6 +60,11 @@ function queryStreamsDetails (options) {
     })
 }
 
+/* Get list of streams for specified games
+    Querystring params: game_id, language, first
+    https://dev.twitch.tv/docs/api/reference/#get-streams
+
+*/
 function queryStreamsForSpecificGames (options) {
     return new Promise((resolve, reject) => {
         baseRequest.get({

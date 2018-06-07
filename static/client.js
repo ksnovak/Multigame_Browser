@@ -4,9 +4,7 @@ $(function() {
     let games = new Map();
     let streams = new Map();
 
-    $('#search').click(() => {
-
-        
+    $('#search').click(() => {        
         let selectedGames =  $('#gameList').val();
         games.forEach(game => {
             game.selected = (selectedGames.includes(game.id.toString()));
