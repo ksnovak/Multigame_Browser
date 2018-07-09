@@ -6,7 +6,7 @@
 
 const request 		= require('request');
 const keys 			= require('../keys');
-const Stream         = require('../models/stream');
+const Stream        = require('../models/stream');
 const GameRouter 	= require('./games');
 
 

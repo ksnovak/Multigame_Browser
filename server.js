@@ -108,6 +108,8 @@ function queryStreamsForSpecificGames(games, queryString) {
 		StreamRouter.queryStreamsForSpecificGames({
 			game_id: Array.from(games.keys()),
 			language: queryString.language,
+			exclude: queryString.exclude,
+			include: queryString.include,
 			first: queryString.first || 100
 		})
 		.then(streamsArray => {
@@ -119,17 +121,25 @@ function queryStreamsForSpecificGames(games, queryString) {
 }
 
 // Gets details on specified streams
-function queryStreamsDetails(games, streams) {
+function queryStreamsDetails(games, streams, queryString) {
 	return new Promise((resolve, reject) => {
 		StreamRouter.queryStreamsDetails({
-			id: Array.from(streams.keys())
+			id: Array.from(streams.keys()),
+			exclude: queryString.exclude,
+			include: queryString.include
 		})
 		.then(streamsArray => {
-			streamsArray.forEach(stream => {				
+
+			streamsArray.forEach(stream => {	
 				let streamObject = streams.get(stream.user_id);
 				streamObject.setName(stream.login);
 	
+				if (queryString.exclude && queryString.exclude.indexOf(stream.login) > -1) {
+					streams.delete(stream.user_id)
+				}
+				else {
 				streams.set(stream.user_id, streamObject);
+				}
 			})
 			resolve({games: games, streams: streams});
 		})
