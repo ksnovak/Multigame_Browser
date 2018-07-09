@@ -41,7 +41,7 @@ app.get('/', function(req, res) {
 		queryGamesTop(req.query),
 		queryGamesSpecific(req.query)	//For specified games, you have to get the game details -> list of streamers -> streamers' details
 			.then(games => { return games ? queryStreamsForSpecificGames(games, req.query) : null })
-			.then(data => { return data ? queryStreamsDetails(data.games, data.streams) : null })
+			.then(data => { return data ? queryStreamsDetails(data.games, data.streams, req.query) : null })
 	])
 	//Once you have top + specific details, combine as appropriate and render the page
 	.then(data => {
@@ -129,16 +129,21 @@ function queryStreamsDetails(games, streams, queryString) {
 			include: queryString.include
 		})
 		.then(streamsArray => {
-
 			streamsArray.forEach(stream => {	
 				let streamObject = streams.get(stream.user_id);
 				streamObject.setName(stream.login);
-	
-				if (queryString.exclude && queryString.exclude.indexOf(stream.login) > -1) {
-					streams.delete(stream.user_id)
+				
+				//If the user specified to exclude any streamers, this is where it happens
+				if (queryString.exclude) {
+					//See if the streamer is in the exclusion list. If so, remove them from the streams map, and also from the exclusion list.
+					let index = queryString.exclude.indexOf(stream.login);
+					if (index > -1) {
+						streams.delete(stream.user_id)
+						queryString.exclude.splice(index, 1)
+					}
 				}
 				else {
-				streams.set(stream.user_id, streamObject);
+					streams.set(stream.user_id, streamObject);
 				}
 			})
 			resolve({games: games, streams: streams});
