@@ -34,13 +34,14 @@ app.get('/', function(req, res) {
 	//Get a list of top games, and get details on specified games, as appropriate.
 	Promise.all([
 		queryGamesTop(req.query),
-		queryGamesSpecific(req.query)	//For specified games, you have to get the game details -> list of streamers -> streamers' details
+		queryGamesSpecific(req.query)
 			.then(games => { return games ? queryStreamsForSpecificGames(games, req.query) : null })
 	])
+	
 	//Once you have top + specific details, combine as appropriate and render the page
 	.then(data => {
 		let games = combineGames(data[0], data[1]);
-		let streams = data[1] ? data[1].streams : null;
+		let streams = data[1] ? removeExcludedStreamers(data[1].streams, req.query.exclude) : null;
 
 		res.render('home', generateTemplate(games, streams, req.query.language, req.query.includeTop));
 	})
@@ -57,6 +58,23 @@ function combineGames(topGames, selectedDetails) {
 	}
 
 	return combinedGames;
+}
+
+function removeExcludedStreamers (streams, exclude) {
+	if (exclude) {
+		exclude = Array(exclude);
+		streams.forEach(stream => {
+
+			let index = exclude.indexOf(stream.login);
+
+			if (index > -1) {
+				exclude.splice(index, 1);
+				streams.delete(stream.user_id);
+			}
+			
+		})
+	}
+	return streams;
 }
 
 require('./routes/games')(router);
