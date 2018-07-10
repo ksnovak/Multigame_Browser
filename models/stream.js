@@ -23,7 +23,7 @@ module.exports = class Stream {
 		/* We're looking for a set of characters (\w+), sandwiched between "live_user_" and "-{width"
 			Lookbehinds are questionably supported, but they work with at least Node 8.11+
 		*/
-		return thumbnail_url.match(/(?<=live_user_)\w+(?=\-\{width)/ig);
+		return String(thumbnail_url.match(/(?<=live_user_)\w+(?=\-\{width)/ig));
 	}
 
 	static newGameFromDetails(stream) {
