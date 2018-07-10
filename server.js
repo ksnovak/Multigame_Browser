@@ -43,7 +43,7 @@ app.get('/', function(req, res) {
 		let games = combineGames(data[0], data[1]);
 		let streams = data[1] ? removeExcludedStreamers(data[1].streams, req.query.exclude) : null;
 
-		res.render('home', generateTemplate(games, streams, req.query.language, req.query.includeTop));
+		res.render('home', generateTemplate(games, streams, {language: req.query.language, includeTop: req.query.includeTop, exclude: req.query.exclude}));
 	})
 })
 
@@ -189,13 +189,13 @@ function setStream(stream) {
 
 // --------------------------------------------
 // Building structures to send to client
-function generateTemplate(games, streams, language, includeTop) {
+function generateTemplate(games, streams, options) {
 	const StreamWidth = 230;
 	const StreamAspectRatio = 1.75;
 
 	const GameWidth = 90;
 	const GameAspectRatio = 0.75;
-
+	
 	return({
 		helpers: {
 			eachInMap: function (map, block) {
@@ -221,8 +221,9 @@ function generateTemplate(games, streams, language, includeTop) {
 		},
 		games: games,
 		streams: streams,
-		englishOnly: (language == 'en') ? true : false,
-		includeTop: stringIsTrue(includeTop, true),
+		englishOnly: (options.language == 'en') ? true : false,
+		includeTop: stringIsTrue(options.includeTop, true),
+		exclude: options.exclude ? options.exclude.join(', ') : null,
 		gridView: true
 	});
 }

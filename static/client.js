@@ -13,7 +13,13 @@ $(function() {
         })
 
         Promise.all([
-            searchSelectedGames(getCustomGames(), getSelectedGames(), getLanguages(), getIncludeTop()),
+            searchSelectedGames({
+                nameArray: getCustomGames(), 
+                idArray: getSelectedGames(), 
+                languages: getLanguages(), 
+                includeTop: getIncludeTop(), 
+                exclude: getExclusions()
+            }),
             getTopGames(5)
         ])
         .then(results => {
@@ -21,6 +27,14 @@ $(function() {
             const topGames = results[1];
 
             rebuildGameSelect();
+        })
+    })
+
+    $('#myFaves').click(() => {
+        searchSelectedGames({
+            nameArray: ['Rimworld', 'Into the Breach', 'Terraria', 'Stardew Valley', 'Dungeon of the Endless', 'Guild Wars 2', 'Slay the Spire', 'Cities: Skylines'], 
+            languages: 'en',
+            includeTop: true
         })
     })
     
@@ -31,6 +45,8 @@ $(function() {
     function getSelectedGames() {
         return $('#gameList').val();
     }
+
+    //TODO: gotta change this to a language selection instead of just 'en'
     function getLanguages() {
         return $('#englishOnly').prop('checked') ? 'en' : '';
     }
@@ -38,30 +54,48 @@ $(function() {
         return $('#includeTop').prop('checked')
     }
 
-    async function searchSelectedGames (nameArray, idArray, languages, includeTop) {
+    function getExclusions() {
+        return $('#excludeNames').val().split(', ');
+    }
+
+
+    //This function just gets the games' names and sets querystring operators. It doesn't actually get any stream details.
+    async function searchSelectedGames (searchOptions) {
         const result = await $.get({
             url: './api/games/specific',
             data: { 
-                name: nameArray,
-                id: idArray
+                name: searchOptions.nameArray,
+                id: searchOptions.idArray//,
+                //exclude: searchOptions.exclude
             },
             error: response => { console.log (`Error: ${response}`) },
             success: gameArray => {
                 let queryString = '?';
 
-                if (includeTop)
-                    queryString += `includeTop=${includeTop}&`;
+                if (searchOptions.includeTop)
+                    queryString += `includeTop=${searchOptions.includeTop}&`;
                 
-                if (languages)
-                    queryString += `language=en&`
+                if (searchOptions.languages)
+                    queryString += `language=${searchOptions.languages}&`
 
+                if (searchOptions.exclude) {
+                    searchOptions.exclude.forEach(exclude => {
+                        queryString += `exclude=${exclude}&`
+                    })
+                }
+                
                 gameArray.forEach(game => {
                     queryString += `name=${game.name}&`;
 
                     game.selected = true;
                     games.set(game.id, game);
                 });
-                pushNewState(addQueryString (window.location, queryString));
+                
+                //This line is for refresh-less updating of the URL bar
+                //pushNewState(addQueryString (window.location, queryString));
+
+                //This line is for basic refresh with new querystring
+                window.location.href = window.location.protocol + "//" + window.location.host + window.location.pathname + queryString;
             }
         })
         return result;
@@ -96,17 +130,15 @@ $(function() {
     }
 
     function testHandlebarFunction() {
-        // var source   = $("#some-template").html();
-        // var template = Handlebars.compile(source);  
-        // var data =  {users: [  
+        var source   = $("#stream-template").html();
+        var template = Handlebars.compile(source);  
+        var data = {}// {users: [  
         //     {username: "alan", firstName: "Alan", lastName: "Johnson", email: "alan@test.com" },  
         //     {username: "allison", firstName: "Allison", lastName: "House", email: "allison@test.com" },  
         //     {username: "ryan", firstName: "Ryan", lastName: "Carson", email: "ryan@test.com" }  
         //   ]};
-
-        //   var asdf = template(data);
   
-        // $("#content-placeholder").html(template(data));
+        $("#content-placeholder").html(template(data));
     }
 
     function addQueryString (location, queryString) {

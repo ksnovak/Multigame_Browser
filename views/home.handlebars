@@ -4,6 +4,12 @@
 <div id='main' class='container-fluid'>
     <div class='row'>
         <div class='form-group col-sm-2 col-lg-3'>   
+            
+            <div id='actionButtons'>
+                <button id='search' class='btn btn-primary '>Search</button>
+                <button id='myFaves' class='btn btn-success'>My favorites</button>
+            </div>
+
             <div id='filters' class='custom-checkbox'>
                 <div class="custom-control">
                     <input class="custom-control-input" id="englishOnly" {{#if englishOnly}}checked{{/if}} type="checkbox"/>
@@ -25,12 +31,9 @@
             <label for='customGames'>Additional games: </label>
             <input type='text' id='customGames' class='form-control'/>
 
-            <div id='actionButtons'>
-                <button id='search' class='btn btn-primary'>Search</button>
-                <!--
-                <button id='clearTable' class='btn btn-secondary'>Clear Results</button>
-                <button id='clearSearch' class='btn btn-secondary'>Clear Search</button>-->
-            </div>
+            <label for='excludeNames'>Exclude these users: </label>
+            <input type='text' id='excludeNames' class='form-control' {{#if exclude}}value='{{exclude}}'{{/if}}/>
+
         </div>
         <div id='streams' class='col-sm-10 col-lg-9'>
         {{#if gridView}}
@@ -86,21 +89,22 @@
     <div id='content-placeholder'></div>
 </div>
 
-{{!-- <script id="some-template" type="text/x-handlebars-template">
-    <table>
-    <thead>
-        <th>Username</th>
-        <th>Real Name</th>
-        <th>Email</th>
-    </thead>
-    <tbody>
-        \{{#users}}
-        <tr>
-            <td>\{{username}}</td>
-            <td>\{{firstName}} \{{lastName}}</td>
-            <td>\{{email}}</td>
-        </tr>
-        \{{/users}}
-    </tbody>
-    </table>
-</script> --}}
+<script id="stream-template" type="text/x-handlebars-template">
+    <div class='col-lg-2 col-md-3 col-sm-4 col-xs-6 py-1'>
+        <div class='row py-1 px-1'>
+            <a href='https://twitch.tv/\{{value.login}}'><img src=\{{getStreamArt value.thumbnail_url}} style='width: 100%;'/></a>
+        </div>
+        <div class='row px-1'>
+            <div class='col-sm-2 px-0'>
+                <a href='https://www.twitch.tv/directory/game/\{{getGameName value.game_id}}'><img src=\{{getGameArt value.game_id}}  class='align-middle' style='width: 100%; max-width: 90px;'/></a>
+            </div>
+            <div class='col-sm-10'>
+                <a href='https://twitch.tv/\{{value.login}}'>\{{value.login}}</a> with \{{value.viewer_count}} viewers<br/>
+                \{{getGameName value.game_id}}
+            </div>
+        </div>
+        <div class='row'>
+            <span style='font-style: italic;'>\{{value.title}}</span><br/>
+        </div>
+    </div>
+</script>
