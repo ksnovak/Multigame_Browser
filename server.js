@@ -42,7 +42,6 @@ app.get('/', function(req, res) {
 	.then(data => {
 		let games = combineGames(data[0], data[1]);
 		let streams = data[1] ? removeExcludedStreamers(data[1].streams, req.query.exclude) : null;
-
 		res.render('home', generateTemplate(games, streams, {language: req.query.language, includeTop: req.query.includeTop, exclude: req.query.exclude}));
 	})
 })
@@ -62,15 +61,16 @@ function combineGames(topGames, selectedDetails) {
 
 function removeExcludedStreamers (streams, exclude) {
 	if (exclude) {
-		exclude = Array(exclude);
+
+		if (typeof exclude == 'string')
+			exclude = Array(exclude);
+
 		streams.forEach(stream => {
 
 			let index = exclude.indexOf(stream.login);
 
-			if (index > -1) {
-				exclude.splice(index, 1);
+			if (index > -1) 
 				streams.delete(stream.user_id);
-			}
 			
 		})
 	}
@@ -223,13 +223,24 @@ function generateTemplate(games, streams, options) {
 		streams: streams,
 		englishOnly: (options.language == 'en') ? true : false,
 		includeTop: stringIsTrue(options.includeTop, true),
-		exclude: options.exclude ? options.exclude.join(', ') : null,
+		exclude: createExcludeString(options.exclude),
 		gridView: true
 	});
 }
 
 function changeImagePlaceholders(image_url, width, ratio) {
 	return image_url.replace("{width}", width).replace('{height}', parseInt(width/ratio));
+}
+
+function createExcludeString(exclude) {
+	if (exclude) {
+		if (typeof exclude == 'string')
+			return exclude;
+
+		else
+			return exclude.join(', ');
+	}
+	return null;
 }
 
 //Check if a string value matches "true" (e.g. boolean string). 
