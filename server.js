@@ -17,11 +17,6 @@ let Stream 			= require('./models/stream');
 
 let router = express.Router();
 
-let baseRequest = request.defaults({
-	headers: keys.twitch,
-	baseUrl: 'https://api.twitch.tv/'
-})
-
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
 
@@ -41,7 +36,6 @@ app.get('/', function(req, res) {
 		queryGamesTop(req.query),
 		queryGamesSpecific(req.query)	//For specified games, you have to get the game details -> list of streamers -> streamers' details
 			.then(games => { return games ? queryStreamsForSpecificGames(games, req.query) : null })
-			.then(data => { return data ? queryStreamsDetails(data.games, data.streams, req.query) : null })
 	])
 	//Once you have top + specific details, combine as appropriate and render the page
 	.then(data => {

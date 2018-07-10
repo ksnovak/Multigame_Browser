@@ -28,6 +28,32 @@ module.exports = function(router) {
 module.exports.queryStreamsDetails = queryStreamsDetails;
 module.exports.queryStreamsForSpecificGames = queryStreamsForSpecificGames;
 
+/* Get list of streams for specified games
+    Querystring params: game_id, language, first
+
+    WARNING: You can specify either the game, or the streamer. If you do both, it returns an inner join basically (all of the specified people, streaming the specified games)
+    https://dev.twitch.tv/docs/api/reference/#get-streams
+
+*/
+function queryStreamsForSpecificGames (options) {
+    return new Promise((resolve, reject) => {
+        baseRequest.get({
+            uri: 'helix/streams',
+            qs: options
+        }, function(error, response, body) {
+            if (error) 
+                reject(Error(`Error on streamsForSpecificGames, ${error}`))
+            else {
+                try {
+                    resolve(JSON.parse(body).data.map(stream => new Stream(stream)));
+                }
+                catch (error) {
+                    reject(Error(`Error parsing streamsForSpecificGames, ${error}`));
+                }
+            }
+        })
+    })
+}
 
 /* Get details for specified users
     Querystring params: id, login
@@ -54,31 +80,6 @@ function queryStreamsDetails (options) {
                 }
                 catch (error) {
                     reject(Error(`Error parsing streamsDetails, ${error}`))
-                }
-            }
-        })
-    })
-}
-
-/* Get list of streams for specified games
-    Querystring params: game_id, language, first
-    https://dev.twitch.tv/docs/api/reference/#get-streams
-
-*/
-function queryStreamsForSpecificGames (options) {
-    return new Promise((resolve, reject) => {
-        baseRequest.get({
-            uri: 'helix/streams',
-            qs: options
-        }, function(error, response, body) {
-            if (error) 
-                reject(Error(`Error on streamsForSpecificGames, ${error}`))
-            else {
-                try {
-                    resolve(JSON.parse(body).data.map(stream => new Stream(stream)));
-                }
-                catch (error) {
-                    reject(Error(`Error parsing streamsForSpecificGames, ${error}`));
                 }
             }
         })
