@@ -55,7 +55,12 @@ $(function() {
     }
 
     function getExclusions() {
-        return $('#excludeNames').val().split(', ');
+        let excludeText = $('#excludeNames').val();
+
+        if (excludeText.length > 0) 
+            return excludeText.split(', ');
+        else 
+            return null
     }
 
 
@@ -90,6 +95,10 @@ $(function() {
                     game.selected = true;
                     games.set(game.id, game);
                 });
+
+                if (queryString[queryString.length-1] == "&") {
+                    queryString = queryString.slice(0, queryString.length-1);
+                }
                 
                 //This line is for refresh-less updating of the URL bar
                 //pushNewState(addQueryString (window.location, queryString));
