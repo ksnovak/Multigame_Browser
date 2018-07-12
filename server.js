@@ -37,26 +37,46 @@ app.get('/', function(req, res) {
 		queryGamesSpecific(req.query)
 			.then(games => { return games ? queryStreamsForSpecificGames(games, req.query) : null })
 	])
-	
-	//Once you have top + specific details, combine as appropriate and render the page
+
+	//Re-query list of streams, followed by list of games as needed, for the Include list
 	.then(data => {
-		let games = combineGames(data[0], data[1]);
+		let games = combineGames(data[0], data[1]? data[1].games : null);
 		let streams = data[1] ? removeExcludedStreamers(data[1].streams, req.query.exclude) : null;
-		res.render('home', generateTemplate(games, streams, {language: req.query.language, includeTop: req.query.includeTop, exclude: req.query.exclude}));
+
+		handleIncludedStreamers(streams, games, req.query.include)
+		.then (details => {
+			console.log('oh we here');
+
+			//Once you have top + specific details, combine as appropriate and render the page
+			res.render('home', generateTemplate(details.games, details.streams, {language: req.query.language, includeTop: req.query.includeTop, exclude: req.query.exclude}));
+		})
 	})
 })
 
-function combineGames(topGames, selectedDetails) {	
-	let combinedGames = topGames || new Map();
+function combineGames(baseGames, additionalGames) {	
+	let combinedGames = baseGames || new Map();
 
-	if (selectedDetails) {
-		selectedDetails.games.forEach(game => {
+	if (additionalGames) {
+		additionalGames.forEach(game => {
 			game.selected = true;
 			combinedGames.set(game.id, game);
 		})
 	}
 
 	return combinedGames;
+}
+
+function combineStreams(baseStreams, additionalStreams) {
+	let combinedStreams = baseStreams || new Map();
+
+	if (additionalStreams) {
+		additionalStreams.forEach(game => {
+			game.selected = true;
+			combinedStreams.set(game.id, game);
+		})
+	}
+
+	return combinedStreams;
 }
 
 function removeExcludedStreamers (streams, exclude) {
@@ -75,6 +95,75 @@ function removeExcludedStreamers (streams, exclude) {
 		})
 	}
 	return streams;
+}
+
+function handleIncludedStreamers(streams, games, include) {
+
+	return new Promise((resolve, reject) => {
+		//resolve({streams: streams, games: games})
+		if (!include || include.length == 0) {
+			console.log('1')
+			resolve({streams: streams, games: games})
+		}
+
+		//TODO: Handle duplicate inclusions
+		let newInclude = (typeof include == 'string') ? Array(include.toLowerCase()) : include.map(include => include.toLowerCase());
+
+		//Iterate through 'streams', weeding users out of 'include'. if any remain, have to re-query
+		if (streams) {
+			streams.forEach(stream => {
+				let index = newInclude.indexOf(stream.login);
+				if (index > -1) {
+					newInclude.splice(index, 1);
+				}
+			})
+		}
+
+		//If there's nothing left after the weeding out, break early.
+		if (newInclude.length == 0) {
+			console.log('2')
+			resolve()
+
+		}
+
+		
+		//Otherwise, re-query streamer list
+		queryStreamsForSpecificUsers(newInclude).then(newStreams => {
+			//Check if there are any games from the Included list, that aren't in 'games'. If so, re-query similarly.
+			if (newStreams.size == 0) {
+				console.log('3')
+				resolve()
+			}
+
+			let neededGames = [];
+
+			newStreams.forEach(stream => {
+				if (!games.has(stream.game_id)) {
+					neededGames.push(stream.game_id);
+				}
+			})
+
+			//TODO: Re-order based on viewer count.
+			//Right now this shows all from `newStreams`, followed by all from `streams`. That's better than the other way around, but not ideal
+			let combinedStreams = combineStreams(newStreams, streams);
+
+			if (neededGames.length == 0) {
+				console.log('4')
+				resolve({games: games, streams: combinedStreams});
+			} 
+			else {
+				queryGamesSpecific({id: neededGames})
+				.then(data => {
+
+					console.log(combinedStreams)
+
+					console.log('5')
+					resolve({games: combineGames(games, data), streams: combinedStreams});
+				})	
+			}
+		})
+	})
+
 }
 
 require('./routes/games')(router);
@@ -132,36 +221,46 @@ function queryStreamsForSpecificGames(games, queryString) {
 	})	
 }
 
-// Gets details on specified streams
-function queryStreamsDetails(games, streams, queryString) {
-	return new Promise((resolve, reject) => {
-		StreamRouter.queryStreamsDetails({
-			id: Array.from(streams.keys()),
-			exclude: queryString.exclude,
-			include: queryString.include
-		})
-		.then(streamsArray => {
-			streamsArray.forEach(stream => {	
-				let streamObject = streams.get(stream.user_id);
-				streamObject.setName(stream.login);
-				
-				//If the user specified to exclude any streamers, this is where it happens
-				if (queryString.exclude) {
-					//See if the streamer is in the exclusion list. If so, remove them from the streams map, and also from the exclusion list.
-					let index = queryString.exclude.indexOf(stream.login);
-					if (index > -1) {
-						streams.delete(stream.user_id)
-						queryString.exclude.splice(index, 1)
-					}
-				}
-				else {
-					streams.set(stream.user_id, streamObject);
-				}
-			})
-			resolve({games: games, streams: streams});
-		})
+async function queryStreamsForSpecificUsers(users, queryString) {
+	let streamsArray = await StreamRouter.queryStreamsForSpecificGames({
+		user_login: users
 	})
+	let streams = new Map();
+	streamsArray.forEach(stream => {streams.set(stream.user_id, stream)})
+
+	return streams;
 }
+
+// // Gets details on specified streams
+// function queryStreamsDetails(games, streams, queryString) {
+// 	return new Promise((resolve, reject) => {
+// 		StreamRouter.queryStreamsDetails({
+// 			id: Array.from(streams.keys()),
+// 			exclude: queryString.exclude,
+// 			include: queryString.include
+// 		})
+// 		.then(streamsArray => {
+// 			streamsArray.forEach(stream => {	
+// 				let streamObject = streams.get(stream.user_id);
+// 				streamObject.setName(stream.login);
+				
+// 				//If the user specified to exclude any streamers, this is where it happens
+// 				if (queryString.exclude) {
+// 					//See if the streamer is in the exclusion list. If so, remove them from the streams map, and also from the exclusion list.
+// 					let index = queryString.exclude.indexOf(stream.login);
+// 					if (index > -1) {
+// 						streams.delete(stream.user_id)
+// 						queryString.exclude.splice(index, 1)
+// 					}
+// 				}
+// 				else {
+// 					streams.set(stream.user_id, streamObject);
+// 				}
+// 			})
+// 			resolve({games: games, streams: streams});
+// 		})
+// 	})
+// }
 // --------------------------------------------
 
 
