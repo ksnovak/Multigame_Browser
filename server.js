@@ -122,7 +122,7 @@ function handleIncludedStreamers(streams, games, include) {
 		//If there's nothing left after the weeding out, break early.
 		if (newInclude.length == 0) {
 			console.log('2')
-			resolve()
+			resolve({streams: streams, games: games})
 
 		}
 
@@ -132,7 +132,7 @@ function handleIncludedStreamers(streams, games, include) {
 			//Check if there are any games from the Included list, that aren't in 'games'. If so, re-query similarly.
 			if (newStreams.size == 0) {
 				console.log('3')
-				resolve()
+				resolve({streams: streams, games: games})
 			}
 
 			let neededGames = [];
