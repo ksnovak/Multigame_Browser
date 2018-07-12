@@ -1,5 +1,5 @@
 # Multigame_Browser
-This is intended to be an alternative to Twitch's default stream directory 
+##This is intended to be an alternative to Twitch's default stream directory 
 Twitch provides the following directory types:
 * The top streamers across all games (https://www.twitch.tv/directory/all)
 * The top streamers for 1 given game (https://www.twitch.tv/directory/game/Overwatch)
@@ -9,7 +9,7 @@ but you can only view those one-at-a-time.
 
 The core issue being solved with this new directory is, **I want to see the top streamers for all of the games that I follow, at once**
 
-Other things being tackled as well:
+##Other things being tackled as well:
 * I want to see all of the streamers for this game, but don't show me these specific streamers.
 * I want to see the overall top streamers, but don't show me those streaming these certain games.
 * Get me all of the streamers for these specific games, but also include these specific streamers (regardless of what game they're playing)
@@ -18,7 +18,7 @@ Other things being tackled as well:
 
 
 
-Up next:
+##Up next:
 * BIG: Include streamer list (in X list of games OR Y list of streamers)
 * URGENT: Unit testing
 * URGENT: Switching from Handlebars to React
@@ -37,7 +37,7 @@ Up next:
     * Top games
     * Top streamers
 
-Backburner /  Don't forget:
+##Backburner /  Don't forget:
 * Change promises to async, for clarity     https://medium.com/@bluepnume/learn-about-promises-before-you-start-using-async-await-eb148164a9c8
 * using window.location.search, find ways to update the querystring without completely deleting and replacing it (e.g. update the games list without changing the language setting)
 * make case insensitive querystrings, using proxy https://stackoverflow.com/questions/15521876/nodejs-express-is-it-possible-to-have-case-insensitive-querystring
