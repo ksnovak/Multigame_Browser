@@ -21,7 +21,9 @@ The core issue being solved with this new directory is, **I want to see the top 
 ## Up next:
 "Big" is for large undertakings. "Urgent" is for things that are really important. "Cool" is for everything else noteworthy
 * URGENT: Clean up all the mess made by the "Include" feature
+* Add UI component for "Include"
 * URGENT: Rewrite promises to async functions
+* Cleanup on aisle "function and parameter names"
 * URGENT: Unit testing
 * URGENT: Switching from Handlebars to React
 * COOL: Update Client-side to update data without needing a refresh
