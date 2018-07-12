@@ -19,23 +19,28 @@ The core issue being solved with this new directory is, **I want to see the top 
 
 
 ## Up next:
-* BIG: Include streamer list (in X list of games OR Y list of streamers)
+"Big" is for large undertakings. "Urgent" is for things that are really important. "Cool" is for everything else noteworthy
+* URGENT: Clean up all the mess made by the "Include" feature
+* URGENT: Rewrite promises to async functions
 * URGENT: Unit testing
 * URGENT: Switching from Handlebars to React
-* Update Client-side to update data without needing a refresh
+* COOL: Update Client-side to update data without needing a refresh
 * BIG: "Show me the top overall streams, excluding games X, Y, and Z"
-* Change selection to be a tag-selection type thing instead of Selects & Textboxes
-* Cache client preferences somehow
+* COOL: Change selection to be a tag-selection type thing instead of Selects & Textboxes
+* COOL: Cache client preferences somehow
 * BIG: Accounts
     * Saving preferred settings
     * Shortcuts for certain settings
     * Sharing lists
-* Server-side caching for data 
+* COOL: Server-side caching for data 
     * Game details (name, ID, thumbnail) is an ideal use, they barely change
     * List of streamers
     * Streamers' details
     * Top games
     * Top streamers
+* COOL: Game weighting
+    * If you follow a huge game (e.g. League) and a small game (e.g. Stardew Valley), you probably won't see any streams for the smaller game on the first page. Find a way to weight game value so there's a reasonable spread
+    * "Simplest" solution would probably be to have a cutoff for game # of viewers. Alternate between displaying streams for the larger set and the smaller set.
 * BIG: Integrate Twitch's oauth, so we can directly pull Following Users/Games details
 
 ## Backburner /  Don't forget:
