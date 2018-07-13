@@ -20,6 +20,7 @@ The core issue being solved with this new directory is, **I want to see the top 
 
 ## Up next:
 "Big" is for large undertakings. "Urgent" is for things that are really important. "Cool" is for everything else noteworthy
+This is listed roughly in order of importance to me.
 * URGENT: Clean up all the mess made by the "Include" feature
 * Add UI component for "Include"
 * URGENT: Rewrite promises to async functions
@@ -28,6 +29,7 @@ The core issue being solved with this new directory is, **I want to see the top 
 * URGENT: Switching from Handlebars to React
 * COOL: Update Client-side to update data without needing a refresh
 * BIG: "Show me the top overall streams, excluding games X, Y, and Z"
+* COOL: Option for auto-refresh at certain intervals
 * COOL: Change selection to be a tag-selection type thing instead of Selects & Textboxes
 * COOL: Cache client preferences somehow
 * BIG: Accounts
@@ -44,6 +46,10 @@ The core issue being solved with this new directory is, **I want to see the top 
     * If you follow a huge game (e.g. League) and a small game (e.g. Stardew Valley), you probably won't see any streams for the smaller game on the first page. Find a way to weight game value so there's a reasonable spread
     * "Simplest" solution would probably be to have a cutoff for game # of viewers. Alternate between displaying streams for the larger set and the smaller set.
 * BIG: Integrate Twitch's oauth, so we can directly pull Following Users/Games details
+* COOL: Various sorting/grouping options. 
+    * "Show me all the Rimworld streams, then all the Stardew streams, ..."
+    * "Show me the specified users first, then all the rest"
+* Pagination
 
 ## Backburner /  Don't forget:
 * Change promises to async, for clarity     https://medium.com/@bluepnume/learn-about-promises-before-you-start-using-async-await-eb148164a9c8
@@ -53,3 +59,4 @@ The core issue being solved with this new directory is, **I want to see the top 
 * Edgecase testing for empty sets (no games, no streamers, nothing selected on client, no things after Exclusion list, duplicates in include/exclude, etc)
 * Multiple display styles (grid vs list)
 * Allow use of the results screen to filter (e.g. a small pair of buttons to exclude either the certain streamer or their game)
+* Helper functions for Maps, to search and retrieve arrays of certain things (e.g. array of streamer names)
