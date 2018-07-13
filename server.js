@@ -53,27 +53,8 @@ app.get('/', function(req, res) {
 	})
 })
 
-/* Combines two maps (One's elements after the other's)
- * "keyName" is the key to set for the Map element; 'id' is default
- * "flag" is for some value to set, which specifies that the element came from the Additional set
-*/
-function combineMaps(baseMap, additionalMap, keyName = 'id', flag) {
-	let combinedMaps = baseMap || new Map();
-
-	if (additionalMap) {
-		additionalMap.forEach(elem => {
-			if (flag)
-				elem[flag.name] = flag.val;
-
-			combinedMaps.set(elem[keyName], elem);
-		})
-	}
-
-	return combinedMaps;
-}
 
 function removeExcludedStreamers (streams, exclude) {
-	
 	if (exclude) {
 		exclude = getParameterArray(exclude);
 		streams.forEach(stream => {
@@ -192,6 +173,7 @@ function queryGamesSpecific(queryString) {
 
 // Gets the most popular streams for a specific game
 function queryStreamsForSpecificGames(games, queryString) {
+
 	return new Promise((resolve, reject) => {
 		StreamRouter.queryStreamsForSpecificGames({
 			game_id: Array.from(games.keys()),
@@ -199,7 +181,7 @@ function queryStreamsForSpecificGames(games, queryString) {
 			first: queryString.first || 100
 		})
 		.then(streamsArray => {
-			resolve({streams: mapFromArray(streamsArray, 'user_id'), games: games});
+			resolve({streams: mapFromArray(streamsArray, 'user_id', {key: 'login', values: queryString.exclude}), games: games});
 		})
 	})	
 }
@@ -217,13 +199,40 @@ async function queryStreamsForSpecificUsers(users, queryString) {
 
 // --------------------------------------------
 
+/* Combines two maps (without duplicate IDs/elements)
+ * "keyName" is the key to set for the Map element; 'id' is default
+ * "flag" is for some value to set, which specifies that the element came from the Additional set
+*/
+function combineMaps(baseMap, additionalMap, keyName = 'id', flag) {
+	let combinedMaps = baseMap || new Map();
 
-// Take in an array of objects, and convert it into a Map, with the specified field as the key ('id' as default)
-function mapFromArray(arr, key = 'id') {
+	if (additionalMap) {
+		additionalMap.forEach(elem => {
+			if (flag)
+				elem[flag.name] = flag.val;
+
+			combinedMaps.set(elem[keyName], elem);
+		})
+	}
+
+	return combinedMaps;
+}
+
+/* Turn the given array into a map.
+ * The key will be 'id' by default, or whatever otherwise specified
+ * This will also filter out any elements that fit the exclusion clause.
+ 
+*/
+function mapFromArray(arr, key = 'id', exclude = null) {
 	let newMap = new Map();
 
-	if (arr)
-		arr.forEach(elem => { newMap.set(Number(elem[key]), elem)})	
+	if (arr) {
+		arr.forEach(elem => { 
+			//If exclude is null, or if it's missing either a "key" or "values" member, 
+			if (!exclude || !exclude.values || !exclude.key || !getParameterArray(exclude.values, true).includes(elem[exclude.key]))
+				newMap.set(Number(elem[key]), elem)
+		})	
+	}
 
 	return newMap;
 }
@@ -239,7 +248,7 @@ function getParameterArray(parameter, toLowerCase = false) {
 }
 
 //Turn an array into a string if possible, joined by ", "
-function arrayFromString(arr, joinString = ', ') {
+function stringFromArray(arr, joinString = ', ') {
 	if (arr) {
 		if (typeof arr == 'string')
 			return arr;
@@ -295,7 +304,7 @@ function generateTemplate(games, streams, options) {
 		streams: streams,
 		englishOnly: (options.language == 'en') ? true : false,
 		includeTop: stringIsTrue(options.includeTop, true),
-		exclude: arrayFromString(options.exclude),
+		exclude: stringFromArray(options.exclude),
 		gridView: true
 	});
 }

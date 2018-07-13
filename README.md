@@ -60,3 +60,9 @@ This is listed roughly in order of importance to me.
 * Multiple display styles (grid vs list)
 * Allow use of the results screen to filter (e.g. a small pair of buttons to exclude either the certain streamer or their game)
 * Helper functions for Maps, to search and retrieve arrays of certain things (e.g. array of streamer names)
+
+
+## Known issues:
+* Intermittent error of "Error parsing topGames, TypeError: Cannot read property 'map' of undefined" (Also happens with specificGames, I think)
+    * This is so intermittent that, every time I change the code to just log the data, the problem gets fixed.
+    * Might be something like includeTop being unchecked, but it still tries to search?
