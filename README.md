@@ -50,6 +50,7 @@ This is listed roughly in order of importance to me.
     * "Show me all the Rimworld streams, then all the Stardew streams, ..."
     * "Show me the specified users first, then all the rest"
 * Pagination
+* Something to do for Replays and Hosts
 
 ## Backburner /  Don't forget:
 * Change promises to async, for clarity     https://medium.com/@bluepnume/learn-about-promises-before-you-start-using-async-await-eb148164a9c8
@@ -60,9 +61,31 @@ This is listed roughly in order of importance to me.
 * Multiple display styles (grid vs list)
 * Allow use of the results screen to filter (e.g. a small pair of buttons to exclude either the certain streamer or their game)
 * Helper functions for Maps, to search and retrieve arrays of certain things (e.g. array of streamer names)
-
+* Make sure mixed inclusion/exclusions handle logially. The more specific instruction should be upheld. 
+    * X language only, but include Y streamer -> Y better show up no matter what they speak
+    * Show top games, excluding X -> X better not show
+    * Show top games, excluding X, but including Y streamer -> Y should show
 
 ## Known issues:
 * Intermittent error of "Error parsing topGames, TypeError: Cannot read property 'map' of undefined" (Also happens with specificGames, I think)
     * This is so intermittent that, every time I change the code to just log the data, the problem gets fixed.
     * Might be something like includeTop being unchecked, but it still tries to search?
+    * Managed to get this error kicked back finally. `body: '{"error":"Bad Request","status":400,"message":"Must provide at least one name or ID."}' }`
+    * Go through and make sure no empty calls are getting made. Especially check calls for 'include'
+
+
+## Simple smoke-test cases
+* http://localhost:3000/
+* http://localhost:3000/?name=
+* http://localhost:3000/?name=Always%20On
+* http://localhost:3000/?exclude=&name=Always%20On
+* http://localhost:3000/?exclude=food&name=Always%20On
+* http://localhost:3000/?includeTop=true&exclude=food&exclude=twitchpresents2&name=Always%20On
+* http://localhost:3000/?name=Always%20On&include=
+* http://localhost:3000/?name=Always%20On&include=
+* http://localhost:3000/?name=Stardew%20Valley&include=food
+* http://localhost:3000/?name=Stardew%20Valley&include=food&exclude=day9tv
+* http://localhost:3000/?name=Stardew%20Valley&include=food&exclude=day9tv&exclude=day9tv
+* http://localhost:3000/?language=en&name=Always%20On
+* http://localhost:3000/?language=en&name=Always%20On&include=epilinet  - That's a Chinese stream, shouldn't show for English-only
+

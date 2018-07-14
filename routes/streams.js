@@ -48,6 +48,11 @@ function queryStreamsForSpecificGames (options) {
                     resolve(JSON.parse(body).data.map(stream => new Stream(stream)));
                 }
                 catch (error) {
+                    console.log("Hey that error happened!!! (specific streams)")
+                    console.log(body);
+                    console.log('---')
+                    console.log(response);
+                    console.log('----')
                     reject(Error(`Error parsing streamsForSpecificGames, ${error}`));
                 }
             }

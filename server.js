@@ -1,18 +1,18 @@
 
-const config 		= require('./config');
-const keys 			= require('./keys');
+// const config 		= require('./config');
+// const keys 			= require('./keys');
 const express		= require('express');
 const exphbs		= require('express-handlebars');
 const app			= express();
 const bodyParser	= require('body-parser');
-const request 		= require('request');
+// const request 		= require('request');
 //var sql 		= require('sql');
 
 const GameRouter 	= require('./routes/games');
 const StreamRouter	= require('./routes/streams');
 
-let Game 			= require('./models/game');
-let Stream 			= require('./models/stream');
+// let Game 			= require('./models/game');
+// let Stream 			= require('./models/stream');
 
 
 let router = express.Router();
@@ -40,7 +40,7 @@ app.get('/', function(req, res) {
 
 	//Re-query list of streams, followed by list of games as needed, for the Include list
 	.then(data => {
-		let games = combineMaps(data[0], (data[1]? data[1].games : null), 'id', {name: 'selected', val: true});
+		let games = combineMapsAndSelect(data[0], (data[1]? data[1].games : null));
 		let streams = data[1] ? removeExcludedStreamers(data[1].streams, req.query.exclude) : null;
 
 		handleIncludedStreamers(streams, games, req.query.include)
@@ -56,12 +56,11 @@ app.get('/', function(req, res) {
 
 function removeExcludedStreamers (streams, exclude) {
 	if (exclude) {
-		exclude = getParameterArray(exclude);
+		exclude = arrayFromParameterString(exclude);
 		streams.forEach(stream => {
 			let index = exclude.indexOf(stream.login);
 			if (index > -1) 
 				streams.delete(stream.user_id);
-			
 		})
 	}
 	return streams;
@@ -70,14 +69,13 @@ function removeExcludedStreamers (streams, exclude) {
 function handleIncludedStreamers(streams, games, include) {
 
 	return new Promise((resolve, reject) => {
-		//resolve({streams: streams, games: games})
 		if (!include || include.length == 0) {
 			console.log('1')
-			resolve({streams: streams, games: games})
+			resolve({streams, games})
 		}
 
 		//TODO: Handle duplicate inclusions
-		let newInclude = getParameterArray(include, true);
+		let newInclude = arrayFromParameterString(include, true);
 		
 		//Iterate through 'streams', weeding users out of 'include'. if any remain, have to re-query
 		if (streams) {
@@ -92,7 +90,7 @@ function handleIncludedStreamers(streams, games, include) {
 		//If there's nothing left after the weeding out, break early.
 		if (newInclude.length == 0) {
 			console.log('2')
-			resolve({streams: streams, games: games})
+			resolve({streams, games})
 
 		}
 
@@ -102,7 +100,7 @@ function handleIncludedStreamers(streams, games, include) {
 			//Check if there are any games from the Included list, that aren't in 'games'. If so, re-query similarly.
 			if (newStreams.size == 0) {
 				console.log('3')
-				resolve({streams: streams, games: games})
+				resolve({streams, games})
 			}
 
 			let neededGames = [];
@@ -119,14 +117,14 @@ function handleIncludedStreamers(streams, games, include) {
 
 			if (neededGames.length == 0) {
 				console.log('4')
-				resolve({games: games, streams: combinedStreams});
+				resolve({games, combinedStreams});
 			} 
 			else {
 				queryGamesSpecific({id: neededGames})
 				.then(data => {
 					console.log('5')
 					resolve({
-						games: combineMaps(games, data, 'id', {name: 'selected', val: true}), 
+						games: combineMapsAndSelect(games, data), 
 						streams: combinedStreams
 					});
 				})	
@@ -181,12 +179,15 @@ function queryStreamsForSpecificGames(games, queryString) {
 			first: queryString.first || 100
 		})
 		.then(streamsArray => {
-			resolve({streams: mapFromArray(streamsArray, 'user_id', {key: 'login', values: queryString.exclude}), games: games});
+			resolve({
+				streams: mapFromArray(streamsArray, 'user_id', {key: 'login', values: arrayFromParameterString(queryString.exclude, true)}), 
+				games: games
+			});
 		})
 	})	
 }
 
-async function queryStreamsForSpecificUsers(users, queryString) {
+async function queryStreamsForSpecificUsers(users/*, queryString*/) {
 	let streamsArray = await StreamRouter.queryStreamsForSpecificGames({
 		user_login: users
 	})
@@ -208,7 +209,7 @@ function combineMaps(baseMap, additionalMap, keyName = 'id', flag) {
 
 	if (additionalMap) {
 		additionalMap.forEach(elem => {
-			if (flag)
+			if (flag && flag.name) //flag.val could potentially be 'false' so testing for that isn't reasonable
 				elem[flag.name] = flag.val;
 
 			combinedMaps.set(elem[keyName], elem);
@@ -216,6 +217,11 @@ function combineMaps(baseMap, additionalMap, keyName = 'id', flag) {
 	}
 
 	return combinedMaps;
+}
+
+// Specialized version of combineMaps, where the flag is .selected = true
+function combineMapsAndSelect(baseMap, additionalMap, keyName = 'id') {
+	return combineMaps(baseMap, additionalMap, keyName, {name: 'selected', val: true})
 }
 
 /* Turn the given array into a map.
@@ -227,9 +233,12 @@ function mapFromArray(arr, key = 'id', exclude = null) {
 	let newMap = new Map();
 
 	if (arr) {
+		//If the 'exclude' isn't specified, we can shortcut some logic
+		const needFilter = (exclude && exclude.values && exclude.key)
+
 		arr.forEach(elem => { 
 			//If exclude is null, or if it's missing either a "key" or "values" member, 
-			if (!exclude || !exclude.values || !exclude.key || !getParameterArray(exclude.values, true).includes(elem[exclude.key]))
+			if (!needFilter || !exclude.values.includes(elem[exclude.key]))
 				newMap.set(Number(elem[key]), elem)
 		})	
 	}
@@ -238,25 +247,27 @@ function mapFromArray(arr, key = 'id', exclude = null) {
 }
 
 //Given a querystring parameter, turn it into an Array. Optionally convert it to lowercase
-function getParameterArray(parameter, toLowerCase = false) {
-	if (typeof parameter == 'string') {
+function arrayFromParameterString(parameter, toLowerCase = false) {
+	if (!parameter)
+		return null;
+
+	else if (typeof parameter == 'string')
 		return toLowerCase? Array(parameter.toLowerCase()) : Array(parameter);
-	}
-	else {
+		
+	else 
 		return toLowerCase? parameter.map(elem => elem.toLowerCase()) : parameter;
-	}
 }
 
 //Turn an array into a string if possible, joined by ", "
 function stringFromArray(arr, joinString = ', ') {
-	if (arr) {
-		if (typeof arr == 'string')
-			return arr;
-		else 
-			return arr.join(joinString);
-	}
+	if (!arr)
+		return null;
 
-	return null;
+	else if (typeof arr == 'string')
+		return arr;
+
+	else 
+		return arr.join(joinString);
 }
 
 //Check if a string value matches "true" (e.g. boolean string). 

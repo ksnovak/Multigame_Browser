@@ -6,8 +6,8 @@
 
 
 const request 		= require('request');
-const keys 			= require('../keys');
-const Game         = require('../models/game');
+const keys 		    = require('../keys');
+const Game          = require('../models/game');
 
 
 let baseRequest = request.defaults({
@@ -49,6 +49,11 @@ function queryTopGames (options) {
                     resolve(JSON.parse(body).data.map(game => new Game(game)));    
                 }
                 catch (error) {
+                    console.log("Hey that error happened!!! (top)")
+                    console.log(body);
+                    console.log('---')
+                    console.log(response);
+                    console.log('----')
                     reject(Error(`Error parsing topGames, ${error}`));
                 }
             }
@@ -74,6 +79,11 @@ function querySpecificGames (options) {
                     resolve(JSON.parse(body).data.map(game => new Game(game)));
                 }
                 catch (error) {
+                    console.log("Hey that error happened!!! (specific games)")
+                    console.log(body);
+                    console.log('---')
+                    console.log(response);
+                    console.log('----')
                     reject(Error(`Error parsing specificGames, ${error}`));
                 }
             }
