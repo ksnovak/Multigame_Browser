@@ -51,8 +51,6 @@ function queryTopGames (options) {
                 catch (error) {
                     console.log("Hey that error happened!!! (top)")
                     console.log(body);
-                    console.log('---')
-                    console.log(response);
                     console.log('----')
                     reject(Error(`Error parsing topGames, ${error}`));
                 }
@@ -67,6 +65,7 @@ function queryTopGames (options) {
     https://dev.twitch.tv/docs/api/reference/#get-games
 */
 function querySpecificGames (options) {
+    console.log('123')
     return new Promise((resolve, reject) => {
         baseRequest.get({
 			uri: 'helix/games',
@@ -81,8 +80,6 @@ function querySpecificGames (options) {
                 catch (error) {
                     console.log("Hey that error happened!!! (specific games)")
                     console.log(body);
-                    console.log('---')
-                    console.log(response);
                     console.log('----')
                     reject(Error(`Error parsing specificGames, ${error}`));
                 }

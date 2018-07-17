@@ -30,12 +30,15 @@ router.use(function(req, res, next) {
 })
 
 app.get('/', function(req, res) {
+	console.log('kn1')
 
 	//Get a list of top games, and get details on specified games, as appropriate.
 	Promise.all([
 		queryGamesTop(req.query),
 		queryGamesSpecific(req.query)
-			.then(games => { return games ? queryStreamsForSpecificGames(games, req.query) : null })
+			.then(games => { 
+				return games ? queryStreamsForSpecificGames(games, req.query) : null 
+			})
 	])
 
 	//Re-query list of streams, followed by list of games as needed, for the Include list
@@ -45,8 +48,7 @@ app.get('/', function(req, res) {
 
 		handleIncludedStreamers(streams, games, req.query.include)
 		.then (details => {
-			console.log('oh we here');
-
+			
 			//Once you have top + specific details, combine as appropriate and render the page
 			res.render('home', generateTemplate(details.games, details.streams, {language: req.query.language, includeTop: req.query.includeTop, exclude: req.query.exclude}));
 		})
@@ -67,7 +69,6 @@ function removeExcludedStreamers (streams, exclude) {
 }
 
 function handleIncludedStreamers(streams, games, include) {
-
 	return new Promise((resolve, reject) => {
 		if (!include || include.length == 0) {
 			console.log('1')
@@ -160,12 +161,18 @@ function queryGamesTop(queryString) {
 // Gets details on specific games
 function queryGamesSpecific(queryString) {
 	return new Promise((resolve, reject) => {
-		GameRouter.querySpecificGames(queryString)
-		.then((gamesArray) => {
-			resolve(mapFromArray(gamesArray));
-		}, (error) => {
+		//If no game is specified (by name or ID), break out early.
+		if (!queryString || !(queryString.name || queryString.id)) {
 			resolve();
-		})
+		}
+		else {
+			GameRouter.querySpecificGames(queryString)
+			.then((gamesArray) => {
+				resolve(mapFromArray(gamesArray));
+			}, (error) => {
+				resolve();
+			})
+		}
 	})
 }
 

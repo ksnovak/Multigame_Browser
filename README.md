@@ -65,6 +65,7 @@ This is listed roughly in order of importance to me.
     * X language only, but include Y streamer -> Y better show up no matter what they speak
     * Show top games, excluding X -> X better not show
     * Show top games, excluding X, but including Y streamer -> Y should show
+* Once pagination is implemented, make sure there's proper handling of a streamer not appearing until page 2 for the main list, but page 1 for the Include list
 
 ## Known issues:
 * Intermittent error of "Error parsing topGames, TypeError: Cannot read property 'map' of undefined" (Also happens with specificGames, I think)

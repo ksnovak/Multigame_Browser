@@ -51,8 +51,6 @@ function queryStreamsForSpecificGames (options) {
                     console.log("Hey that error happened!!! (specific streams)")
                     console.log(body);
                     console.log('---')
-                    console.log(response);
-                    console.log('----')
                     reject(Error(`Error parsing streamsForSpecificGames, ${error}`));
                 }
             }
