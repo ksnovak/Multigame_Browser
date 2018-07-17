@@ -1,4 +1,8 @@
 # Multigame_Browser
+
+Minimal contribution the week of 7/16 due to solidarity with Amazon Prime Day boycotts
+
+
 ## This is intended to be an alternative to Twitch's default stream directory 
 Twitch provides the following directory types:
 * The top streamers across all games (https://www.twitch.tv/directory/all)
@@ -51,6 +55,7 @@ This is listed roughly in order of importance to me.
     * "Show me the specified users first, then all the rest"
 * Pagination
 * Something to do for Replays and Hosts
+* Option for Youtube and Steam streams
 
 ## Backburner /  Don't forget:
 * Change promises to async, for clarity     https://medium.com/@bluepnume/learn-about-promises-before-you-start-using-async-await-eb148164a9c8
