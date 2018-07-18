@@ -35,7 +35,11 @@ This is listed roughly in order of importance to me.
 * BIG: "Show me the top overall streams, excluding games X, Y, and Z"
 * COOL: Option for auto-refresh at certain intervals
 * COOL: Change selection to be a tag-selection type thing instead of Selects & Textboxes
-* COOL: Cache client preferences somehow
+* COOL: Cache client preferences
+    * Cookies
+    * "Option" settings definitely worth saving (language and "include top"), those would rarely change
+    * Next most worthwhile would be saving the include/exclude list.
+    * Maybe save the game selection as "My favorites" and have it quickly accessible, but not sure about always defaulting to showing those.
 * BIG: Accounts
     * Saving preferred settings
     * Shortcuts for certain settings
@@ -54,8 +58,7 @@ This is listed roughly in order of importance to me.
     * "Show me all the Rimworld streams, then all the Stardew streams, ..."
     * "Show me the specified users first, then all the rest"
 * Pagination
-* Something to do for Replays and Hosts
-* Option for Youtube and Steam streams
+    * Make sure there's proper handling of a streamer not appearing until page 2 for the main list, but page 1 for the Include list
 
 ## Backburner /  Don't forget:
 * Change promises to async, for clarity     https://medium.com/@bluepnume/learn-about-promises-before-you-start-using-async-await-eb148164a9c8
@@ -66,11 +69,33 @@ This is listed roughly in order of importance to me.
 * Multiple display styles (grid vs list)
 * Allow use of the results screen to filter (e.g. a small pair of buttons to exclude either the certain streamer or their game)
 * Helper functions for Maps, to search and retrieve arrays of certain things (e.g. array of streamer names)
-* Make sure mixed inclusion/exclusions handle logially. The more specific instruction should be upheld. 
+* Make sure mixed inclusion/exclusions handle logically. The more specific instruction should be upheld. 
     * X language only, but include Y streamer -> Y better show up no matter what they speak
     * Show top games, excluding X -> X better not show
     * Show top games, excluding X, but including Y streamer -> Y should show
-* Once pagination is implemented, make sure there's proper handling of a streamer not appearing until page 2 for the main list, but page 1 for the Include list
+* Creative, IRL, and other non-gaming streams
+
+## Potential future integrations
+* Utilize Replays and Hosts
+* Youtube
+    * Youtube Live API: https://developers.google.com/youtube/v3/live/docs/liveBroadcasts
+    * Livestreams: https://gaming.youtube.com/games
+    * Note: Their game URLs are something like `https://gaming.youtube.com/game/UCCnY7KLXOI1ofeMu5zZFgSg`, so using raw name is gonna be harder to make use of.
+    * https://stackoverflow.com/questions/31616252/get-list-of-gaming-live-streams-on-youtube
+    * https://www.googleapis.com/youtube/v3/search?part=snippet&eventType=live&type=video&videoCategoryId=20&regionCode=US&maxResults=50&key=YOUR_API_KEY_HERE
+        * videoCategoryId=20 for games; without it, you get all kinds of streams
+        * 
+* Steam
+    * Steam has an API but it doesn't look like it has any support for their broadcasts
+    * https://steamcommunity.com/updates/broadcasting
+    * https://steamcommunity.com/dev
+* Discord
+    * Get your list of games from there?
+    * Share between friends
+* Twitch friends
+* Game metadata
+    * "Get me X, Y, and Z games, and also League streamers who are playing Akali"
+
 
 ## Known issues:
 * Intermittent error of "Error parsing topGames, TypeError: Cannot read property 'map' of undefined" (Also happens with specificGames, I think)
