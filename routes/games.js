@@ -46,7 +46,7 @@ function queryTopGames (options) {
             }
             else {
                 try {
-                    resolve(JSON.parse(body).data.map(game => new Game(game)));    
+                    resolve(gamesMapFromData(body));    
                 }
                 catch (error) {
                     console.log("Hey that error happened!!! (top)")
@@ -65,7 +65,6 @@ function queryTopGames (options) {
     https://dev.twitch.tv/docs/api/reference/#get-games
 */
 function querySpecificGames (options) {
-    console.log('123')
     return new Promise((resolve, reject) => {
         baseRequest.get({
 			uri: 'helix/games',
@@ -75,7 +74,7 @@ function querySpecificGames (options) {
                 reject(Error(`Error on specificGames, ${error}`))
             else {
                 try {
-                    resolve(JSON.parse(body).data.map(game => new Game(game)));
+                    resolve(gamesMapFromData(body));
                 }
                 catch (error) {
                     console.log("Hey that error happened!!! (specific games)")
@@ -86,4 +85,13 @@ function querySpecificGames (options) {
             }
 		});
     })
+}
+
+function gamesMapFromData (body) {
+    try {
+        return JSON.parse(body).data.map(game => new Game(game));
+    }
+    catch (ex) {
+        throw (ex);
+    }
 }

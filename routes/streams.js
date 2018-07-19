@@ -45,7 +45,7 @@ function queryStreamsForSpecificGames (options) {
                 reject(Error(`Error on streamsForSpecificGames, ${error}`))
             else {
                 try {
-                    resolve(JSON.parse(body).data.map(stream => new Stream(stream)));
+                    resolve(streamsMapFromData(body));
                 }
                 catch (error) {
                     console.log("Hey that error happened!!! (specific streams)")
@@ -87,4 +87,14 @@ function queryStreamsDetails (options) {
             }
         })
     })
+}
+
+
+function streamsMapFromData (body) {
+    try {
+        return JSON.parse(body).data.map(stream => new Stream(stream));
+    }
+    catch (ex) {
+        throw (ex);
+    }
 }

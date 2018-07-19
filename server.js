@@ -31,55 +31,61 @@ router.use(function(req, res, next) {
 })
 
 app.get('/', function(req, res) {
-	console.log('kn1')
-
 	//Get a list of top games, and get details on specified games, as appropriate.
 	Promise.all([
 		queryGamesTop(req.query),
 		queryGamesSpecific(req.query)
 			.then(games => { 
-				return games ? queryStreamsForSpecificGames(games, req.query) : null 
+				if (!games)
+					return null;
+
+				return queryStreams({
+					game_id: Array.from(games.keys()),
+					language: req.query.language,
+					first: (req.query.first || 20)
+				}, {key: 'login', values: arrayFromParameterString(req.query.exclude, true)})
+				.then(streamsMap => {
+					return ({streams: streamsMap, games: games})
+				})
 			})
 	])
 
 	//Re-query list of streams, followed by list of games as needed, for the Include list
 	.then(data => {
 		let games = combineMapsAndSelect(data[0], (data[1]? data[1].games : null));
-		let streams = data[1] ? removeExcludedStreamers(data[1].streams, req.query.exclude) : null;
+		let streams = data[1] ? data[1].streams : null;
 
 		handleIncludedStreamers(streams, games, req.query.include)
 		.then (details => {
-			
 			//Once you have top + specific details, combine as appropriate and render the page
 			res.render('home', generateTemplate(details.games, details.streams, {language: req.query.language, includeTop: req.query.includeTop, exclude: req.query.exclude}));
 		})
 	})
 })
 
+function getStreamersNames(streams) {
+	let nameArray = [];
+	streams.forEach(stream => {
+		nameArray.push(stream.login)
+	})
 
-function removeExcludedStreamers (streams, exclude) {
-	if (exclude) {
-		exclude = arrayFromParameterString(exclude);
-		streams.forEach(stream => {
-			let index = exclude.indexOf(stream.login);
-			if (index > -1) 
-				streams.delete(stream.user_id);
-		})
-	}
-	return streams;
+	return nameArray;
 }
 
+// Given maps of streams and games, and an array of names,
+// find which names are not in the stream map, and search for their stream details
+// if any of them are playing games NOT in our "games" map, query for those games' details too
 function handleIncludedStreamers(streams, games, include) {
 	return new Promise((resolve, reject) => {
-		if (!include || include.length == 0) {
-			console.log('1')
-			resolve({streams, games})
-		}
 
-		//TODO: Handle duplicate inclusions
+		//Exit early: Nothing to include listed
+		if (!include || include.length == 0)
+			resolve({streams, games})
+
+		// Take the "include" querystring and make an array out of it
 		let newInclude = arrayFromParameterString(include, true);
 		
-		//Iterate through 'streams', weeding users out of 'include'. if any remain, have to re-query
+		//Look at the list of streamers we already got. Figure out which of our "include"d streamers aren't in that list (because we need to get their details)
 		if (streams) {
 			streams.forEach(stream => {
 				let index = newInclude.indexOf(stream.login);
@@ -89,52 +95,45 @@ function handleIncludedStreamers(streams, games, include) {
 			})
 		}
 
-		//If there's nothing left after the weeding out, break early.
-		if (newInclude.length == 0) {
-			console.log('2')
+		//Exit early: All included streams were obtained via the main query
+		if (newInclude.length == 0)
 			resolve({streams, games})
-
-		}
-
 		
-		//Otherwise, re-query streamer list
-		queryStreamsForSpecificUsers(newInclude).then(newStreams => {
-			//Check if there are any games from the Included list, that aren't in 'games'. If so, re-query similarly.
+		//If there are still some included streamers whose info we need, then query it
+		queryStreams({user_login: newInclude}).then(newStreams => {
+			
+			//Exit early: We queried those remaining names, but none of them are streaming.
 			if (newStreams.size == 0) {
-				console.log('3')
 				resolve({streams, games})
 			}
 
+			// Look at this new list of streamers, are they playing games that we don't have data on yet?
 			let neededGames = [];
-
 			newStreams.forEach(stream => {
 				if (!games.has(stream.game_id)) {
 					neededGames.push(stream.game_id);
 				}
 			})
 
-			//TODO: Re-order based on viewer count.
 			//Right now this shows all from `newStreams`, followed by all from `streams`. That's better than the other way around, but not ideal
 			let combinedStreams = combineMaps(newStreams, streams);
 
+			//Exit early: We got the appropriate new set of streamers, and we don't need to get new game data, so we're done here
 			if (neededGames.length == 0) {
-				console.log('4')
 				resolve({games, combinedStreams});
 			} 
+
+			//There are new streamers found from the "include" list, but they're playing games that we don't have data on yet. So query for those game details.
 			else {
 				queryGamesSpecific({id: neededGames})
 				.then(data => {
-					console.log('5')
-					resolve({
-						games: combineMapsAndSelect(games, data), 
-						streams: combinedStreams
-					});
+					resolve({games: combineMapsAndSelect(games, data), streams: combinedStreams});
 				})	
 			}
 		})
 	})
-
 }
+
 
 require('./routes/games')(router);
 require('./routes/streams')(router);
@@ -145,62 +144,32 @@ app.listen(3000);
 
 // --------------------------------------------
 // Gets the most popular games
-function queryGamesTop(queryString) {
-	return new Promise((resolve, reject) => {
-		if (queryString.includeTop && stringIsTrue(queryString.includeTop, true)) {
-			GameRouter.queryTopGames(queryString)
-				.then((gamesArray) => {
-					resolve(mapFromArray(gamesArray))
-				})
-		}
-		else {
-			resolve()
-		}
-	})
+async function queryGamesTop(queryString) {
+
+	if (queryString.includeTop && stringIsTrue(queryString.includeTop, true)) 
+		return mapFromArray(await GameRouter.queryTopGames(queryString));
+
+	else
+		return null;
 }
 
 // Gets details on specific games
-function queryGamesSpecific(queryString) {
-	return new Promise((resolve, reject) => {
+async function queryGamesSpecific(queryString) {
 		//If no game is specified (by name or ID), break out early.
-		if (!queryString || !(queryString.name || queryString.id)) {
-			resolve();
-		}
-		else {
-			GameRouter.querySpecificGames(queryString)
-			.then((gamesArray) => {
-				resolve(mapFromArray(gamesArray));
-			}, (error) => {
-				resolve();
-			})
-		}
-	})
+		if (!queryString || !(queryString.name || queryString.id)) 
+			return null;
+
+		else
+			return mapFromArray(await GameRouter.querySpecificGames(queryString))
 }
 
-// Gets the most popular streams for a specific game
-function queryStreamsForSpecificGames(games, queryString) {
-
-	return new Promise((resolve, reject) => {
-		StreamRouter.queryStreamsForSpecificGames({
-			game_id: Array.from(games.keys()),
-			language: queryString.language,
-			first: queryString.first || 100
-		})
-		.then(streamsArray => {
-			resolve({
-				streams: mapFromArray(streamsArray, 'user_id', {key: 'login', values: arrayFromParameterString(queryString.exclude, true)}), 
-				games: games
-			});
-		})
-	})	
+// Get streams for the given options, filtering out any exclusions 
+async function queryStreams(options, exclude = null) {
+	let streamsArray = await StreamRouter.queryStreamsForSpecificGames(options)
+	return mapFromArray(streamsArray, 'user_id', exclude)
 }
 
-async function queryStreamsForSpecificUsers(users/*, queryString*/) {
-	let streamsArray = await StreamRouter.queryStreamsForSpecificGames({
-		user_login: users
-	})
-	return mapFromArray(streamsArray, 'user_id');
-}
+
 
 
 // --------------------------------------------
