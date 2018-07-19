@@ -72,6 +72,42 @@ function getStreamersNames(streams) {
 	return nameArray;
 }
 
+
+require('./routes/games')(router);
+require('./routes/streams')(router);
+
+app.use('/static', express.static('static'));
+app.use('/api', router);
+app.listen(3000);
+
+// --------------------------------------------
+// Gets the most popular games
+async function queryGamesTop(queryString) {
+
+	if (queryString.includeTop && stringIsTrue(queryString.includeTop, true)) 
+		return mapFromArray(await GameRouter.queryTopGames(queryString));
+
+	else
+		return null;
+}
+
+// Gets details on specific games
+async function queryGamesSpecific(queryString) {
+		//If no game is specified (by name or ID), break out early.
+		if (!queryString || !(queryString.name || queryString.id)) 
+			return null;
+
+		else
+			return mapFromArray(await GameRouter.querySpecificGames(queryString))
+}
+
+// Get streams for the given options, filtering out any exclusions 
+async function queryStreams(options, exclude = null) {
+	let streamsArray = await StreamRouter.queryStreamsForSpecificGames(options)
+	return mapFromArray(streamsArray, 'user_id', exclude)
+}
+
+
 // Given maps of streams and games, and an array of names,
 // find which names are not in the stream map, and search for their stream details
 // if any of them are playing games NOT in our "games" map, query for those games' details too
@@ -133,44 +169,6 @@ function handleIncludedStreamers(streams, games, include) {
 		})
 	})
 }
-
-
-require('./routes/games')(router);
-require('./routes/streams')(router);
-
-app.use('/static', express.static('static'));
-app.use('/api', router);
-app.listen(3000);
-
-// --------------------------------------------
-// Gets the most popular games
-async function queryGamesTop(queryString) {
-
-	if (queryString.includeTop && stringIsTrue(queryString.includeTop, true)) 
-		return mapFromArray(await GameRouter.queryTopGames(queryString));
-
-	else
-		return null;
-}
-
-// Gets details on specific games
-async function queryGamesSpecific(queryString) {
-		//If no game is specified (by name or ID), break out early.
-		if (!queryString || !(queryString.name || queryString.id)) 
-			return null;
-
-		else
-			return mapFromArray(await GameRouter.querySpecificGames(queryString))
-}
-
-// Get streams for the given options, filtering out any exclusions 
-async function queryStreams(options, exclude = null) {
-	let streamsArray = await StreamRouter.queryStreamsForSpecificGames(options)
-	return mapFromArray(streamsArray, 'user_id', exclude)
-}
-
-
-
 
 // --------------------------------------------
 // Helper functions
