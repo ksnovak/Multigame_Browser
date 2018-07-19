@@ -34,6 +34,14 @@
             <label for='excludeNames'>Exclude these users: </label>
             <input type='text' id='excludeNames' class='form-control' {{#if exclude}}value='{{exclude}}'{{/if}}/>
 
+        
+            {{#if repo}}
+            <div id='git_buttons'>
+                <a href='{{repo}}' target="_blank" id='git_repo' class='btn btn-warning' role='button'>Github</a>
+                <a href='{{repo}}/projects/1' target="_blank" id='git_board' class='btn btn-danger' role='button'>Project Board</a>
+            </div>
+            {{/if}}
+
         </div>
         <div id='streams' class='col-sm-10 col-lg-9'>
         {{#if gridView}}

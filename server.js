@@ -5,6 +5,7 @@ const express		= require('express');
 const exphbs		= require('express-handlebars');
 const app			= express();
 const bodyParser	= require('body-parser');
+const package 		= require('./package.json')
 // const request 		= require('request');
 //var sql 		= require('sql');
 
@@ -323,7 +324,8 @@ function generateTemplate(games, streams, options) {
 		englishOnly: (options.language == 'en') ? true : false,
 		includeTop: stringIsTrue(options.includeTop, true),
 		exclude: stringFromArray(options.exclude),
-		gridView: true
+		gridView: true,
+		repo: package.repo_root
 	});
 }
 

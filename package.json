@@ -1,5 +1,5 @@
 {
-  "name": "Multigame",
+  "name": "multigame_browser",
   "version": "0.0.1",
   "description": "Directory for streams of multiple games on Twitch",
   "main": "index.js",
@@ -9,14 +9,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ksnovak/multigame"
+    "url": "git+https://github.com/ksnovak/Multigame_Browser"
   },
+  "repo_root": "https://github.com/ksnovak/Multigame_Browser",
   "author": "Kevin Novak",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ksnovak/multigame/issues"
+    "url": "https://github.com/ksnovak/Multigame_Browser/issues"
   },
-  "homepage": "https://github.com/ksnovak/multigame#readme",
+  "homepage": "https://github.com/ksnovak/Multigame_Browser#readme",
   "dependencies": {
     "body-parser": "^1.18.3",
     "config.json": "0.0.4",
