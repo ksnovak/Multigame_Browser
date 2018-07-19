@@ -19,90 +19,28 @@ The core issue being solved with this new directory is, **I want to see the top 
 * Get me all of the streamers for these specific games, but also include these specific streamers (regardless of what game they're playing)
 * I prefer English results, but show all other languages afterwards
 
+## To use
+If you pull down this repo and make use of it for yourself, you need to create a `keys.js` file in the root directory, with the following details:
 
-
-
-## Up next:
-"Big" is for large undertakings. "Urgent" is for things that are really important. "Cool" is for everything else noteworthy
-This is listed roughly in order of importance to me.
-* URGENT: Clean up all the mess made by the "Include" feature
-* Add UI component for "Include"
-* URGENT: Rewrite promises to async functions
-* Cleanup on aisle "function and parameter names"
-* URGENT: Unit testing
-* URGENT: Switching from Handlebars to React
-* COOL: Update Client-side to update data without needing a refresh
-* BIG: "Show me the top overall streams, excluding games X, Y, and Z"
-* COOL: Option for auto-refresh at certain intervals
-* COOL: Change selection to be a tag-selection type thing instead of Selects & Textboxes
-* COOL: Cache client preferences
-    * Cookies
-    * "Option" settings definitely worth saving (language and "include top"), those would rarely change
-    * Next most worthwhile would be saving the include/exclude list.
-    * Maybe save the game selection as "My favorites" and have it quickly accessible, but not sure about always defaulting to showing those.
-* BIG: Accounts
-    * Saving preferred settings
-    * Shortcuts for certain settings
-    * Sharing lists
-* COOL: Server-side caching for data 
-    * Game details (name, ID, thumbnail) is an ideal use, they barely change
-    * List of streamers
-    * Streamers' details
-    * Top games
-    * Top streamers
-* COOL: Game weighting
-    * If you follow a huge game (e.g. League) and a small game (e.g. Stardew Valley), you probably won't see any streams for the smaller game on the first page. Find a way to weight game value so there's a reasonable spread
-    * "Simplest" solution would probably be to have a cutoff for game # of viewers. Alternate between displaying streams for the larger set and the smaller set.
-* BIG: Integrate Twitch's oauth, so we can directly pull Following Users/Games details
-* COOL: Various sorting/grouping options. 
-    * "Show me all the Rimworld streams, then all the Stardew streams, ..."
-    * "Show me the specified users first, then all the rest"
-* Pagination
-    * Make sure there's proper handling of a streamer not appearing until page 2 for the main list, but page 1 for the Include list
-
-## Backburner /  Don't forget:
-* Change promises to async, for clarity     https://medium.com/@bluepnume/learn-about-promises-before-you-start-using-async-await-eb148164a9c8
-* using window.location.search, find ways to update the querystring without completely deleting and replacing it (e.g. update the games list without changing the language setting)
-* make case insensitive querystrings, using proxy https://stackoverflow.com/questions/15521876/nodejs-express-is-it-possible-to-have-case-insensitive-querystring
-* Client-side language selection (instead of en-only vs. all)
-* Edgecase testing for empty sets (no games, no streamers, nothing selected on client, no things after Exclusion list, duplicates in include/exclude, etc)
-* Multiple display styles (grid vs list)
-* Allow use of the results screen to filter (e.g. a small pair of buttons to exclude either the certain streamer or their game)
-* Helper functions for Maps, to search and retrieve arrays of certain things (e.g. array of streamer names)
-* Make sure mixed inclusion/exclusions handle logically. The more specific instruction should be upheld. 
-    * X language only, but include Y streamer -> Y better show up no matter what they speak
-    * Show top games, excluding X -> X better not show
-    * Show top games, excluding X, but including Y streamer -> Y should show
-* Creative, IRL, and other non-gaming streams
-
-## Potential future integrations
-* Utilize Replays and Hosts
-* Youtube
-    * Youtube Live API: https://developers.google.com/youtube/v3/live/docs/liveBroadcasts
-    * Livestreams: https://gaming.youtube.com/games
-    * Note: Their game URLs are something like `https://gaming.youtube.com/game/UCCnY7KLXOI1ofeMu5zZFgSg`, so using raw name is gonna be harder to make use of.
-    * https://stackoverflow.com/questions/31616252/get-list-of-gaming-live-streams-on-youtube
-    * https://www.googleapis.com/youtube/v3/search?part=snippet&eventType=live&type=video&videoCategoryId=20&regionCode=US&maxResults=50&key=YOUR_API_KEY_HERE
-        * videoCategoryId=20 for games; without it, you get all kinds of streams
-        * 
-* Steam
-    * Steam has an API but it doesn't look like it has any support for their broadcasts
-    * https://steamcommunity.com/updates/broadcasting
-    * https://steamcommunity.com/dev
-* Discord
-    * Get your list of games from there?
-    * Share between friends
-* Twitch friends
-* Game metadata
-    * "Get me X, Y, and Z games, and also League streamers who are playing Akali"
-
-
-## Known issues:
-* Intermittent error of "Error parsing topGames, TypeError: Cannot read property 'map' of undefined" (Also happens with specificGames, I think)
-    * This is so intermittent that, every time I change the code to just log the data, the problem gets fixed.
-    * Might be something like includeTop being unchecked, but it still tries to search?
-    * Managed to get this error kicked back finally. `body: '{"error":"Bad Request","status":400,"message":"Must provide at least one name or ID."}' }`
-    * Go through and make sure no empty calls are getting made. Especially check calls for 'include'
+    module.exports = {
+        db: {
+            user: 'ADMIN',
+            password: 'SECRET'
+        },
+    
+        twitch: {
+            'Client-ID': 'KEY',
+            'Authorization': 'Bearer KEY'
+        },
+    
+        youtube: {
+            'API-Key': 'KEY'
+        }
+    };
+Replacing KEY with the appropriate key.
+Update Node and install all packages
+Run via `npm run dev`
+View at localhost:3000
 
 
 ## Simple smoke-test cases
