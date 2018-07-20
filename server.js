@@ -156,7 +156,7 @@ function handleIncludedStreamers(streams, games, include) {
 
 			//Exit early: We got the appropriate new set of streamers, and we don't need to get new game data, so we're done here
 			if (neededGames.length == 0) {
-				resolve({games, combinedStreams});
+			resolve({games: games, streams: combinedStreams});
 			} 
 
 			//There are new streamers found from the "include" list, but they're playing games that we don't have data on yet. So query for those game details.
