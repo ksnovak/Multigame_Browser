@@ -60,7 +60,12 @@ app.get('/', function(req, res) {
 		handleIncludedStreamers(streams, games, req.query.include)
 		.then (details => {
 			//Once you have top + specific details, combine as appropriate and render the page
-			res.render('home', generateTemplate(details.games, details.streams, {language: req.query.language, includeTop: req.query.includeTop, exclude: req.query.exclude}));
+			res.render('home', generateTemplate(details.games, details.streams, {
+				language: req.query.language, 
+				includeTop: req.query.includeTop, 
+				exclude: req.query.exclude, 
+				include: req.query.include
+			}));
 		})
 	})
 })
@@ -244,15 +249,26 @@ function arrayFromParameterString(parameter, options = {toLowerCase: false, remo
 }
 
 //Turn an array into a string if possible, joined by ", "
-function stringFromArray(arr, joinString = ', ') {
+function stringFromArray(arr, options = {joinString: ', ', toLowerCase: false, removeDuplicates: false}) {
+
 	if (!arr)
 		return null;
 
 	else if (typeof arr == 'string')
-		return arr;
+		return options.toLowerCase ? arr.toLowerCase() : arr;
 
-	else 
-		return arr.join(joinString);
+	else {
+		//Converting to lowercase as an array because we need to do that in order to remove dupliates appropriately
+		if (options.toLowerCase) {
+			arr = arr.map(elem => elem.toLowerCase());
+		}
+
+		if (options.removeDuplicates) {
+			arr = Array.from(new Set(arr))
+		}
+	}
+
+	return arr.join(options.joinString);
 }
 
 //Check if a string value matches "true" (e.g. boolean string). 
@@ -300,7 +316,8 @@ function generateTemplate(games, streams, options) {
 		streams: streams,
 		englishOnly: (options.language == 'en') ? true : false,
 		includeTop: stringIsTrue(options.includeTop, true),
-		exclude: stringFromArray(options.exclude),
+		include: stringFromArray(options.include, {toLowerCase: true, removeDuplicates: true}),
+		exclude: stringFromArray(options.exclude, {toLowerCase: true, removeDuplicates: true}),
 		gridView: true,
 		repo: package.repo_root
 	});

@@ -5,7 +5,9 @@
     <div class='row'>
         <div class='form-group col-sm-2 col-lg-3'>   
             <form action="javascript:void(0);">
+
                 <div id='actionButtons'>
+                    <a href='/' id='home' class='btn btn-info' role='button'>Home</a>
                     <button id='search' class='btn btn-primary' type="submit">Search</button>
                     <button id='myFaves' class='btn btn-success'>My favorites</button>
                 </div>
@@ -21,8 +23,8 @@
                     </div>
                 </div>
                     
-                <label for='gameList'>Top games:</label>
-                <select id='gameList' multiple="multiple" class='form-control' size='20'>
+                <label for='gameList'>Games:</label>
+                <select id='gameList' multiple="multiple" class='form-control' size='10'>
                     {{#eachInMap games}}
                         <option value='{{value.id}}' {{#if value.selected}}selected{{/if}}>{{value.name}}</option>
                     {{/eachInMap}}
@@ -30,6 +32,9 @@
                 <br/>
                 <label for='customGames'>Additional games: </label>
                 <input type='text' id='customGames' class='form-control'/>
+
+                <label for='includeNames'>Include these users: </label>
+                <input type='text' id='includeNames' class='form-control' {{#if include}}value='{{include}}'{{/if}}/>
 
                 <label for='excludeNames'>Exclude these users: </label>
                 <input type='text' id='excludeNames' class='form-control' {{#if exclude}}value='{{exclude}}'{{/if}}/>

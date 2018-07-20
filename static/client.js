@@ -18,7 +18,8 @@ $(function() {
                 idArray: getSelectedGames(), 
                 languages: getLanguages(), 
                 includeTop: getIncludeTop(), 
-                exclude: getExclusions()
+                exclude: getExclusions(),
+                include: getInclusions()
             }),
             getTopGames(5)
         ])
@@ -55,12 +56,22 @@ $(function() {
     }
 
     function getExclusions() {
-        let excludeText = $('#excludeNames').val();
+        return textFieldToArray('#excludeNames');
+    }
 
-        if (excludeText.length > 0) 
-            return excludeText.split(', ');
-        else 
-            return null
+    function getInclusions() {
+        return textFieldToArray('#includeNames')
+
+    }
+
+    function textFieldToArray(fieldName) {
+        let text = $(fieldName).val().toLowerCase();
+
+        if (text.length) {
+            return text.split(/,\s*/);
+        }
+
+        return null;
     }
 
 
@@ -83,11 +94,9 @@ $(function() {
                 if (searchOptions.languages)
                     queryString += `language=${searchOptions.languages}&`
 
-                if (searchOptions.exclude) {
-                    searchOptions.exclude.forEach(exclude => {
-                        queryString += `exclude=${exclude}&`
-                    })
-                }
+                queryString += queryStringFromArray(searchOptions.exclude, 'exclude');
+
+                queryString += queryStringFromArray(searchOptions.include, 'include');
                 
                 gameArray.forEach(game => {
                     queryString += `name=${game.name}&`;
@@ -96,6 +105,7 @@ $(function() {
                     games.set(game.id, game);
                 });
 
+                //Remove a trailing ampersand, for a bit of cleanliness
                 if (queryString[queryString.length-1] == "&") {
                     queryString = queryString.slice(0, queryString.length-1);
                 }
@@ -108,6 +118,17 @@ $(function() {
             }
         })
         return result;
+    }
+
+    function queryStringFromArray(arr, queryName) {
+        let returnString = "";
+        if (arr) {
+            arr.forEach(elem => {
+                returnString += `${queryName}=${elem}&`
+            })
+        }
+
+        return returnString;
     }
 
     async function getTopGames (first) {
