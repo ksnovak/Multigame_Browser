@@ -139,7 +139,7 @@ async function handleIncludedStreamers(streams, games, include) {
 				//There are new streamers found from the "include" list, but they're playing games that we don't have data on yet. So query for those game details.
 				if (neededGames.length > 0) {				
 					let data = await queryGamesSpecific({id: neededGames});
-					return ({games: combineMapsAndSelect(games, data), streams: streams})
+					return ({games: combineMaps(games, data), streams: streams})
 				}
 			}
 		}
