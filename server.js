@@ -43,8 +43,10 @@ app.get('/', function(req, res) {
 					game_id: Array.from(games.keys()),
 					language: req.query.language,
 					first: (req.query.first || 20)
-				}, {key: 'login', values: arrayFromParameterString(req.query.exclude, true)})
+				}, {key: 'login', values: arrayFromParameterString(req.query.exclude, {toLowerCase: true, removeDuplicates: true})})
 				.then(streamsMap => {
+					console.log('asdfad')
+
 					return ({streams: streamsMap, games: games})
 				})
 			})
@@ -111,63 +113,57 @@ async function queryStreams(options, exclude = null) {
 // Given maps of streams and games, and an array of names,
 // find which names are not in the stream map, and search for their stream details
 // if any of them are playing games NOT in our "games" map, query for those games' details too
-function handleIncludedStreamers(streams, games, include) {
-	return new Promise((resolve, reject) => {
+async function handleIncludedStreamers(streams, games, include) {
+	
+		//Given the map of streams already obtained, and the "include" querystring, find a list of users who we need to go and separately grab.
+		//This will filter out any duplicates in the "include" list itself, as well as duplicates between the two sets. 
+		let neededStreams = getNeededNewStreams(streams, include);
 
-		//Exit early: Nothing to include listed
-		if (!include || include.length == 0)
-			resolve({streams, games})
+		if (neededStreams.length) {
+			//If there are still some included streamers whose info we need, then query it
+			let newStreams = await queryStreams({user_login: neededStreams})
 
-		// Take the "include" querystring and make an array out of it
-		let newInclude = arrayFromParameterString(include, true);
-		
-		//Look at the list of streamers we already got. Figure out which of our "include"d streamers aren't in that list (because we need to get their details)
-		if (streams) {
-			streams.forEach(stream => {
-				let index = newInclude.indexOf(stream.login);
-				if (index > -1) {
-					newInclude.splice(index, 1);
+			if (newStreams.size > 0) { //(arrays use .length but maps use .size)
+
+				// Look at this new list of streamers, are they playing games that we don't have data on yet?
+				let neededGames = [];
+				newStreams.forEach(stream => {
+					if (!games.has(stream.game_id)) {
+						neededGames.push(stream.game_id);
+					}
+				})
+
+				//Wait until after finding the needed games for performance's sake. Combine now in case there are new streamers but not new games
+				streams = combineMaps(newStreams, streams);
+
+				//There are new streamers found from the "include" list, but they're playing games that we don't have data on yet. So query for those game details.
+				if (neededGames.length > 0) {				
+					let data = await queryGamesSpecific({id: neededGames});
+					return ({games: combineMapsAndSelect(games, data), streams: streams})
 				}
-			})
+			}
 		}
 
-		//Exit early: All included streams were obtained via the main query
-		if (newInclude.length == 0)
-			resolve({streams, games})
+		return ({streams, games})		
+}
+
+
+//Passing in the streams object, and the include string, return an array of unique new users who need to be found.
+function getNeededNewStreams(streams, include) {
+
+	let newInclude = []
+	//Exit early: Nothing to include listed
+	if (include && include.length) {
+		// Take the "include" querystring and make an array out of it. We're also filtering out duplicates from that querystring
+		newInclude = arrayFromParameterString(include, {toLowerCase: true, removeDuplicates: true});
 		
-		//If there are still some included streamers whose info we need, then query it
-		queryStreams({user_login: newInclude}).then(newStreams => {
-			
-			//Exit early: We queried those remaining names, but none of them are streaming.
-			if (newStreams.size == 0) {
-				resolve({streams, games})
-			}
+		//Look at the list of streamers we already got. Figure out which of our desired streamers aren't in that list (because we need to get their details)
+		if (streams) {
+			newInclude = newInclude.filter(name => { return (getStreamersNames(streams).indexOf(name) == -1) })
+		}
+	}
 
-			// Look at this new list of streamers, are they playing games that we don't have data on yet?
-			let neededGames = [];
-			newStreams.forEach(stream => {
-				if (!games.has(stream.game_id)) {
-					neededGames.push(stream.game_id);
-				}
-			})
-
-			//Right now this shows all from `newStreams`, followed by all from `streams`. That's better than the other way around, but not ideal
-			let combinedStreams = combineMaps(newStreams, streams);
-
-			//Exit early: We got the appropriate new set of streamers, and we don't need to get new game data, so we're done here
-			if (neededGames.length == 0) {
-			resolve({games: games, streams: combinedStreams});
-			} 
-
-			//There are new streamers found from the "include" list, but they're playing games that we don't have data on yet. So query for those game details.
-			else {
-				queryGamesSpecific({id: neededGames})
-				.then(data => {
-					resolve({games: combineMapsAndSelect(games, data), streams: combinedStreams});
-				})	
-			}
-		})
-	})
+	return newInclude;
 }
 
 // --------------------------------------------
@@ -221,16 +217,30 @@ function mapFromArray(arr, key = 'id', exclude = null) {
 	return newMap;
 }
 
-//Given a querystring parameter, turn it into an Array. Optionally convert it to lowercase
-function arrayFromParameterString(parameter, toLowerCase = false) {
-	if (!parameter)
-		return null;
+function removeDuplicatesInArray(arr) {
+	return Array.from(new Set(arr))
+}
 
-	else if (typeof parameter == 'string')
-		return toLowerCase? Array(parameter.toLowerCase()) : Array(parameter);
+//Given a querystring parameter, turn it into an Array. Optionally convert it to lowercase
+function arrayFromParameterString(parameter, options = {toLowerCase: false, removeDuplicates: false}) {
+	
+	if (!parameter) {
+		return null;
+	}		
+	else if (typeof parameter == 'string') {
+		return options.toLowerCase ? Array(parameter.toLowerCase()) : Array(parameter);
+	}
+	else { //An array already
+		let arr = parameter;
+
+		if (options.toLowerCase) 
+			arr.map(elem => elem.toLowerCase());
+
+		if (options.removeDuplicates)
+			arr = Array.from(new Set(arr));	//Sets are objects that only allow for unique values. Works as a duplicate-remover in ES6. 
 		
-	else 
-		return toLowerCase? parameter.map(elem => elem.toLowerCase()) : parameter;
+		return arr;
+	}
 }
 
 //Turn an array into a string if possible, joined by ", "
