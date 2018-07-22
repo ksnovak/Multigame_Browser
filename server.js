@@ -251,6 +251,18 @@ function arrayFromParameterString(parameter, options = {toLowerCase: false, remo
 //Turn an array into a string if possible, joined by ", "
 function stringFromArray(arr, options = {joinString: ', ', toLowerCase: false, removeDuplicates: false}) {
 
+	if (typeof options.joinString == 'undefined') {
+		options.joinString = ', '
+	}
+	if (typeof options.toLowerCase == 'undefined') {
+		options.toLowerCase = false;
+	}
+
+	if (typeof options.removeDuplicates == 'undefined') {
+		options.removeDuplicates = false;
+	}
+
+
 	if (!arr)
 		return null;
 
