@@ -35,7 +35,8 @@ $(function() {
         searchSelectedGames({
             nameArray: ['Rimworld', 'Into the Breach', 'Terraria', 'Stardew Valley', 'Dungeon of the Endless', 'Guild Wars 2', 'Slay the Spire', 'Cities: Skylines'], 
             languages: 'en',
-            includeTop: true
+            includeTop: true,
+            include: ['aphromoo', 'lethalfrag', 'scarra', 'meteos', 'day9tv', 'dismaid', 'scarizardplays', 'kitboga', 'captaincoach', 'albinoliger', 'cilantrogamer', 'insanefrenzy']
         })
     })
     

@@ -1,8 +1,5 @@
 # Multigame_Browser
 
-Minimal contribution the week of 7/16 due to solidarity with Amazon Prime Day boycotts
-
-
 ## This is intended to be an alternative to Twitch's default stream directory 
 Twitch provides the following directory types:
 * The top streamers across all games (https://www.twitch.tv/directory/all)
