@@ -293,7 +293,24 @@ function stringFromArray(arr, options = {joinString: ', ', toLowerCase: false, r
 //Check if a string value matches "true" (e.g. boolean string). 
 //defaultVal used for empty strings, whether an empty string counts as true or false
 function stringIsTrue(str, defaultVal = false) {
-	return (str && str.toLowerCase() == 'true') || (!str && defaultVal);
+
+	//If the value isn't set, then go to the default
+	if (typeof str == 'undefined' || str.length == 0) { 
+		return defaultVal;
+	}
+
+	//If for some reason a boolean got passed directly, just use that value
+	else if (typeof str == 'boolean') { 
+		return str;
+	}
+
+	//Otherwise, treat it as a string. Cast it to lowercase, trip whitespace, and compare it to strings we consider truthy.
+	else {
+		str = str.toLowerCase().trim();
+
+		return (str == 'true' || str == 't')
+	}
+
 }
 // --------------------------------------------
 
@@ -334,7 +351,7 @@ function generateTemplate(games, streams, options) {
 		games: games,
 		streams: streams,
 		englishOnly: (options.language == 'en') ? true : false,
-		includeTop: stringIsTrue(options.includeTop, true),
+		includeTop: stringIsTrue(options.includeTop, false),
 		include: stringFromArray(options.include, {toLowerCase: true, removeDuplicates: true}),
 		exclude: stringFromArray(options.exclude, {toLowerCase: true, removeDuplicates: true}),
 		gridView: true,
