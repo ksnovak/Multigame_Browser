@@ -33,21 +33,27 @@ These are all things that I want to resolve with this project.
 
 ### Here is usage broken down into individual images:
 The current "base" screen, if you navigate to the home:
+
 <img src="./github_images/1_root.png" width="500px"/>
 
 Typing in some search options, before submitting the search: 
+
 <img src="./github_images/2_presearch.png" width="500px"/>
 
 Results of the search:
+
 <img src="./github_images/3_postsearch.png" width="500px"/>
 
 Modifying the search to only return English streams:
+
 <img src="./github_images/4_english_only.png" width="500px"/>
 
-Modifying the search to exclude a certain user
+Modifying the search to exclude a certain user:
+
 <img src="./github_images/5_exclude.png" width="500px"/>
 
-Using the "My Favorites" button to use a pre-defined set of search options
+Using the "My Favorites" button to use a pre-defined set of search options:
+
 <img src="./github_images/6_my_faves.png" width="500px"/>
 
 
