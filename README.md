@@ -28,22 +28,27 @@ But there are a lot of gaps left there. In some cases, it's about information be
 These are all things that I want to resolve with this project. 
 
 ## Browsing with this new directory
-### Here's the current "base" screen, if you navigate to the home:
-![Root](./github_images/1_root.png)
-### Typing in some search options, before submitting the search: 
-![Before searching](./github_images/2_presearch.png)
+### Here is a .gif of the directory in action: 
+![Searching and refining with the directory](./github_images/usage_gif.gif)
 
-### Results of the search:
-![Results after searching](./github_images/3_postsearch.png)
+### Here is usage broken down into individual images:
+The current "base" screen, if you navigate to the home:
+<img src="./github_images/1_root.png" width="500px"/>
 
-### Modifying the search to only return English streams:
-![Modifying search to be English-only](./github_images/4_english_only.png)
+Typing in some search options, before submitting the search: 
+<img src="./github_images/2_presearch.png" width="500px"/>
 
-### Modifying the search to exclude a certain user
-![Excluding a streamer](./github_images/5_exclude.png)
+Results of the search:
+<img src="./github_images/3_postsearch.png" width="500px"/>
 
-### Using the "My Favorites" button to use a pre-defined set of search options
-![Using the "My Favorites" preset](./github_images/6_my_faves.png)
+Modifying the search to only return English streams:
+<img src="./github_images/4_english_only.png" width="500px"/>
+
+Modifying the search to exclude a certain user
+<img src="./github_images/5_exclude.png" width="500px"/>
+
+Using the "My Favorites" button to use a pre-defined set of search options
+<img src="./github_images/6_my_faves.png" width="500px"/>
 
 
 ## For developers who want to try this on their own
