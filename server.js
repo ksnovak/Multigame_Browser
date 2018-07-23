@@ -45,8 +45,6 @@ app.get('/', function(req, res) {
 					first: (req.query.first || 20)
 				}, {key: 'login', values: arrayFromParameterString(req.query.exclude, {toLowerCase: true, removeDuplicates: true})})
 				.then(streamsMap => {
-					console.log('asdfad')
-
 					return ({streams: streamsMap, games: games})
 				})
 			})
@@ -229,6 +227,15 @@ function removeDuplicatesInArray(arr) {
 //Given a querystring parameter, turn it into an Array. Optionally convert it to lowercase
 function arrayFromParameterString(parameter, options = {toLowerCase: false, removeDuplicates: false}) {
 	
+	if (typeof options.toLowerCase == 'undefined') {
+		options.toLowerCase = false;
+	}
+
+	if (typeof options.removeDuplicates == 'undefined') {
+		options.removeDuplicates = false;
+	}
+
+
 	if (!parameter) {
 		return null;
 	}		

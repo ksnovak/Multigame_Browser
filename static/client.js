@@ -36,8 +36,11 @@ $(function() {
             nameArray: ['Rimworld', 'Into the Breach', 'Terraria', 'Stardew Valley', 'Dungeon of the Endless', 'Guild Wars 2', 'Slay the Spire', 'Cities: Skylines'], 
             languages: 'en',
             includeTop: true,
-            include: ['aphromoo', 'lethalfrag', 'scarra', 'meteos', 'day9tv', 'dismaid', 'scarizardplays', 'kitboga', 'captaincoach', 'albinoliger', 'cilantrogamer', 'insanefrenzy']
+            include: ['aphromoo', 'lethalfrag', 'scarra', 'meteos', 'day9tv', 'dismaid', 'scarizardplays', 'kitboga', 'captaincoach', 'albinoliger', 'cilantrogamer', 'insanefrenzy'],
+            exclude: ['pokimane', 'tsm_theoddone']
         })
+
+        
     })
     
 
@@ -68,8 +71,9 @@ $(function() {
     function textFieldToArray(fieldName) {
         let text = $(fieldName).val().toLowerCase();
 
+        // Turn the list of names into an array, and remove duplicates (using a Set)
         if (text.length) {
-            return text.split(/,\s*/);
+            return Array.from(new Set(text.split(/,\s*/)));
         }
 
         return null;
