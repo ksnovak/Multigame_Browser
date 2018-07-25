@@ -1,3 +1,5 @@
+import 'babel-core/register';
+import 'babel-polyfill';
 
 // const config 		= require('./config');
 // const keys 			= require('./keys');
@@ -5,12 +7,16 @@ const express		= require('express');
 const exphbs		= require('express-handlebars');
 const app			= express();
 const bodyParser	= require('body-parser');
-const package 		= require('./package.json')
+const packageJSON 	= require('../package.json')
+const React 		= require('react');
+const ReactDOM	 	= require('react-dom');
+
+// const App 			= require('./components/App');
 // const request 		= require('request');
 //var sql 		= require('sql');
 
-const GameRouter 	= require('./routes/games');
-const StreamRouter	= require('./routes/streams');
+const GameRouter 	= require('../routes/games');
+const StreamRouter	= require('../routes/streams');
 
 // let Game 			= require('./models/game');
 // let Stream 			= require('./models/stream');
@@ -78,8 +84,8 @@ function getStreamersNames(streams) {
 }
 
 
-require('./routes/games')(router);
-require('./routes/streams')(router);
+require('../routes/games')(router);
+require('../routes/streams')(router);
 
 app.use('/static', express.static('static'));
 app.use('/api', router);
@@ -87,7 +93,7 @@ app.listen(3000);
 
 // --------------------------------------------
 // Gets the most popular games
-async function queryGamesTop(queryString) {
+const queryGamesTop = async function(queryString) {
 
 	if (queryString.includeTop && stringIsTrue(queryString.includeTop, true)) 
 		return mapFromArray(await GameRouter.queryTopGames(queryString));
@@ -97,7 +103,7 @@ async function queryGamesTop(queryString) {
 }
 
 // Gets details on specific games
-async function queryGamesSpecific(queryString) {
+const queryGamesSpecific = async function(queryString) {
 		//If no game is specified (by name or ID), break out early.
 		if (!queryString || !(queryString.name || queryString.id)) 
 			return null;
@@ -107,7 +113,7 @@ async function queryGamesSpecific(queryString) {
 }
 
 // Get streams for the given options, filtering out any exclusions 
-async function queryStreams(options, exclude = null) {
+const queryStreams = async function(options, exclude = null) {
 	let streamsArray = await StreamRouter.queryStreamsForSpecificGames(options)
 	return mapFromArray(streamsArray, 'user_id', exclude)
 }
@@ -116,7 +122,7 @@ async function queryStreams(options, exclude = null) {
 // Given maps of streams and games, and an array of names,
 // find which names are not in the stream map, and search for their stream details
 // if any of them are playing games NOT in our "games" map, query for those games' details too
-async function handleIncludedStreamers(streams, games, include) {
+const handleIncludedStreamers = async function(streams, games, include) {
 	
 		//Given the map of streams already obtained, and the "include" querystring, find a list of users who we need to go and separately grab.
 		//This will filter out any duplicates in the "include" list itself, as well as duplicates between the two sets. 
@@ -355,7 +361,7 @@ function generateTemplate(games, streams, options) {
 		include: stringFromArray(options.include, {toLowerCase: true, removeDuplicates: true}),
 		exclude: stringFromArray(options.exclude, {toLowerCase: true, removeDuplicates: true}),
 		gridView: true,
-		repo: package.repo_root
+		repo: packageJSON.repo_root
 	});
 }
 
