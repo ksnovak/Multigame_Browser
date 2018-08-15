@@ -42,6 +42,7 @@ $(function() {
 
         
     })
+    
 
     function getCustomGames() {
         return $('#customGames').val().split(', ');
@@ -80,7 +81,7 @@ $(function() {
 
 
     //This function just gets the games' names and sets querystring operators. It doesn't actually get any stream details.
-    const searchSelectedGames = async function (searchOptions) {
+    async function searchSelectedGames (searchOptions) {
         const result = await $.get({
             url: './api/games/specific',
             data: { 
@@ -135,7 +136,7 @@ $(function() {
         return returnString;
     }
 
-    const getTopGames = async function (first) {
+    async function getTopGames (first) {
         const result = await $.get({
             url: './api/games/top',
             data: { 
@@ -197,13 +198,4 @@ $(function() {
             alert(alertStatement);
     }
 
-    // var StreamView = React.createClass({
-    //     render: function() {
-    //         return (
-    //             <div>{this.props.message}</div>
-    //         )
-    //     }
-    // })
-
-    // ReactDOM.render(<StreamView message='yoyoyo!' />, document.getElementById('hi'))
 })

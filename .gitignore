@@ -58,5 +58,4 @@ typings/
 .env
 
 keys.js
-
-dist
+keys.js
