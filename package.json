@@ -11,7 +11,7 @@
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "herokuDeploy": "npm run build & npm run start",
     "test": "mocha",
-    "test-startup": ""
+    "test:min": "mocha --reporter dot"
   },
   "repository": {
     "type": "git",
