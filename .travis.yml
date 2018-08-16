@@ -13,4 +13,4 @@ cache:
 branches:
   only:
     - Heroku
-    - Revamp
+    - master
