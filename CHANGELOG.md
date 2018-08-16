@@ -55,8 +55,8 @@ I had previously spent a bunch of time trying to build this directory, but ran i
 
 ### Removed
 
-- [x] Moved all old repo code to <https://github.com/ksnovak/Multigame_Browser/tree/Pre-React>
+- Moved all old repo code to <https://github.com/ksnovak/Multigame_Browser/tree/Pre-React>
 
 ### Personal
 
-- [x] Started learning how to use Heroku
+- Started learning how to use Heroku
