@@ -1,36 +1,55 @@
 {
   "name": "multigame_browser",
   "version": "0.0.1",
-  "description": "Directory for streams of multiple games on Twitch",
-  "main": "index.js",
+  "description": "Directory for streams of multiple games on Twitch.",
+  "main": "src/server/index.js",
   "scripts": {
-    "dev": "nodemon server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/server/index.js",
+    "build": "webpack -p",
+    "client": "webpack-dev-server --mode development --devtool inline-source-map --hot",
+    "server": "nodemon src/server/index.js",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "herokuDeploy": "npm run build & npm run start",
+    "test": "mocha",
+    "test:min": "mocha --reporter dot"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ksnovak/Multigame_Browser"
   },
   "repo_root": "https://github.com/ksnovak/Multigame_Browser",
+  "homepage": "https://github.com/ksnovak/Multigame_Browser#readme",
   "author": "Kevin Novak",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/ksnovak/Multigame_Browser/issues"
-  },
-  "homepage": "https://github.com/ksnovak/Multigame_Browser#readme",
   "dependencies": {
-    "body-parser": "^1.18.3",
-    "config.json": "0.0.4",
+    "dotenv": "^6.0.0",
     "express": "^4.16.3",
-    "express-handlebars": "^3.0.0",
-    "handlebars": "^4.0.11",
-    "mocha": "^5.2.0",
-    "query-string": "^6.1.0",
-    "react": "^16.4.1",
-    "request": "^2.87.0",
-    "sql": "^0.78.0"
+    "react": "^16.3.1",
+    "react-dom": "^16.3.1"
   },
   "devDependencies": {
-    "nodemon": "^1.17.5"
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.4",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.24.1",
+    "chai": "^4.1.2",
+    "clean-webpack-plugin": "^0.1.19",
+    "concurrently": "^3.5.1",
+    "css-loader": "^1.0.0",
+    "eslint": "^5.0.0",
+    "eslint-config-airbnb": "^17.0.0",
+    "eslint-plugin-import": "^2.11.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-react": "^7.7.0",
+    "file-loader": "^1.1.11",
+    "html-webpack-plugin": "^3.2.0",
+    "mocha": "^5.2.0",
+    "nodemon": "^1.17.3",
+    "style-loader": "^0.22.0",
+    "url-loader": "^1.0.1",
+    "webpack": "^4.5.0",
+    "webpack-cli": "^3.0.8",
+    "webpack-dev-server": "^3.1.3"
   }
 }
