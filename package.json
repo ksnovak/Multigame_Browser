@@ -4,10 +4,10 @@
   "description": "Directory for streams of multiple games on Twitch.",
   "main": "src/server/index.js",
   "scripts": {
-    "start": "node src/server/index.js",
+    "start": "babel-node src/server/index.js",
     "build": "webpack -p",
     "client": "webpack-dev-server --mode development --devtool inline-source-map --hot",
-    "server": "nodemon src/server/index.js",
+    "server": "nodemon src/server/index.js --exec babel-node",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "herokuDeploy": "npm run build & npm run start",
     "test": "mocha",
@@ -28,6 +28,7 @@
     "react-dom": "^16.3.1"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.4",
     "babel-plugin-transform-class-properties": "^6.24.1",
