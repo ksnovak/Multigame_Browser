@@ -2,7 +2,6 @@
 */
 import express from 'express';
 import os from 'os';
-import chalk from 'chalk';
 import games from './games';
 import streams from './streams';
 

@@ -12,12 +12,13 @@ app.use(express.static('dist'));
 app.use((req, res, next) => {
   console.log(
     'Request for ',
-    chalk.blue(req._parsedOriginalUrl.pathname),
-    chalk.green(req._parsedOriginalUrl.search || '')
+    chalk.blue(req._parsedUrl.pathname),
+    chalk.green(req._parsedUrl.search || '')
   );
   next();
 });
 
 // All API routing is handled through apiMain
 app.use('/api', apiMain);
+
 app.listen(port, () => console.log(`Listening on port ${port}!`));

@@ -1,16 +1,17 @@
 {
-  "extends": ["airbnb"],
-  "env": {
-    "browser": true,
-    "node": true,
-    "mocha": true
-  },
-  "rules": {
-    "no-console": "off",
-    "comma-dangle": "off",
-    "react/jsx-filename-extension": "off",
-    "react/jsx-one-expression-per-line": "off",
-    "react/destructuring-assessment": "off",
-    "linebreak-style": ["error", "windows"]
-  }
+	"extends": ["airbnb"],
+	"env": {
+		"browser": true,
+		"node": true,
+		"mocha": true
+	},
+	"rules": {
+		"no-console": "off",
+		"comma-dangle": "off",
+		"react/jsx-filename-extension": "off",
+		"react/jsx-one-expression-per-line": "off",
+		"react/destructuring-assessment": "off",
+		"linebreak-style": ["error", "windows"],
+		"max-len": "off"
+	}
 }

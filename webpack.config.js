@@ -39,7 +39,8 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin([outputDirectory]),
     new HtmlWebpackPlugin({
-      template: './public/welcome.html',
+      /* This decides where to go when someone visits the homepage */
+      template: './public/index.html',
       favicon: './public/favicon.ico'
     })
   ]
