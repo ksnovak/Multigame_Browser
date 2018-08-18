@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import './app.css';
 import ReactImage from './react.png';
+import OptionsPane from './OptionsPane/OptionsPane';
+import Directory from './Directory';
 
 export default class App extends Component {
   constructor(props) {
@@ -8,21 +10,14 @@ export default class App extends Component {
     this.state = { username: null };
   }
 
-  componentDidMount() {
-    fetch('/api/getUsername')
-      .then(res => res.json())
-      .then(user => this.setState({ username: user.username }));
-  }
+  componentDidMount() {}
 
   render() {
     return (
-      <div>
-        {this.state.username ? (
-          <h1>Welcome back {this.state.username}</h1>
-        ) : (
-          <h1>Loadeng.. please wait!</h1>
-        )}
-        <img src={ReactImage} alt="react" />
+      <div id="home" className="row">
+        <OptionsPane />
+
+        <Directory />
       </div>
     );
   }
