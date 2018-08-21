@@ -1,6 +1,5 @@
 import express from 'express';
-import chalk from 'chalk';
-import apiMain from './api/apiMain';
+import routes from './Routes/routesMain';
 
 require('dotenv').config();
 
@@ -10,16 +9,7 @@ const port = process.env.PORT || 8081;
 
 app.use(express.static('dist'));
 
-app.use((req, res, next) => {
-  console.log(
-    'Request for ',
-    chalk.blue(req._parsedUrl.pathname),
-    chalk.green(req._parsedUrl.search || '')
-  );
-  next();
-});
-
-// All API routing is handled through apiMain
-app.use('/api', apiMain);
+// All routing is handled through routesMain
+app.use(routes);
 
 if (!module.parent) app.listen(port, () => console.log(`Listening on port ${port}!`));

@@ -6,7 +6,6 @@ import express from 'express';
 import request from 'request';
 import Game from '../Models/Game';
 import Errors from '../Models/Errors';
-
 require('dotenv').config();
 
 const router = express.Router();
