@@ -2,8 +2,8 @@
 */
 import express from 'express';
 import os from 'os';
-import games from './games';
 import streams from './streams';
+import games from './gamesAPI';
 
 const router = express.Router();
 router.use((req, res, next) => {
