@@ -5,7 +5,8 @@ import apiMain from './api/apiMain';
 require('dotenv').config();
 
 const app = express();
-const port = process.env.PORT || 8080;
+
+const port = process.env.PORT || 8081;
 
 app.use(express.static('dist'));
 
@@ -21,4 +22,4 @@ app.use((req, res, next) => {
 // All API routing is handled through apiMain
 app.use('/api', apiMain);
 
-app.listen(port, () => console.log(`Listening on port ${port}!`));
+if (!module.parent) app.listen(port, () => console.log(`Listening on port ${port}!`));

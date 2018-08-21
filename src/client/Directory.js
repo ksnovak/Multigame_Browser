@@ -14,10 +14,6 @@ export default class App extends Component {
   }
 
   render() {
-    const divStyle = {
-      backgroundColor: 'DarkSeaGreen'
-    };
-
     return (
       <div className="directory col-sm-10 col-lg-9">
         {this.state.username ? (

@@ -4,7 +4,7 @@ import './OptionsPane.css';
 export default class App extends Component {
   constructor(props) {
     super(props);
-    this.state = { username: null };
+    this.state = {};
   }
 
   componentDidMount() {
