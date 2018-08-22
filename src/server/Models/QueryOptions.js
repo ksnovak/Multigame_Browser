@@ -11,7 +11,10 @@ const queryOptions = {
     before: { type: 'number' },
     after: { type: 'number' }
   },
-  '/games/specific': {}
+  '/games/specific': {
+    id: { type: 'number', duplicate: true },
+    name: { duplicate: true }
+  }
 };
 
 module.exports = {
@@ -52,10 +55,13 @@ module.exports = {
             if (Array.isArray(tempVal)) {
               [cleanedVal] = tempVal;
             }
+          } else {
+            cleanedVal = cleanedVal || paramVal;
           }
 
           // Finishing; if there is a valid value at the end of everything, add it to the cleanedParams object
           if (cleanedVal) {
+            console.log('yes cleaned val');
             // If the param doesn't exist yet, simply set it.
             if (!cleanedParams[cleanedName]) {
               cleanedParams[cleanedName] = cleanedVal;
