@@ -4,7 +4,7 @@ import express from 'express';
 import os from 'os';
 import chalk from 'chalk';
 import games from './games';
-// import streams from './streams';
+import streams from './streams';
 
 const router = express.Router();
 
@@ -21,7 +21,7 @@ router.use((req, res, next) => {
 // Separate router files for Games and Streams
 // Note this regex allows case-insensitive, as well as either "game" or "games" to work
 router.use(/\/api\/game(s)?/i, games);
-// router.use(/\/api\/stream(s)?/i, streams);
+router.use(/\/api\/stream(s)?/i, streams);
 
 // Routes for api specifically
 router.get('/api/', (req, res) => {

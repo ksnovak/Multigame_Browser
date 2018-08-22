@@ -14,6 +14,19 @@ const queryOptions = {
   '/games/specific': {
     id: { type: 'number', duplicate: true },
     name: { duplicate: true }
+  },
+  '/streams/details': {
+    id: { type: 'number', duplicate: true },
+    login: { duplicate: true }
+  },
+  '/streams/games': {
+    first: { type: 'number' },
+    before: { type: 'number' },
+    after: { type: 'number' },
+    game_id: { type: 'number', duplicate: true },
+    language: { duplicate: true },
+    user_id: { type: 'number', duplicate: true },
+    user_login: { duplicate: true }
   }
 };
 
