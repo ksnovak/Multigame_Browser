@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './OptionsPane.css';
+import PropTypes from 'prop-types';
 import GamesList from './GamesList';
 import TextList from './TextList';
 import TopButtons from './TopButtons';
@@ -12,27 +13,30 @@ export default class OptionsPane extends Component {
   }
 
   render() {
+    const {
+      languages, includeTop, games, include, exclude
+    } = this.props;
     return (
       <div className="optionsPane col-sm-2 col-lg-3">
         <TopButtons />
 
         <OptionsButtons
-          englishOnly={this.props.languages == 'en'}
-          includeTop={this.props.includeTop}
+          englishOnly={languages.includes('en')}
+          includeTop={includeTop}
         />
 
-        <GamesList games={this.props.games} />
+        <GamesList games={games} />
 
         <TextList
           id="includeList"
           label="Include these users: "
-          list={this.props.include}
+          list={include}
         />
 
         <TextList
           id="excludeList"
           label="Exclude these users: "
-          list={this.props.exclude}
+          list={exclude}
         />
 
         <GithubButtons />
@@ -40,3 +44,14 @@ export default class OptionsPane extends Component {
     );
   }
 }
+OptionsPane.propTypes = {
+  languages: PropTypes.arrayOf(PropTypes.string).isRequired,
+  includeTop: PropTypes.bool.isRequired,
+  games: PropTypes.arrayOf(PropTypes.object),
+  include: PropTypes.arrayOf(PropTypes.object).isRequired,
+  exclude: PropTypes.arrayOf(PropTypes.object).isRequired
+};
+
+OptionsPane.defaultProps = {
+  games: null
+};

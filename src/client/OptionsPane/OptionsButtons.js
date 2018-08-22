@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './OptionsPane.css';
+import PropTypes from 'prop-types';
 
 export default class OptionsButtons extends Component {
   componentDidMount() {
@@ -35,3 +36,8 @@ export default class OptionsButtons extends Component {
     );
   }
 }
+
+OptionsButtons.defaultProps = {
+  englishOnly: true,
+  includeTop: false
+};

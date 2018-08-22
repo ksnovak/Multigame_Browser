@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './OptionsPane.css';
+import PropTypes from 'prop-types';
 
 export default class GamesList extends Component {
   componentDidMount() {
@@ -22,3 +23,11 @@ export default class GamesList extends Component {
     return <select id="gameList" multiple="multiple" size="10" />;
   }
 }
+
+GamesList.propTypes = {
+  games: PropTypes.arrayOf(PropTypes.object)
+};
+
+GamesList.defaultProps = {
+  games: null
+};

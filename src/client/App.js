@@ -8,7 +8,7 @@ export default class App extends Component {
     super(props);
     this.state = {
       games: null,
-      streams: null,
+      // streams: null,
       include: [],
       exclude: [],
       languages: [],
@@ -25,14 +25,17 @@ export default class App extends Component {
   }
 
   render() {
+    const {
+      games, include, exclude, languages, includeTop
+    } = this.state;
     return (
       <div id="home" className="row">
         <OptionsPane
-          games={this.state.games}
-          include={this.state.include}
-          exclude={this.state.exclude}
-          languages={this.state.languages}
-          includeTop={this.state.includeTop}
+          games={games}
+          include={include}
+          exclude={exclude}
+          languages={languages}
+          includeTop={includeTop}
         />
 
         <Directory />
