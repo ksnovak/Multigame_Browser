@@ -8,7 +8,7 @@ export default class GithubButtons extends Component {
 
   render() {
     return (
-      <div id="gitButtons">
+      <div className="buttonSet">
         <a
           href="https://github.com/ksnovak/Multigame_Browser"
           target="_blank"

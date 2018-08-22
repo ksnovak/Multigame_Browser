@@ -11,27 +11,29 @@ export default class OptionsButtons extends Component {
     const { englishOnly, includeTop } = this.props;
 
     return (
-      <div id="optionsButtons">
-        <label className="custom-control-label" htmlFor="englishOnly">
-          <input
-            className="custom-control-input"
-            id="englishOnly"
-            type="checkbox"
-            checked={englishOnly}
-          />
-					English only?
-        </label>
-        <br />
+      <div id="optionsButtons" className="custom-checkbox">
+        <div className="custom-control">
+          <label className="custom-control-label" htmlFor="englishOnly">
+            <input
+              className="custom-control-input"
+              id="englishOnly"
+              type="checkbox"
+              checked={englishOnly}
+            />
+						English only?
+          </label>
+          <br />
 
-        <label className="custom-control-label" htmlFor="includeTop">
-          <input
-            className="custom-control-input"
-            id="includeTop"
-            type="checkbox"
-            checked={includeTop}
-          />
-					Include Top games?
-        </label>
+          <label className="custom-control-label" htmlFor="includeTop">
+            <input
+              className="custom-control-input"
+              id="includeTop"
+              type="checkbox"
+              checked={includeTop}
+            />
+						Include Top games?
+          </label>
+        </div>
       </div>
     );
   }

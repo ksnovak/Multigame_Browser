@@ -8,7 +8,7 @@ export default class MajorButton extends Component {
 
   render() {
     return (
-      <div id="topButtons">
+      <div id="topButtons" className="buttonSet">
         <a href="/" id="home" className="btn btn-info" role="button">
 					Home
         </a>
