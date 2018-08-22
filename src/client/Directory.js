@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './Directory.css';
 
-export default class App extends Component {
+export default class Directory extends Component {
   constructor(props) {
     super(props);
     this.state = { username: null };

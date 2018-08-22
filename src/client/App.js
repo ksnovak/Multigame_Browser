@@ -6,15 +6,34 @@ import Directory from './Directory';
 export default class App extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      games: null,
+      streams: null,
+      include: [],
+      exclude: [],
+      languages: [],
+      includeTop: true
+    };
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    fetch('/api/games/top?first=10')
+      .then(res => res.json())
+      .then((games) => {
+        this.setState({ games });
+      });
+  }
 
   render() {
     return (
       <div id="home" className="row">
-        <OptionsPane />
+        <OptionsPane
+          games={this.state.games}
+          include={this.state.include}
+          exclude={this.state.exclude}
+          languages={this.state.languages}
+          includeTop={this.state.includeTop}
+        />
 
         <Directory />
       </div>
