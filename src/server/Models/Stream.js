@@ -28,23 +28,27 @@
 */
 
 module.exports = class Stream {
-  constructor(stream) {
-    console.log(stream);
-    if (stream) {
-      this.id = Number(stream.id);
-      this.user_id = Number(stream.user_id || stream.id); // The two Twitch calls return different objects to mean the same thing. In the main one, it's user_id; in the details one, it's just id.
-      this.title = stream.title;
-      this.viewer_count = stream.viewer_count;
-      this.game_id = Number(stream.game_id);
-      this.thumbnail_url = stream.thumbnail_url;
+  constructor({
+    id,
+    user_id,
+    title,
+    viewer_count,
+    game_id,
+    thumbnail_url,
+    login
+  }) {
+    this.id = Number(id);
+    this.user_id = Number(user_id || id); // The two Twitch calls return different objects to mean the same thing. In the main one, it's user_id; in the details one, it's just id.
+    this.title = title;
+    this.viewer_count = viewer_count;
+    this.game_id = Number(game_id);
+    this.thumbnail_url = thumbnail_url;
 
-      if (stream.login) {
-        this.login = stream.login;
-      } else if (this.thumbnail_url) {
-        this.login = this.setNameFromThumbnail();
-      }
+    if (login) {
+      this.login = login;
+    } else if (this.thumbnail_url) {
+      this.login = this.setNameFromThumbnail();
     }
-    // console.log(this);
   }
 
   setNameFromThumbnail() {
