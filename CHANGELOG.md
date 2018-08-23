@@ -12,15 +12,38 @@
 
 ### Personal
 
-## 0.2.0 - Thurs, Aug 16, 2018 - Build the foundation (usage)
+## 0.2.0 - Tues, Aug 21, 2018 - Build the foundation (usage)
 
-Now that the details for deploying the app are out of the way, there's foundation within the app needed to be done.
+### Overview
 
-- [ ] Remove all boilerplate code, add in extreme barebones details for our own site
-- [ ] Add in Twitch oauth. I want to have this integrated from the beginning, because it will determine if we need a...
-- [ ] Database? Likely will need this eventually. Might as well see about doing it sooner.
-- [ ] Caching? This can save a lot of api calls. Which will be highly needed if this is going to be public.
-- [ ] Go to the Twitch dev center and see what's needed for the callback URL.
+Two major things done this time: API firmly established, and the Options panel visuals all set up.
+
+### Added
+
+- API calls, properly going through Twitch and returning our own Objects
+- Top games, Specific games, Streams by game, and Stream details
+- These are all very Dumb. They just get the data, turn it into our objects, and return it. There is no intelligent collation, and they are all just the foundation
+- A lot of effort was put into validation params, making sure that we don't send anything bad to Twitch. But this was all home-rolled, we should realistically be using a 3rd party tool
+
+- Options panel visuals
+- Done with React
+- All of the fields that existed in the old Implementation are present now. They all properly bubble data down from the parents to children
+- They do not, however, bubble back up. And no requests really get made.
+
+- Currently the client just makes a single API call, just getting the list of Top Games to populate our multi-select, just as a "proof of concept" thing.
+
+- Added some very basic error handling, and setup for different Error types
+
+### Changed
+
+- Changed a lot of nomeclature of "API" -> "Router" to make it more flexible for later.
+
+### Personal
+
+- I got frustrated trying to learn about doing oauth logins. I really wanted to have this in from the beginning. I know it's going to bite me later. But I gave up on it for now.
+- I decided to spend the day ignoring the existence of unit tests. I'm going to work hard on them tomorrow, but I regret not doing it immediately.
+- I learned a lot about planning out object validation with this hacky home-brewed version.
+- React is starting to make a lot more sense, but it's still really boggling. I read an article on DEV about it that I really liked: https://dev.to/aberezkin/react-the-key-points--4h83
 
 ## 0.1.0 - Wed, Aug 15, 2018 - Built the foundation (deployment)
 
@@ -50,8 +73,6 @@ I had previously spent a bunch of time trying to build this directory, but ran i
 ### Added
 
 - [crsandeep](https://github.com/crsandeep)'s [Simple react full-stack](https://github.com/crsandeep/simple-react-full-stack) boilerplate for an app that simultaneously runs React & Express, and has a bunch of other important features like Webpacck implemented
-
-### Changed
 
 ### Removed
 
