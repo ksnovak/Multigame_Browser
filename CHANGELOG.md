@@ -12,6 +12,28 @@
 
 ### Personal
 
+## 0.2.1 - Fri, Aug 24, 2018 - Build the foundation (testing)
+
+### Overview
+
+I wanted to establish a decent set of tests before continuing with anything else, so that's what's done in here.
+
+### Added
+
+- Testing on all of the API routes, covering the major cases.
+- Filling out the Error classes
+
+### Changed
+
+- A lot of work with the Twitch API calls. Moved things to be more generic wherever possible
+- In the case of certain API calls that are looking for specific things (e.g. details on specific games, or list of streamers for specific games), added a shortcut that skips the call to Twitch if nothing is specified.
+- Actually incremented package.json version
+
+### Personal
+
+Something that I was hoping to figure out but couldn't, was a way for a Mocha test to "warn" instead of being pass/fail. There are some tests that we have, that are on kind of shaky ground, and I don't want the entire suite to fail if those specific ones go wrong. I found something from a REALLY old thread that might be a solution: [mocha test/allowed-failures || true](https://github.com/mochajs/mocha/issues/1480#issuecomment-93861957), whereas all of the "wonky" tests are stored in that file. Will have to look into that in the future, as we run into issues with the wonky ones.
+I also discovered the existence of pre-commit hooks, and am curious about using those to make sure tests pass before committing. But didn't dedicate time to doing that, because it requires some bash scripts.
+
 ## 0.2.0 - Tues, Aug 21, 2018 - Build the foundation (usage)
 
 ### Overview
