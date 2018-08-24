@@ -27,6 +27,10 @@ const queryOptions = {
     language: { duplicate: true },
     user_id: { type: 'number', duplicate: true },
     user_login: { duplicate: true }
+  },
+  '/streams/top': {
+    first: { type: 'number' },
+    language: { duplicate: true }
   }
 };
 

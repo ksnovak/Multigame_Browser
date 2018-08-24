@@ -18,7 +18,8 @@ const baseRequest = request.defaults({
 
 const twitchEndpoints = {
   '/details': 'helix/users',
-  '/games': 'helix/streams'
+  '/games': 'helix/streams',
+  '/top': 'helix/streams'
 };
 
 function streamsFromData(body) {
@@ -40,23 +41,28 @@ function makeGameRequest(req, res, next) {
     req.query
   );
 
-  baseRequest.get(
-    {
-      uri: twitchEndpoints[localEndpoint],
-      qs: options
-    },
-    (error, response, body) => {
-      if (error) {
-        next(error);
-      } else {
-        try {
-          res.send(streamsFromData(body));
-        } catch (err) {
-          next(err);
+  // Make sure that a game or user was specified. If not, return early with nothing.
+  if (!(options.game_id || options.user_id || options.user_login)) {
+    res.send([]);
+  } else {
+    baseRequest.get(
+      {
+        uri: twitchEndpoints[localEndpoint],
+        qs: options
+      },
+      (error, response, body) => {
+        if (error) {
+          next(error);
+        } else {
+          try {
+            res.send(streamsFromData(body));
+          } catch (err) {
+            next(err);
+          }
         }
       }
-    }
-  );
+    );
+  }
 }
 
 /* Get details for specified users (Note: This even gets details on offline users)
@@ -71,5 +77,7 @@ router.get('/details', makeGameRequest);
     https://dev.twitch.tv/docs/api/reference/#get-streams
 */
 router.get('/games', makeGameRequest);
+
+router.get('/top', makeGameRequest);
 
 module.exports = router;
