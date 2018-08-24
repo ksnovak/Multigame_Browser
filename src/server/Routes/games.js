@@ -22,11 +22,7 @@ const baseRequest = request.defaults({
 
 function gamesFromData(body) {
   try {
-    const parsedBody = JSON.parse(body);
-
-    if (parsedBody.error) throw parsedBody.error;
-
-    return parsedBody.data.map(game => new Game(game));
+    return body.data.map(game => new Game(game));
   } catch (ex) {
     throw ex;
   }
@@ -50,11 +46,15 @@ function makeGameRequest(req, res, next) {
       qs: options
     },
     (error, response, body) => {
-      if (error) {
+      // Note that an actual "error" object is largely unexpected. Twitch will send back an error in the body object.
+      const jsonData = JSON.parse(body);
+      if (jsonData.error) {
+        next(Errors.twitchError(jsonData.error.message));
+      } else if (error) {
         next(error);
       } else {
         try {
-          res.send(gamesFromData(body));
+          res.send(gamesFromData(jsonData));
         } catch (err) {
           next(err);
         }
