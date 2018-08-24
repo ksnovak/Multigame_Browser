@@ -1,8 +1,9 @@
 /* All of the different errors that're expected to be thrown within the system
 
 */
-function newError(name, message) {
+function newError({ name, code, message }) {
   const err = new Error(message);
+  err.code = code;
   err.name = name;
 
   return err;
@@ -10,19 +11,28 @@ function newError(name, message) {
 
 module.exports = {
   // Standard errors
-  genericError: newError(500, 'Something went wrong'),
-  fileNotFound: newError(404, 'File not found'),
-  badRequest: newError(400, 'Bad request'),
-  unauthorized: newError(401, 'Not authorized to view that'),
-  timeout: newError(408, 'Request took too long'),
-  notYetImplemented: newError(501, 'That is not yet implemented``'),
+  genericError: newError({ code: 500, message: 'Something went wrong' }),
+  fileNotFound: newError({ code: 404, message: 'File not found' }),
+  badRequest: newError({ code: 400, message: 'Bad request' }),
+  unauthorized: newError({ code: 401, message: 'Not authorized to view that' }),
+  timeout: newError({ code: 408, message: 'Request took too long' }),
+  notYetImplemented: newError({
+    code: 501,
+    message: 'That is not yet implemented``'
+  }),
 
   // Unique
-  malformedFile: newError('malformedFile', 'File is malformed'),
-  malformedObject: newError('malformedObject', 'Object is malformed'),
+  malformedFile: newError({
+    name: 'malformedFile',
+    message: 'File is malformed'
+  }),
+  malformedObject: newError({
+    name: 'malformedObject',
+    message: 'Object is malformed'
+  }),
 
   // Error received from Twitch servers
   twitchError(message) {
-    return newError('twitch', message);
+    return newError({ name: 'twitch', message });
   }
 };

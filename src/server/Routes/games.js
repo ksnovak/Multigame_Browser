@@ -49,7 +49,12 @@ function makeGameRequest(req, res, next) {
       // Note that an actual "error" object is largely unexpected. Twitch will send back an error in the body object.
       const jsonData = JSON.parse(body);
       if (jsonData.error) {
-        next(Errors.twitchError(jsonData.error.message));
+        next(
+          Errors.twitchError({
+            code: jsonData.error.status,
+            message: jsonData.error.message
+          })
+        );
       } else if (error) {
         next(error);
       } else {

@@ -46,8 +46,8 @@ router.use((err, req, res, next) => {
   let status = 500;
   let message = err;
 
-  // If the "name" is a number, then it's a proper HTTP error, so react accordingly
-  if (!isNaN(err.name)) {
+  // If the error comes with a specific code, then that makes it a proper HTTP error.
+  if (err.code) {
     status = Number(err.name);
     message = err.message;
   }
