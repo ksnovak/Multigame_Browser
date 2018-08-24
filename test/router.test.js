@@ -81,8 +81,10 @@ describe('Router', function () {
             if (err) {
               done(err);
             }
-            res.should.have.status(400);
-            res.body.should.be.empty;
+
+            expect(res.body)
+              .to.be.an('array')
+              .with.lengthOf(0);
             done();
           }
         });

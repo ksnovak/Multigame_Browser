@@ -48,19 +48,29 @@ router.get('/top', (req, res, next) => {
     https://dev.twitch.tv/docs/api/reference/#get-games
 */
 router.get('/specific', (req, res, next) => {
-  RoutesUtils.commonTwitchRequest({
-    uri: '/helix/games/',
-    qs: QueryOptions.getValidQueryOptions('/games/specific', req.query),
-    rejectErrors: true,
-    next,
-    onResponse: (error, response, jsonData) => {
-      try {
-        res.send(gamesFromData(jsonData));
-      } catch (err) {
-        next(err);
+  const options = QueryOptions.getValidQueryOptions(
+    '/games/specific',
+    req.query
+  );
+
+  // If no IDs or names were passed, just return early with nothing.
+  if (!options.id && !options.name) {
+    res.send([]);
+  } else {
+    RoutesUtils.commonTwitchRequest({
+      uri: '/helix/games/',
+      qs: options,
+      rejectErrors: true,
+      next,
+      onResponse: (error, response, jsonData) => {
+        try {
+          res.send(gamesFromData(jsonData));
+        } catch (err) {
+          next(err);
+        }
       }
-    }
-  });
+    });
+  }
 });
 
 module.exports = router;
