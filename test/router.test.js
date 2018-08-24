@@ -163,5 +163,127 @@ describe('Router', function () {
     });
   });
 
-  describe.skip('Streams', () => {});
+  describe('Streams', () => {
+    describe('/streams/top', () => {
+      const url = '/api/streams/top';
+      it('Gets the top overall streams', (done) => {
+        commonRequest({
+          url,
+          rejectErrors: true,
+          done,
+          onSuccess: (err, res) => {
+            res.body.should.be.an('array').and.have.lengthOf(20);
+            done();
+          }
+        });
+      });
+      it("Accepts 'first' to reduce the number of streams", (done) => {
+        const first = 7;
+        commonRequest({
+          url,
+          query: { first },
+          rejectErrors: true,
+          done,
+          onSuccess: (err, res) => {
+            res.body.should.be.an('array').and.have.lengthOf(first);
+            done();
+          }
+        });
+      });
+    });
+    describe('/streams/games', () => {
+      const url = '/api/streams/games';
+      const alwaysOn = 499973;
+      const creative = 488191;
+      it('Returns nothing with no games specified', (done) => {
+        commonRequest({
+          url,
+          rejectErrors: true,
+          done,
+          onSuccess: (err, res) => {
+            res.body.should.be.an('array').and.have.lengthOf(0);
+
+            done();
+          }
+        });
+      });
+      it('Gets streamers by game ID', (done) => {
+        commonRequest({
+          url,
+          query: { game_id: alwaysOn }, // Always On
+          rejectErrors: true,
+          done,
+          onSuccess: (err, res) => {
+            res.body.should.be.an('array').and.have.lengthOf.above(0);
+            done();
+          }
+        });
+      });
+      it('Accepts multiple games (awkward test)', (done) => {
+        const gameIDs = [creative, alwaysOn];
+        commonRequest({
+          url,
+          query: { game_id: gameIDs },
+          rejectErrors: true,
+          done,
+          onSuccess: (err, res) => {
+            let gotCreative = false;
+            let gotAlwaysOn = false;
+
+            res.body.forEach((stream) => {
+              if (stream.game_id === gameIDs[0]) {
+                gotCreative = true;
+              } else if (stream.game_id === gameIDs[1]) {
+                gotAlwaysOn = true;
+              }
+            });
+
+            expect(gotCreative).to.be.true;
+            expect(gotAlwaysOn).to.be.true;
+            done();
+          }
+        });
+      });
+      it("Allows 'first' to reduce the number of streams", (done) => {
+        const first = 2;
+        commonRequest({
+          url,
+          query: { game_id: alwaysOn, first },
+          rejectErrors: true,
+          done,
+          onSuccess: (err, res) => {
+            res.body.should.be.an('array').and.have.lengthOf(first);
+            done();
+          }
+        });
+      });
+
+      it("Allows 'language' to filter out certain languages", (done) => {
+
+        //This is an awkward test. Making two calls, one nested, and testing that they have different results.
+        commonRequest({
+          url,
+          query: { game_id: alwaysOn },
+          rejectErrors: true,
+          done,
+          onSuccess: (err, res) => {
+            const results = res.body;
+
+            commonRequest({
+              url,
+              query: { game_id: alwaysOn, language: 'es' },
+              rejectErrors: true,
+              done,
+              onSuccess: (err, res) => {
+                expect(results).to.not.deep.equal(res.body);
+                done();
+              }
+            });
+          }
+        });
+      });
+    });
+
+    describe('/streams/details', () => {});
+  });
 });
