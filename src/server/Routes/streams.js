@@ -16,12 +16,6 @@ const baseRequest = request.defaults({
   baseUrl: 'https://api.twitch.tv'
 });
 
-const twitchEndpoints = {
-  '/details': 'helix/users',
-  '/games': 'helix/streams',
-  '/top': 'helix/streams'
-};
-
 function streamsFromData(body) {
   try {
     const parsedBody = JSON.parse(body);
@@ -34,10 +28,59 @@ function streamsFromData(body) {
   }
 }
 
-function makeGameRequest(req, res, next) {
-  const localEndpoint = req.route.path;
+function commonRequest({
+  uri, qs, onResponse, rejectErrors, next
+}) {
+  baseRequest.get({ uri, qs }, (error, response, body) => {
+    if (!error && body) {
+      error = JSON.parse(body).error;
+    }
+
+    // If an error occurs, and the flag is set to automatically reject errors, then do so:
+    if (rejectErrors && next && error) {
+      if (error) {
+        next(error);
+      } else {
+        const parsed = JSON.parse(body);
+        if (parsed.error) {
+          next(parsed.error);
+        }
+      }
+    } else {
+      // Otherwise, return everything to the caller:
+      onResponse(error, response, body);
+    }
+  });
+}
+
+/* Get details for specified users (Note: This even gets details on offline users)
+    Querystring params: id, login
+    https://dev.twitch.tv/docs/api/reference/#get-users
+*/
+router.get('/details', (req, res, next) => {
+  commonRequest({
+    uri: '/helix/users',
+    qs: QueryOptions.getValidQueryOptions('/streams/details', req.query),
+    rejectErrors: true,
+    next,
+    onResponse: (error, response, body) => {
+      try {
+        res.send(streamsFromData(body));
+      } catch (err) {
+        next(err);
+      }
+    }
+  });
+});
+
+/* Get list of live streams for specified games
+    Querystring params: game_id, language, first
+    WARNING: You can specify either the game, or the streamer. If you do both, it returns an inner join basically (all of the specified people, streaming the specified games)
+    https://dev.twitch.tv/docs/api/reference/#get-streams
+*/
+router.get('/games', (req, res, next) => {
   const options = QueryOptions.getValidQueryOptions(
-    `/streams${localEndpoint}`,
+    '/streams/games',
     req.query
   );
 
@@ -45,39 +88,36 @@ function makeGameRequest(req, res, next) {
   if (!(options.game_id || options.user_id || options.user_login)) {
     res.send([]);
   } else {
-    baseRequest.get(
-      {
-        uri: twitchEndpoints[localEndpoint],
-        qs: options
-      },
-      (error, response, body) => {
-        if (error) {
-          next(error);
-        } else {
-          try {
-            res.send(streamsFromData(body));
-          } catch (err) {
-            next(err);
-          }
+    commonRequest({
+      uri: '/helix/streams',
+      qs: options,
+      rejectErrors: true,
+      next,
+      onResponse: (error, response, body) => {
+        try {
+          res.send(streamsFromData(body));
+        } catch (err) {
+          next(err);
         }
       }
-    );
+    });
   }
-}
+});
 
-/* Get details for specified users (Note: This even gets details on offline users)
-    Querystring params: id, login
-    https://dev.twitch.tv/docs/api/reference/#get-users
-*/
-router.get('/details', makeGameRequest);
-
-/* Get list of live streams for specified games
-    Querystring params: game_id, language, first
-    WARNING: You can specify either the game, or the streamer. If you do both, it returns an inner join basically (all of the specified people, streaming the specified games)
-    https://dev.twitch.tv/docs/api/reference/#get-streams
-*/
-router.get('/games', makeGameRequest);
-
-router.get('/top', makeGameRequest);
+router.get('/top', (req, res, next) => {
+  commonRequest({
+    uri: '/helix/streams',
+    qs: QueryOptions.getValidQueryOptions('/streams/top', req.query),
+    rejectErrors: true,
+    next,
+    onResponse: (error, response, body) => {
+      try {
+        res.send(streamsFromData(body));
+      } catch (err) {
+        next(err);
+      }
+    }
+  });
+});
 
 module.exports = router;
