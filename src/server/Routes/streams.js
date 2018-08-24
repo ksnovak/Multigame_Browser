@@ -1,56 +1,18 @@
 import express from 'express';
-import request from 'request';
 import Stream from '../Models/Stream';
-import Errors from '../Models/Errors';
 import QueryOptions from '../Models/QueryOptions';
-
-require('dotenv').config();
+import RoutesUtils from './routeUtils';
 
 const router = express.Router();
 
-const baseRequest = request.defaults({
-  headers: {
-    'Client-ID': process.env.TWITCH_CLIENT_ID,
-    Authorization: `Bearer ${process.env.TWITCH_CLIENT_SECRET}`
-  },
-  baseUrl: 'https://api.twitch.tv'
-});
-
-function streamsFromData(body) {
+function streamsFromData(jsonData) {
   try {
-    const parsedBody = JSON.parse(body);
+    if (jsonData.error) throw jsonData.error;
 
-    if (parsedBody.error) throw parsedBody.error;
-
-    return parsedBody.data.map(stream => new Stream(stream));
+    return jsonData.data.map(stream => new Stream(stream));
   } catch (ex) {
     throw ex;
   }
-}
-
-function commonRequest({
-  uri, qs, onResponse, rejectErrors, next
-}) {
-  baseRequest.get({ uri, qs }, (error, response, body) => {
-    if (!error && body) {
-      error = JSON.parse(body).error;
-    }
-
-    // If an error occurs, and the flag is set to automatically reject errors, then do so:
-    if (rejectErrors && next && error) {
-      if (error) {
-        next(error);
-      } else {
-        const parsed = JSON.parse(body);
-        if (parsed.error) {
-          next(parsed.error);
-        }
-      }
-    } else {
-      // Otherwise, return everything to the caller:
-      onResponse(error, response, body);
-    }
-  });
 }
 
 /* Get details for specified users (Note: This even gets details on offline users)
@@ -58,14 +20,14 @@ function commonRequest({
     https://dev.twitch.tv/docs/api/reference/#get-users
 */
 router.get('/details', (req, res, next) => {
-  commonRequest({
+  RoutesUtils.commonTwitchRequest({
     uri: '/helix/users',
     qs: QueryOptions.getValidQueryOptions('/streams/details', req.query),
     rejectErrors: true,
     next,
-    onResponse: (error, response, body) => {
+    onResponse: (error, response, jsonData) => {
       try {
-        res.send(streamsFromData(body));
+        res.send(streamsFromData(jsonData));
       } catch (err) {
         next(err);
       }
@@ -88,14 +50,14 @@ router.get('/games', (req, res, next) => {
   if (!(options.game_id || options.user_id || options.user_login)) {
     res.send([]);
   } else {
-    commonRequest({
+    RoutesUtils.commonTwitchRequest({
       uri: '/helix/streams',
       qs: options,
       rejectErrors: true,
       next,
-      onResponse: (error, response, body) => {
+      onResponse: (error, response, jsonData) => {
         try {
-          res.send(streamsFromData(body));
+          res.send(streamsFromData(jsonData));
         } catch (err) {
           next(err);
         }
@@ -105,14 +67,14 @@ router.get('/games', (req, res, next) => {
 });
 
 router.get('/top', (req, res, next) => {
-  commonRequest({
+  RoutesUtils.commonTwitchRequest({
     uri: '/helix/streams',
     qs: QueryOptions.getValidQueryOptions('/streams/top', req.query),
     rejectErrors: true,
     next,
-    onResponse: (error, response, body) => {
+    onResponse: (error, response, jsonData) => {
       try {
-        res.send(streamsFromData(body));
+        res.send(streamsFromData(jsonData));
       } catch (err) {
         next(err);
       }
