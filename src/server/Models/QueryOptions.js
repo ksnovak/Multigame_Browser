@@ -27,6 +27,10 @@ const queryOptions = {
     language: { duplicate: true },
     user_id: { type: 'number', duplicate: true },
     user_login: { duplicate: true }
+  },
+  '/streams/top': {
+    first: { type: 'number' },
+    language: { duplicate: true }
   }
 };
 
@@ -74,7 +78,6 @@ module.exports = {
 
           // Finishing; if there is a valid value at the end of everything, add it to the cleanedParams object
           if (cleanedVal) {
-            console.log('yes cleaned val');
             // If the param doesn't exist yet, simply set it.
             if (!cleanedParams[cleanedName]) {
               cleanedParams[cleanedName] = cleanedVal;

@@ -1,6 +1,6 @@
 {
 	"name": "multigame_browser",
-	"version": "0.1.0",
+	"version": "0.2.1",
 	"description": "Directory for streams of multiple games on Twitch.",
 	"main": "src/server/server.js",
 	"scripts": {
@@ -11,7 +11,8 @@
 		"dev": "concurrently \"npm run server\" \"npm run client\"",
 		"herokuDeploy": "npm run build & npm run start",
 		"test": "mocha",
-		"test:min": "mocha --reporter dot"
+		"test:min": "mocha -R mocha-fivemat-reporter",
+		"test:watch": "mocha --watch"
 	},
 	"repository": {
 		"type": "git",
@@ -39,6 +40,8 @@
 		"babel-preset-env": "^1.6.1",
 		"babel-preset-react": "^6.24.1",
 		"chai": "^4.1.2",
+		"chai-as-promised": "^7.1.1",
+		"chai-http": "^4.0.0",
 		"clean-webpack-plugin": "^0.1.19",
 		"concurrently": "^3.5.1",
 		"css-loader": "^1.0.0",
@@ -50,6 +53,8 @@
 		"file-loader": "^1.1.11",
 		"html-webpack-plugin": "^3.2.0",
 		"mocha": "^5.2.0",
+		"mocha-clean": "^1.0.0",
+		"mocha-fivemat-reporter": "0.0.9",
 		"nodemon": "^1.17.3",
 		"style-loader": "^0.22.0",
 		"url-loader": "^1.0.1",
