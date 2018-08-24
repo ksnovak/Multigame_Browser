@@ -10,6 +10,17 @@ process.env.NODE_ENV = 'test';
 const should = chai.should();
 chai.use(chaiHttp);
 
+// All requests made have some very common functionality, reducec the repetition.
+function commonRequest(url, query, results) {
+  chai
+    .request(app)
+    .get(url)
+    .query(query)
+    .end((err, res) => {
+      results(err, res);
+    });
+}
+
 describe('Router', () => {
   it('Gets a response from the server', () => {
     chai
@@ -26,57 +37,105 @@ describe('Router', () => {
 
   describe('Games', () => {
     describe('/games/top', () => {
+      const url = '/api/games/top';
       it('Gets top 20 games by default', (done) => {
-        chai
-          .request(app)
-          .get('/api/games/top')
-          .end((err, res) => {
-            if (err || res.err) {
-              done(err || res.err);
-            } else {
-              // WARNING: This is a really weird hacky situation. For some reason, twitch API inconsistently sends either 19 or 20.
-              //   console.log(`${chalk.green('Note:')} got ${res.body.length} from /games/top`);
-              res.body.should.be.an('array').and.have.lengthOf.within(19, 20);
-              done();
-            }
-          });
+        commonRequest(url, {}, (err, res) => {
+          if (err || res.err) {
+            done(err || res.err);
+          } else {
+            res.body.should.be.an('array').and.have.lengthOf.within(19, 20);
+            done();
+          }
+        });
       });
 
       const first = 4;
       it(`Gets the specified ${first} top games`, (done) => {
-        chai
-          .request(app)
-          .get('/api/games/top')
-          .query({ first })
-          .end((err, res) => {
-            if (err || res.err) {
-              done(err || res.err);
-            } else {
-              res.body.should.be.an('array').and.have.lengthOf(first);
-              done();
-            }
-          });
+        commonRequest(url, { first }, (err, res) => {
+          if (err || res.err) {
+            done(err || res.err);
+          } else {
+            res.body.should.be.an('array').and.have.lengthOf(first);
+            done();
+          }
+        });
       });
     });
 
-    describe.only('/games/specific', () => {
+    describe('/games/specific', () => {
+      const url = '/api/games/specific';
       it('Returns nothing with no games specified', (done) => {
-        chai
-          .request(app)
-          .get('/api/games/specific')
-          .end((err, res) => {
-            if (err) {
-              done(err);
-            }
-            res.should.have.status(400);
-            expect(res.body).to.be.empty;
-            done();
-          });
+        commonRequest(url, {}, (err, res) => {
+          if (err) {
+            done(err);
+          }
+          res.should.have.status(400);
+          res.body.should.be.empty;
+          done();
+        });
       });
-      it('Accepts a game by name');
-      it('Accepts a game by ID');
-      it('Accepts multiple games');
-      it('Does not return partial matches');
+
+      it('Accepts a game by name', (done) => {
+        commonRequest(url, { name: 'rimworld' }, (err, res) => {
+          if (err) {
+            done(err);
+          }
+          res.should.have.status(200);
+          expect(res.body)
+            .to.be.an('array')
+            .with.lengthOf(1);
+          expect(res.body[0]).to.have.property('id', 394568);
+
+          done();
+        });
+      });
+      it('Accepts a game by ID', (done) => {
+        commonRequest(url, { id: 394568 }, (err, res) => {
+          if (err) {
+            done(err);
+          }
+
+          res.should.have.status(200);
+          expect(res.body)
+            .to.be.an('array')
+            .with.lengthOf(1);
+          expect(res.body[0]).to.have.property('name', 'RimWorld');
+
+          done();
+        });
+      });
+      it('Accepts multiple games', (done) => {
+        const gameNames = [
+          'Dead Cells', // Spaces in name
+          "Tom Clancy's Rainbow Six: Siege", // Apostrophe and Colon in name
+          'Dungeons & Dragons', // Ampersand in name
+          'Tidalis' // A game that is almost guaranteed to have no viewers (sorry, Arcen Games)
+        ];
+        commonRequest(url, { name: gameNames }, (err, res) => {
+          if (err) {
+            done(err);
+          }
+
+          res.should.have.status(200);
+          expect(res.body)
+            .to.be.an('array')
+            .with.lengthOf(gameNames.length);
+
+          done();
+        });
+      });
+      it('Does not return partial matches', (done) => {
+        commonRequest(url, { name: 'World of Wo' }, (err, res) => {
+          if (err) {
+            done(err);
+          }
+
+          expect(res.body)
+            .to.be.an('array')
+            .with.lengthOf(0);
+          done();
+        });
+      });
     });
   });
 
