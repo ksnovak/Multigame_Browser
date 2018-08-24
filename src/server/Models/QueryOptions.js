@@ -74,7 +74,6 @@ module.exports = {
 
           // Finishing; if there is a valid value at the end of everything, add it to the cleanedParams object
           if (cleanedVal) {
-            console.log('yes cleaned val');
             // If the param doesn't exist yet, simply set it.
             if (!cleanedParams[cleanedName]) {
               cleanedParams[cleanedName] = cleanedVal;

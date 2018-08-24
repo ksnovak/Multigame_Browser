@@ -5,16 +5,20 @@ import os from 'os';
 import chalk from 'chalk';
 import games from './games';
 import streams from './streams';
+import utils from '../../utils';
+import Errors from '../Models/Errors';
 
 const router = express.Router();
 
 // Initial middleware; notice that a request was made
 router.use((req, res, next) => {
-  console.log(
-    'Request for ',
-    chalk.blue(req._parsedUrl.pathname),
-    chalk.green(req._parsedUrl.search || '')
-  );
+  if (process.env.NODE_ENV == 'dev') {
+    console.log(
+      'Request for ',
+      chalk.blue(req._parsedUrl.pathname),
+      chalk.green(req._parsedUrl.search || '')
+    );
+  }
   next();
 });
 
@@ -34,9 +38,28 @@ router.get('/api/getUsername', (req, res) => {
 
 // Error-handling middleware; must be the last router function
 router.use((err, req, res, next) => {
-  console.log(chalk.red('Hit error handler'), err);
-  res.status(500);
-  res.send(`Error: ${err}`);
+  if (process.env.NODE_ENV == 'dev') {
+    console.log(chalk.red('Hit error handler: ') + err.name);
+    // console.error(err);
+  }
+
+  let status = 500;
+  let message = err;
+
+  // If the "name" is a number, then it's a proper HTTP error, so react accordingly
+  if (!isNaN(err.name)) {
+    status = Number(err.name);
+    message = err.message;
+  }
+  if (err.name === 'twitch') {
+    status = 400;
+    message = 'Error retrieving data from Twitch';
+  } else if (err === Errors.fileNotFound) {
+    status = 404;
+  }
+
+  res.status(status);
+  res.send(`Error: ${message}`);
 });
 
 module.exports = router;
