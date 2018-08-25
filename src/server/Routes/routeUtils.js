@@ -17,20 +17,12 @@ module.exports = {
     if (process.env.NODE_ENV === 'dev') {
       console.log('Generating new Bearer token');
     }
-    const results = await axios.post(
-      `https://id.twitch.tv/oauth2/token?client_id=${
-        process.env.TWITCH_CLIENT_ID
-      }&client_secret=${
-        process.env.TWITCH_CLIENT_SECRET
-      }&grant_type=client_credentials`
-    );
+    const results = await axios.post(`https://id.twitch.tv/oauth2/token?client_id=${process.env.TWITCH_CLIENT_ID}&client_secret=${process.env.TWITCH_CLIENT_SECRET}&grant_type=client_credentials`);
 
     this.updateBearerToken(results.data);
   },
 
-  async commonTwitchRequest({
-    uri, qs, onResponse, rejectErrors, next
-  }) {
+  async commonTwitchRequest({ uri, qs, onResponse, rejectErrors, next }) {
     // Get a bearer token if we don't have one; this allows 120 requests instead of 30 from Twitch
     if (this.isNewBearerTokenNeeded()) {
       await this.generateBearerToken();
@@ -39,33 +31,28 @@ module.exports = {
     // Check if we have exceeded our API rate limit. If so, immediately reject; otherwise, continue the request
     if (this.isRateLimitExceeded()) {
       next(Errors.tooManyRequests);
-    } else {
-      this.baseRequest
-        .get(uri, {
+    }
+    else {
+      try {
+        let results = await this.baseRequest.get(uri, {
           headers: { Authorization: `Bearer ${this.bearerToken.access_token}` },
           params: qs
         })
-        .then((response) => {
-          // Before anything else, update the rate limit details
-          this.updateRateLimit(response.headers);
 
-          onResponse(null, response, response.data);
-        })
-        .catch((error) => {
-          // If an error occurs, and the flag is set to automatically reject errors, then do so:
-          if (rejectErrors && next) {
-            next(
-              Errors.twitchError({
-                code: error.response.status,
-                message: error.response.statusText
-              })
-            );
-          }
-          // Otherwise, just hit the callback with the error object
-          else {
-            onResponse(error);
-          }
-        });
+        onResponse(null, results, results.data);
+        return results.data;
+
+      } catch (err) {
+        if (rejectErrors && next) {
+          if (err.response) //If this was an error from Twitch
+            next(Errors.twitchError({ code: err.response.status, message: err.response.statusText }));
+          else
+            next(Errors.genericError);
+        }
+        else {
+          onResponse(err)
+        }
+      }
     }
   },
 
@@ -99,7 +86,7 @@ module.exports = {
     // If the token isn't set, or if we've gone past the expire time, then we need to get a new token.
     return (
       this.bearerToken.access_token == null
-			|| Date.now() > this.bearerToken.expires_at
+      || Date.now() > this.bearerToken.expires_at
     );
   },
 
@@ -122,9 +109,9 @@ module.exports = {
     const timeTillReset = this.rateLimit.reset - parseInt(Date.now() / 1000);
     if (
       this.rateLimit.remaining != null
-			&& this.rateLimit.remaining < 1
-			&& this.rateLimit.reset != null
-			&& timeTillReset > 1
+      && this.rateLimit.remaining < 1
+      && this.rateLimit.reset != null
+      && timeTillReset > 1
     ) {
       return true;
     }
