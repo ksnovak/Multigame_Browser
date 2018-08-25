@@ -48,7 +48,7 @@ router.use((err, req, res, next) => {
 
   // If the error comes with a specific code, then that makes it a proper HTTP error.
   if (err.code) {
-    status = Number(err.name);
+    status = Number(err.code);
     message = err.message;
   }
   if (err.name === 'twitch') {
