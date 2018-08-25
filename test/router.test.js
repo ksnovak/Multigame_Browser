@@ -29,6 +29,13 @@ describe('Router', function () {
   // Define what a "slow" execution is. Because these tests all have to hit Twitch's API, they're expected to be slower than others
   this.slow(400);
 
+  //Some names/IDs used for multiple tests, for ease/consistenccy
+  let commonGames = {
+    rimworld: { name: 'RimWorld', id: 394568 },
+    alwaysOn: { name: 'Always On', id: 499973 },
+    creative: { name: 'Creative', id: 488191 }
+  }
+
   it('Gets a response from the server', (done) => {
     commonRequest({
       url: '/',
@@ -43,6 +50,7 @@ describe('Router', function () {
   });
 
   describe('Games', () => {
+
     describe('/games/top', () => {
       const url = '/api/games/top';
       //Awkward test because for some reason the Twitch API sometimes returns 1-too-few games in the /top list.
@@ -66,7 +74,7 @@ describe('Router', function () {
           rejectErrors: true,
           done,
           onSuccess: (err, res) => {
-            res.body.should.be.an('array').and.have.lengthOf(first);
+            res.body.should.be.an('array').and.have.lengthOf.within(first - 1, first);
             done();
           }
         });
@@ -94,7 +102,7 @@ describe('Router', function () {
       it('Accepts a game by name', (done) => {
         commonRequest({
           url,
-          query: { name: 'rimworld' },
+          query: { name: commonGames.rimworld.name },
           rejectErrors: true,
           done,
           onSuccess: (err, res) => {
@@ -102,7 +110,7 @@ describe('Router', function () {
             expect(res.body)
               .to.be.an('array')
               .with.lengthOf(1);
-            expect(res.body[0]).to.have.property('id', 394568);
+            expect(res.body[0]).to.have.property('id', commonGames.rimworld.id);
 
             done();
           }
@@ -111,7 +119,7 @@ describe('Router', function () {
       it('Accepts a game by ID', (done) => {
         commonRequest({
           url,
-          query: { id: 394568 },
+          query: { id: commonGames.rimworld.id },
           rejectErrors: true,
           done,
           onSuccess: (err, res) => {
@@ -119,7 +127,7 @@ describe('Router', function () {
             expect(res.body)
               .to.be.an('array')
               .with.lengthOf(1);
-            expect(res.body[0]).to.have.property('name', 'RimWorld');
+            expect(res.body[0]).to.have.property('name', commonGames.rimworld.name);
 
             done();
           }
@@ -180,6 +188,12 @@ describe('Router', function () {
           url, query: { includeTop: true, name: ['Rimworld', 'Dead Cells'] }, rejectErrors: true, done, onSuccess: (err, res) => {
             //See comment on the main /games/top test for why this is a "within" range
             res.body.should.be.an('array').and.have.lengthOf.within(21, 22);
+
+            let rimworldLocation = res.body.map(game => { return game.name }).indexOf('RimWorld');
+
+            rimworldLocation.should.not.equal(-1)
+            res.body[rimworldLocation].should.have.property('selected', true)
+
             done();
           }
         })
@@ -237,8 +251,6 @@ describe('Router', function () {
     });
     describe('/streams/games', () => {
       const url = '/api/streams/games';
-      const alwaysOn = 499973;
-      const creative = 488191;
       it('Returns nothing with no games specified', (done) => {
         commonRequest({
           url,
@@ -254,7 +266,7 @@ describe('Router', function () {
       it('Gets streamers by game ID', (done) => {
         commonRequest({
           url,
-          query: { game_id: alwaysOn }, // Always On
+          query: { game_id: commonGames.alwaysOn.id }, // Always On
           rejectErrors: true,
           done,
           onSuccess: (err, res) => {
@@ -264,7 +276,7 @@ describe('Router', function () {
         });
       });
       it('Accepts multiple games (awkward test)', (done) => {
-        const gameIDs = [creative, alwaysOn];
+        const gameIDs = [commonGames.creative.id, commonGames.alwaysOn.id];
         commonRequest({
           url,
           query: { game_id: gameIDs },
@@ -292,7 +304,7 @@ describe('Router', function () {
         const first = 2;
         commonRequest({
           url,
-          query: { game_id: alwaysOn, first },
+          query: { game_id: commonGames.alwaysOn.id, first },
           rejectErrors: true,
           done,
           onSuccess: (err, res) => {
@@ -306,7 +318,7 @@ describe('Router', function () {
         // This is an awkward test. Making two calls, one nested, and testing that they have different results.
         commonRequest({
           url,
-          query: { game_id: alwaysOn },
+          query: { game_id: commonGames.alwaysOn.id },
           rejectErrors: true,
           done,
           onSuccess: (err, res) => {
@@ -314,7 +326,7 @@ describe('Router', function () {
 
             commonRequest({
               url,
-              query: { game_id: alwaysOn, language: 'es' },
+              query: { game_id: commonGames.alwaysOn.id, language: 'es' },
               rejectErrors: true,
               done,
               onSuccess: (err2, res2) => {
