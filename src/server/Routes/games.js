@@ -48,31 +48,41 @@ async function getSpecificGames(uri, qs, next) {
   }
 }
 
-
 async function getTopAndSpecificGames(options, next) {
+
+  //Make the two separate calls to the Twitch API
   const [specificResult, topResult] = [await getSpecificGames('/helix/games', options, next), await getTopGames('/helix/games/top', options, next)];
 
-  let combined = [];
 
-  if (topResult.length)
-    combined = topResult;
-  if (topResult.length && specificResult.length) {
-    specificResult.forEach(specificGame => {
-      let index = combined.map(game => { return game.id }).indexOf(specificGame.id);
 
-      if (index > -1) {
-        combined[index].selected = true;
-      }
-      else {
-        combined.push(specificGame)
+  //If either one of the two came bacck with no results, then we an use a shortcut to return what is there
+  if (!specificResult.length || !topResult.length) {
+    return specificResult.length ? specificResult : topResult;
+  }
+
+  //Otherwise, we got both as results, so we need to carefully combine (and avoid duplicates)
+  else {
+    let combined = [];
+
+    // Start with the Specific games, because those are more important to the user. Put them in the "combined" array
+    combined = specificResult;
+
+    //Go through the list of Top games, and add all to Combined which aren't yet in there.
+    topResult.forEach(topGame => {
+      //Because it's an array of objects, we first turn it into an array of just IDs, and grab the appropriate index from that.
+      let index = combined.map(game => { return game.id }).indexOf(topGame.id)
+
+      //If the game wasn't found, then add it.
+      if (index === -1) {
+        combined.push(topGame);
       }
     })
-  }
-  else if (specificResult.length && !topResult.length) {
-    combined = specificResult;
+
+    return combined;
   }
 
-  return combined;
+
+
 }
 
 /* Get details for top games
@@ -123,6 +133,10 @@ router.get('/combo', async (req, res, next) => {
       res.send([]);
     }
     else {
+      //If includetop wasn't passed, then we're going to set it to false.
+      if (options.includetop == undefined) {
+        options.includetop = false;
+      }
       const results = await getTopAndSpecificGames(options, next);
       res.send(results)
     }
