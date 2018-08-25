@@ -1,6 +1,6 @@
 {
 	"name": "multigame_browser",
-	"version": "0.2.1",
+	"version": "0.2.3",
 	"description": "Directory for streams of multiple games on Twitch.",
 	"main": "src/server/server.js",
 	"scripts": {
@@ -24,6 +24,7 @@
 	"license": "MIT",
 	"dependencies": {
 		"axios": "^0.18.0",
+		"babel-polyfill": "^6.26.0",
 		"chalk": "^2.4.1",
 		"dotenv": "^6.0.0",
 		"express": "^4.16.3",

@@ -12,6 +12,25 @@
 
 ### Personal
 
+## 0.2.3 - Sat, Aug 25, 2018 - Safeguards for Twitch calls
+
+### Overview
+
+Exceeding Twitch's rate limit was something that I easily did when I was just manually testing things in the old version. So I went back and spent some time making sure that doesn't happen.
+
+### Added
+
+- Generating a Bearer token from Twitch
+- Tracking and checking against the Twitch Rate Limit
+
+### Changed
+
+- Switched from Request to Axios for making calls to Twitch
+
+### Personal
+
+I was really confused by the Bearer token situation. I thought it was the same thing as the Client Secret, apparently that's completely different. Bearer token is something that you have to make a specific Post call in order to generate. And weirdly, it has a value called "expires_in" which is how many seconds from now it expires. I don't get why they would make it a relative value instead of saying when it expires.
+
 ## 0.2.1 - Fri, Aug 24, 2018 - Build the foundation (testing)
 
 ### Overview

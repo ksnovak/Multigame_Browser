@@ -16,9 +16,14 @@ module.exports = {
   badRequest: newError({ code: 400, message: 'Bad request' }),
   unauthorized: newError({ code: 401, message: 'Not authorized to view that' }),
   timeout: newError({ code: 408, message: 'Request took too long' }),
+  tooManyRequests: newError({
+    code: 429,
+    message:
+			'Too many requests to Twitch are being made, please try again later'
+  }),
   notYetImplemented: newError({
     code: 501,
-    message: 'That is not yet implemented``'
+    message: 'That is not yet implemented'
   }),
 
   // Unique
