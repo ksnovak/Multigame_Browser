@@ -259,8 +259,7 @@ describe('Router', function () {
       });
 
       it("Allows 'language' to filter out certain languages", (done) => {
-
-        //This is an awkward test. Making two calls, one nested, and testing that they have different results.
+        // This is an awkward test. Making two calls, one nested, and testing that they have different results.
         commonRequest({
           url,
           query: { game_id: alwaysOn },
@@ -274,8 +273,8 @@ describe('Router', function () {
               query: { game_id: alwaysOn, language: 'es' },
               rejectErrors: true,
               done,
-              onSuccess: (err, res) => {
-                expect(results).to.not.deep.equal(res.body);
+              onSuccess: (err2, res2) => {
+                expect(results).to.not.deep.equal(res2.body);
                 done();
               }
             });
