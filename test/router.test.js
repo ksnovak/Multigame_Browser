@@ -45,6 +45,7 @@ describe('Router', function () {
   describe('Games', () => {
     describe('/games/top', () => {
       const url = '/api/games/top';
+      //Awkward test because for some reason the Twitch API sometimes returns 1-too-few games in the /top list.
       it('Gets top 20 games by default', (done) => {
         commonRequest({
           url,
@@ -161,6 +162,49 @@ describe('Router', function () {
         });
       });
     });
+
+    describe('/games/combo', () => {
+      const url = '/api/games/combo';
+
+      it('Returns nothing, if nothing is specified', (done) => {
+        commonRequest({
+          url, rejectErrors: true, done, onSuccess: (err, res) => {
+            res.body.should.be.an('array').and.have.lengthOf(0);
+            done();
+          }
+        })
+      })
+
+      it('Gets the top games and specified ones', (done) => {
+        commonRequest({
+          url, query: { includeTop: true, name: ['Rimworld', 'Dead Cells'] }, rejectErrors: true, done, onSuccess: (err, res) => {
+            //See comment on the main /games/top test for why this is a "within" range
+            res.body.should.be.an('array').and.have.lengthOf.within(21, 22);
+            done();
+          }
+        })
+      })
+      it('Does not return top games if the flag is false', (done) => {
+        commonRequest({
+          url, query: { includeTop: false, name: ['Rimworld', 'Dead Cells'] }, rejectErrors: true, done, onSuccess: (err, res) => {
+            res.body.should.be.an('array').and.have.lengthOf(2);
+            done();
+          }
+        })
+      })
+
+
+      it('Accepts \'first\' to change the number of games', (done) => {
+        const first = 9
+        commonRequest({
+          url, query: { includeTop: true, first, name: ['Rimworld', 'Dead Cells'] }, rejectErrors: true, done, onSuccess: (err, res) => {
+            //See comment on the main /games/top test for why this is a "within" range
+            res.body.should.be.an('array').and.have.lengthOf.within(10, 11);
+            done();
+          }
+        })
+      })
+    })
   });
 
   describe('Streams', () => {
@@ -283,6 +327,6 @@ describe('Router', function () {
       });
     });
 
-    describe('/streams/details', () => {});
+    describe('/streams/details', () => { });
   });
 });

@@ -15,6 +15,12 @@ const queryOptions = {
     id: { type: 'number', duplicate: true },
     name: { duplicate: true }
   },
+  '/games/combo': {
+    includetop: { type: 'boolean', default: false },
+    first: { type: 'number' },
+    id: { type: 'number', duplicate: true },
+    name: { duplicate: true }
+  },
   '/streams/details': {
     id: { type: 'number', duplicate: true },
     login: { duplicate: true }
@@ -46,6 +52,7 @@ module.exports = {
 
     // Go through each of the given parameters, weeding out the irrelevant and invalid ones, and consolidating them (in case of differing capitalization)
     Object.keys(params).forEach((paramName) => {
+
       const cleanedName = paramName.toLowerCase();
 
       // Check if this parameter is allowed to be used

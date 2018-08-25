@@ -30,7 +30,14 @@ module.exports = {
 
     // Check if we have exceeded our API rate limit. If so, immediately reject; otherwise, continue the request
     if (this.isRateLimitExceeded()) {
-      next(Errors.tooManyRequests);
+      let err = Errors.tooManyRequests
+      if (rejectErrors && next)
+        next(err);
+      else if (onResponse)
+        onResponse(err);
+      else
+        return err;
+
     }
     else {
       try {
@@ -39,18 +46,27 @@ module.exports = {
           params: qs
         })
 
-        onResponse(null, results, results.data);
+        //If a callback function was provided, call it
+        if (onResponse)
+          onResponse(null, results, results.data);
+
+        //Otherwise, just return with the data
         return results.data;
 
       } catch (err) {
+        //If the flag to automatically reject errors was passed, then do so.
         if (rejectErrors && next) {
           if (err.response) //If this was an error from Twitch
             next(Errors.twitchError({ code: err.response.status, message: err.response.statusText }));
           else
             next(Errors.genericError);
         }
+        //Otherwise, send the error back to be handled by the caller.
         else {
-          onResponse(err)
+          if (onResponse)
+            onResponse(err)
+
+          return err;
         }
       }
     }
