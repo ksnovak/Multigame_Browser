@@ -40,6 +40,10 @@ module.exports = {
     const allowedParams = queryOptions[endpoint]; // Based on the endpoint, get the list of allowed parameters
     const cleanedParams = {};
 
+
+    // console.log('Starting params:')
+    // console.log(params);
+
     // Go through each of the given parameters, weeding out the irrelevant and invalid ones, and consolidating them (in case of differing capitalization)
     Object.keys(params).forEach((paramName) => {
       const cleanedName = paramName.toLowerCase();
@@ -54,15 +58,24 @@ module.exports = {
           let cleanedVal;
 
           // Check if a specific type is required
-          if (paramRequirements.type && paramRequirements.type === 'number') {
-            // If number is required, make sure this value is able to become a number
-            if (!isNaN(params[paramName])) {
-              cleanedVal = Number(paramVal);
-            } else if (Array.isArray(paramVal)) {
-              // Note that if the value is an array, we have to validate each member of it.
-              cleanedVal = paramVal
-                .filter(elem => !isNaN(elem))
-                .map(elem => Number(elem));
+          if (paramRequirements.type) {
+            if (paramRequirements.type === 'number') {
+              // If number is required, make sure this value is able to become a number
+              if (!isNaN(params[paramName])) {
+                cleanedVal = Number(paramVal);
+              } else if (Array.isArray(paramVal)) {
+                // Note that if the value is an array, we have to validate each member of it.
+                cleanedVal = paramVal
+                  .filter(elem => !isNaN(elem))
+                  .map(elem => Number(elem));
+              }
+            }
+            else if (paramRequirements.type === 'boolean') {
+              let toLower = params[paramName].toLowerCase();
+              if (toLower === 'true' || toLower === 't')
+                cleanedVal = true;
+              else if (toLower === 'false' || toLower === 'f')
+                cleanedVal = false;
             }
           }
 
@@ -76,8 +89,14 @@ module.exports = {
             cleanedVal = cleanedVal || paramVal;
           }
 
+
+          //TODO: This is NOT the right way. This just handles if the value is invalid; doesn't care if the key is non-existant
+          if (cleanedVal == undefined && paramRequirements.default != undefined) {
+            cleanedVal = paramRequirements.default;
+          }
+
           // Finishing; if there is a valid value at the end of everything, add it to the cleanedParams object
-          if (cleanedVal) {
+          if (cleanedVal != undefined) {
             // If the param doesn't exist yet, simply set it.
             if (!cleanedParams[cleanedName]) {
               cleanedParams[cleanedName] = cleanedVal;
@@ -93,7 +112,8 @@ module.exports = {
         }
       }
     });
-
+    // console.log('Ending params: ')
+    // console.log(cleanedParams)
     return cleanedParams;
   }
 };
