@@ -12,7 +12,8 @@ export default class App extends Component {
       include: [],
       exclude: [],
       languages: [],
-      includeTop: true
+      includeTop: true,
+      generatedTime: null
     };
   }
 
@@ -20,13 +21,13 @@ export default class App extends Component {
     fetch('/api/games/top?first=10')
       .then(res => res.json())
       .then((games) => {
-        this.setState({ games });
+        this.setState({ games, generatedTime: Date.now() });
       });
   }
 
   render() {
     const {
-      games, include, exclude, languages, includeTop
+      games, include, exclude, languages, includeTop, generatedTime
     } = this.state;
     return (
       <div id="home" className="row">
@@ -36,6 +37,7 @@ export default class App extends Component {
           exclude={exclude}
           languages={languages}
           includeTop={includeTop}
+          generatedTime={generatedTime}
         />
 
         <Directory />

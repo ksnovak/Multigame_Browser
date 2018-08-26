@@ -6,6 +6,7 @@ import TextList from './TextList';
 import TopButtons from './TopButtons';
 import BottomButtons from './BottomButtons';
 import OptionsButtons from './OptionsButtons';
+import GeneratedAt from './GeneratedAt';
 
 export default class OptionsPane extends Component {
   componentDidMount() {
@@ -14,8 +15,9 @@ export default class OptionsPane extends Component {
 
   render() {
     const {
-      languages, includeTop, games, include, exclude
+      languages, includeTop, games, include, exclude, generatedTime
     } = this.props;
+
     return (
       <div className="optionsPane col-sm-2 col-lg-3 form-group">
         <form>
@@ -43,6 +45,8 @@ export default class OptionsPane extends Component {
           />
 
           <BottomButtons />
+
+          <GeneratedAt generatedTime={generatedTime} />
         </form>
       </div>
     );
