@@ -12,5 +12,5 @@ cache:
 
 branches:
   only:
-    - Heroku
+    - development
     - master
