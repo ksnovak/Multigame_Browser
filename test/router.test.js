@@ -198,6 +198,27 @@ describe('Router', function () {
           }
         })
       })
+
+      it('Has a special flag for all Specified games', (done) => {
+        let gameNames = [commonGames.rimworld.name, commonGames.alwaysOn.name, 'Fortnite']
+        commonRequest({
+          url, query: { includeTop: true, name: gameNames, first: 5 }, rejectErrors: true, done, onSuccess: (err, res) => {
+            res.body.should.be.an('array').with.lengthOf.at.least(5);
+            let foundGames = 0;
+
+            res.body.forEach(game => {
+              if (gameNames.includes(game.name) && game.selected) {
+                foundGames++;
+              }
+            })
+
+            foundGames.should.equal(gameNames.length);
+
+            done();
+          }
+        })
+      })
+
       it('Does not return top games if the flag is false', (done) => {
         commonRequest({
           url, query: { includeTop: false, name: ['Rimworld', 'Dead Cells'] }, rejectErrors: true, done, onSuccess: (err, res) => {
