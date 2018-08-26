@@ -15,26 +15,6 @@ function streamsFromData(jsonData) {
   }
 }
 
-/* Get details for specified users (Note: This even gets details on offline users)
-    Querystring params: id, login
-    https://dev.twitch.tv/docs/api/reference/#get-users
-*/
-router.get('/details', (req, res, next) => {
-  RoutesUtils.commonTwitchRequest({
-    uri: '/helix/users',
-    qs: QueryOptions.getValidQueryOptions('/streams/details', req.query),
-    rejectErrors: true,
-    next,
-    onResponse: (error, response, jsonData) => {
-      try {
-        res.send(streamsFromData(jsonData));
-      } catch (err) {
-        next(err);
-      }
-    }
-  });
-});
-
 /* Get list of live streams for specified games
     Querystring params: game_id, language, first
     WARNING: You can specify either the game, or the streamer. If you do both, it returns an inner join basically (all of the specified people, streaming the specified games)

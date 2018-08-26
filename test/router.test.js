@@ -338,7 +338,8 @@ describe('Router', function () {
         });
       });
     });
-
-    describe('/streams/details', () => { });
+    describe('/streams/combo', () => {
+      it('exists')
+    })
   });
 });

@@ -21,10 +21,6 @@ const queryOptions = {
     id: { type: 'number', duplicate: true },
     name: { duplicate: true }
   },
-  '/streams/details': {
-    id: { type: 'number', duplicate: true },
-    login: { duplicate: true }
-  },
   '/streams/games': {
     first: { type: 'number' },
     before: { type: 'number' },
