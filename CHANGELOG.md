@@ -12,6 +12,40 @@
 
 ### Personal
 
+## 0.2.4 - Sun, Aug 26, 2018 - Starting to make combinations
+
+### Overview
+
+In order to make the app as clean as possible, we need to make some combined calls. This time around, I'm figuring out what's needed for all of that.
+Big change: I'm changing how I'm doing Git branches. The current way is kind of dumb. After this point, 'master' will represent what's merged into Heroku. The 'heroku' branch is going away. A new one, 'development', is being made. That will be what I actively work on.
+
+### Added
+
+- A /games/combo API endpoint. This is for when you want the Top games as well as some Specific ones.
+- A 'selected' flag on Specific games, to differentiate it from Top ones.
+- Some more thorough tests, and testing cleanup. Added an array for a set of common games (with name + id) so I don't have to bother hardcoding or remembering them.
+- Allowing a 'default' value in the QueryOptions class, as a minor band-aid. But that implementation only works in the case of the key being passed with an invalid value -- doesn't handle the key not being passed at all.
+
+### Changed
+
+- Working on making some functions (in this case, ones in the Games router class) more generic and re-usable
+
+
+### Removed
+
+- Got rid of the /streams/details endpoint. I used this in the earlier version because the main Twitch api call for users never directly gives their name, so we needed a separate API call for that. But I've since found a way to grab it from the thumbnail URL.
+
+
+### Personal
+
+- ESLint+Prettier got annoying to the point where I just got rid of them. Apparently they caused huge performance hits on VSCode too.
+- I realized that the Git branch methodology I used is pretty dumb. "Master" should be what's live online, not what is currently being developed.
+- I want to find something that lets me disable committing directly to Master, or at least require a confirmation. Hopefully I can find a way to make it so that all PRs are squashed commits too.
+- I'm stopping the "Release" system. That's all very irrelevant and just adding unnecessary overhead.
+- Twitch's inconsistent returns from their API is getting frustrating. If you try to get the top N games, it will very often return N-1, meaning you have to always allow for a range of results.
+- I'm getting a lot more comfortable with making unit tests. My biggest concern now is making them more performant, and wanting to use before() hooks better; I think every API all actually resets the "server", as opposed to having it persistently running.
+
+
 ## 0.2.3 - Sat, Aug 25, 2018 - Safeguards for Twitch calls
 
 ### Overview
