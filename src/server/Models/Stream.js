@@ -13,17 +13,7 @@
   thumbnail_url: 'https://static-cdn.jtvnw.net/previews-ttv/live_user_scarra-{width}x{height}.jpg'
   }
 
-  The details Twitch API call returns:
-  id (which is actually user_id), login, display_name, type (empty string???), broadcaster_type (partner), description, profile_image_url, offline_image_url, view_count (total lifetime views)
-  { id: '22253819',
-  login: 'scarra',
-  display_name: 'Scarra',
-  type: '',
-  broadcaster_type: 'partner',
-  description: 'Welcome to the chat room. Feel free to ask questions, but do not spam. You can follow me on twitter @dscarra.',
-  profile_image_url: 'https://static-cdn.jtvnw.net/jtv_user_pictures/8bd07ef046330084-profile_image-300x300.jpeg',
-  offline_image_url: 'https://static-cdn.jtvnw.net/jtv_user_pictures/scarra-channel_offline_image-b43dce71e83db39f-1920x1080.jpeg',
-  view_count: 65803051 }
+  Note: the actual username is not directly passed, but we can find it in the thumbnail_url.
 
 */
 
@@ -38,7 +28,7 @@ module.exports = class Stream {
     login
   }) {
     this.id = Number(id);
-    this.user_id = Number(user_id || id); // The two Twitch calls return different objects to mean the same thing. In the main one, it's user_id; in the details one, it's just id.
+    this.user_id = Number(user_id);
     this.title = title;
     this.viewer_count = viewer_count;
     this.game_id = Number(game_id);
