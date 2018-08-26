@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import GamesList from './GamesList';
 import TextList from './TextList';
 import TopButtons from './TopButtons';
-import GithubButtons from './GithubButtons';
+import BottomButtons from './BottomButtons';
 import OptionsButtons from './OptionsButtons';
 
 export default class OptionsPane extends Component {
@@ -42,7 +42,7 @@ export default class OptionsPane extends Component {
             list={exclude}
           />
 
-          <GithubButtons />
+          <BottomButtons />
         </form>
       </div>
     );
