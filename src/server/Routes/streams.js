@@ -5,14 +5,20 @@ import RoutesUtils from './routeUtils';
 
 const router = express.Router();
 
-function streamsFromData(jsonData) {
+function streamsFromData(body) {
   try {
-    if (jsonData.error) throw jsonData.error;
+    if (body.error) throw body.error;
 
-    return jsonData.data.map(stream => new Stream(stream));
+    return body.data.map(stream => new Stream(stream));
   } catch (ex) {
     throw ex;
   }
+}
+
+async function getStreamsForGame(options, next) {
+  const results = await RoutesUtils.commonTwitchRequest({ uri: '/helix/streams', qs: options, rejectErrors: true, next });
+
+  return streamsFromData(results);
 }
 
 /* Get list of live streams for specified games
@@ -20,7 +26,7 @@ function streamsFromData(jsonData) {
     WARNING: You can specify either the game, or the streamer. If you do both, it returns an inner join basically (all of the specified people, streaming the specified games)
     https://dev.twitch.tv/docs/api/reference/#get-streams
 */
-router.get('/games', (req, res, next) => {
+router.get('/games', async (req, res, next) => {
   const options = QueryOptions.getValidQueryOptions(
     '/streams/games',
     req.query
@@ -30,19 +36,13 @@ router.get('/games', (req, res, next) => {
   if (!(options.game_id || options.user_id || options.user_login)) {
     res.send([]);
   } else {
-    RoutesUtils.commonTwitchRequest({
-      uri: '/helix/streams',
-      qs: options,
-      rejectErrors: true,
-      next,
-      onResponse: (error, response, jsonData) => {
-        try {
-          res.send(streamsFromData(jsonData));
-        } catch (err) {
-          next(err);
-        }
-      }
-    });
+    try {
+      const results = await getStreamsForGame(options, next);
+      res.send(results);
+    }
+    catch (err) {
+      next(err);
+    }
   }
 });
 
