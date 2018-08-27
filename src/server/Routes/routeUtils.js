@@ -108,11 +108,7 @@ module.exports = {
 
     if (process.env.NODE_ENV === 'dev') {
       const daysTillExpire = parseInt(expires_in / 60 / 60 / 24);
-      console.log(
-        `Bearer expires ${daysTillExpire ? `in ~${daysTillExpire} days, ` : ''}at: ${new Date(
-          expiration_time
-        ).toLocaleString()}`
-      );
+      utils.devLog(`Bearer expires ${daysTillExpire ? `in ~${daysTillExpire} days, ` : ''}at: ${new Date(expiration_time).toLocaleString()}`);
     }
 
     this.bearerToken.access_token = access_token;
