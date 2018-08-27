@@ -2,7 +2,7 @@ import request from 'request';
 import axios from 'axios';
 import Errors from '../Models/Errors';
 import fs from 'fs';
-import chalk from 'chalk';
+import utils from '../../utils'
 
 require('dotenv').config();
 
@@ -16,12 +16,31 @@ module.exports = {
 
   // Get the Bearer token from Twitch; this allows for a greater rate limit
   async generateBearerToken() {
-    if (process.env.NODE_ENV === 'dev') {
-      console.log('Generating new Bearer token');
-    }
-    const results = await axios.post(`https://id.twitch.tv/oauth2/token?client_id=${process.env.TWITCH_CLIENT_ID}&client_secret=${process.env.TWITCH_CLIENT_SECRET}&grant_type=client_credentials`);
+
+    utils.devLog('Generating new Bearer token');
+
+    const results = await this.makeTwitchRequest({
+      verb: 'post',
+      uri: `https://id.twitch.tv/oauth2/token?client_id=${process.env.TWITCH_CLIENT_ID}&client_secret=${process.env.TWITCH_CLIENT_SECRET}&grant_type=client_credentials`
+    });
 
     this.updateBearerToken(results.data);
+  },
+
+  async makeTwitchRequest({ verb, uri, headers, params }) {
+
+    utils.devLog('Calling Twitch at ' + utils.devChalk('blue', uri) + ' with ' + utils.devChalk('yellow', JSON.stringify(params)))
+
+    try {
+      return await this.baseRequest({
+        method: verb || 'get',
+        url: uri,
+        headers,
+        params
+      })
+    } catch (err) {
+      throw err
+    }
   },
 
   async commonTwitchRequest({ uri, qs, onResponse, rejectErrors, next }) {
@@ -43,10 +62,9 @@ module.exports = {
     }
     else {
       try {
-        if (process.env.NODE_ENV === 'dev') {
-          console.log('Calling Twitch at ' + chalk.blue(uri) + ' with ' + chalk.yellow(JSON.stringify(qs)))
-        }
-        let results = await this.baseRequest.get(uri, {
+        let results = await this.makeTwitchRequest({
+          verb: 'get',
+          uri,
           headers: { Authorization: `Bearer ${this.bearerToken.access_token}` },
           params: qs
         })

@@ -12,13 +12,11 @@ const router = express.Router();
 
 // Initial middleware; notice that a request was made
 router.use((req, res, next) => {
-  if (process.env.NODE_ENV == 'dev') {
-    console.log(
-      'Request for ',
-      chalk.blue(req._parsedUrl.pathname),
-      chalk.green(req._parsedUrl.search || '')
-    );
-  }
+  utils.devLog(
+    'Request for ' +
+    utils.devChalk('blue', req._parsedUrl.pathname) +
+    utils.devChalk('green', req._parsedUrl.search || '')
+  );
   next();
 });
 
@@ -38,10 +36,8 @@ router.get('/api/getUsername', (req, res) => {
 
 // Error-handling middleware; must be the last router function
 router.use((err, req, res, next) => {
-  if (process.env.NODE_ENV == 'dev') {
-    console.log(chalk.red('Hit error handler: ') + err.name);
-    // console.error(err);
-  }
+
+  utils.devLog(utils.devChalk('red', 'Hit error handler: ') + err.name);
 
   let status = 500;
   let message = err;
