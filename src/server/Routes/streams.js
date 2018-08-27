@@ -26,9 +26,9 @@ async function getStreamsForGame(options, next) {
     WARNING: You can specify either the game, or the streamer. If you do both, it returns an inner join basically (all of the specified people, streaming the specified games)
     https://dev.twitch.tv/docs/api/reference/#get-streams
 */
-router.get('/games', async (req, res, next) => {
+router.get('/list', async (req, res, next) => {
   const options = QueryOptions.getValidQueryOptions(
-    '/streams/games',
+    '/streams/list',
     req.query
   );
 
