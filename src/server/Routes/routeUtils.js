@@ -2,6 +2,7 @@ import request from 'request';
 import axios from 'axios';
 import Errors from '../Models/Errors';
 import fs from 'fs';
+import chalk from 'chalk';
 
 require('dotenv').config();
 
@@ -42,6 +43,9 @@ module.exports = {
     }
     else {
       try {
+        if (process.env.NODE_ENV === 'dev') {
+          console.log('Calling Twitch at ' + chalk.blue(uri) + ' with ' + chalk.yellow(JSON.stringify(qs)))
+        }
         let results = await this.baseRequest.get(uri, {
           headers: { Authorization: `Bearer ${this.bearerToken.access_token}` },
           params: qs
