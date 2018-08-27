@@ -21,7 +21,7 @@ const queryOptions = {
     id: { type: 'number', duplicate: true },
     name: { duplicate: true }
   },
-  '/streams/games': {
+  '/streams/list': {
     first: { type: 'number' },
     before: { type: 'number' },
     after: { type: 'number' },
@@ -33,6 +33,16 @@ const queryOptions = {
   '/streams/top': {
     first: { type: 'number' },
     language: { duplicate: true }
+  },
+  '/combo': {
+    includetop: { type: 'boolean', default: false },
+    first: { type: 'number' },
+    id: { type: 'number', duplicate: true },  //game ID
+    name: { duplicate: true },                //game name
+    game_id: { type: 'number', duplicate: true },
+    language: { duplicate: true },
+    user_id: { type: 'number', duplicate: true },
+    user_login: { duplicate: true }
   }
 };
 

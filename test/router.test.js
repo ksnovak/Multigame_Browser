@@ -270,8 +270,8 @@ describe('Router', function () {
         });
       });
     });
-    describe('/streams/games', () => {
-      const url = '/api/streams/games';
+    describe('/streams/list', () => {
+      const url = '/api/streams/list';
       it('Returns nothing with no games specified', (done) => {
         commonRequest({
           url,

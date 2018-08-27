@@ -1,4 +1,5 @@
 {
-  "watch": ["src/server/"],
-  "delay": "1500"
+  "watch": [
+    "src/server/"
+  ]
 }
