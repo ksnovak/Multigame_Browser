@@ -1,6 +1,7 @@
 import request from 'request';
 import axios from 'axios';
 import Errors from '../Models/Errors';
+import fs from 'fs';
 
 require('dotenv').config();
 
@@ -78,32 +79,60 @@ module.exports = {
     token_type: null
   },
 
-  updateBearerToken({ access_token, expires_in, token_type }) {
+  updateBearerToken({ access_token, expires_at, expires_in, token_type }) {
     // Find out when the access token expires; The "expires_in" value from Twitch is a number of seconds from now, which is tougher to handle
     // Figure out the time at which it expires, instead, and save that.
-    const expiration_time = Date.now() + expires_in * 1000;
+    const expiration_time = expires_at ? expires_at : (Date.now() + expires_in * 1000);
 
     if (process.env.NODE_ENV === 'dev') {
       const daysTillExpire = parseInt(expires_in / 60 / 60 / 24);
       console.log(
-        `New Bearer expires in ~${daysTillExpire} days, at: ${new Date(
+        `Bearer expires ${daysTillExpire ? `in ~${daysTillExpire} days, ` : ''}at: ${new Date(
           expiration_time
-        ).toGMTString()}`
+        ).toLocaleString()}`
       );
     }
 
     this.bearerToken.access_token = access_token;
     this.bearerToken.expires_at = expiration_time;
     this.bearerToken.token_type = token_type;
+
+    this.writeBearerTokenInFile();
+  },
+
+
+  //We try to save bearer tokens in file, so look for it and parse it into an object if possible
+  readBearerTokenFromFile() {
+    try {
+      const results = JSON.parse(fs.readFileSync('bearerToken').toString());
+      return results;
+    }
+    catch (err) {
+      return null
+    }
+  },
+
+  //Save the bearer token as a file, since we need it to persist through restarts and updates
+  writeBearerTokenInFile() {
+    fs.writeFileSync('bearerToken', JSON.stringify(this.bearerToken))
   },
 
   // Check if we need a new bearer token
   isNewBearerTokenNeeded() {
+    const tokenFromFile = this.readBearerTokenFromFile();
+
+    //If we don't have one in memory, try getting one from a file.
+    if (this.bearerToken.access_token == null) {
+      if (tokenFromFile != null) {
+        this.updateBearerToken(tokenFromFile);
+      }
+    }
+    else if (tokenFromFile == null) {
+      this.writeBearerTokenInFile();
+    }
+
     // If the token isn't set, or if we've gone past the expire time, then we need to get a new token.
-    return (
-      this.bearerToken.access_token == null
-      || Date.now() > this.bearerToken.expires_at
-    );
+    return (this.bearerToken.access_token == null || Date.now() > this.bearerToken.expires_at);
   },
 
   // Twitch's API rate limits say how many more requests we can make, we have to keep track of it in order to avoid unexpected errors
