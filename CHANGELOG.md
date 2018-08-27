@@ -12,6 +12,35 @@
 
 ### Personal
 
+## 0.2.5 - Mon, Aug 27, 2018 - Minor tweaks
+
+### Overview
+
+There were a handful of small things that I really wanted to tackle here.
+
+### Added
+- Saving Twitch Bearer token in file, and reading from it.
+- "Generated At" timestamp on the client. It's interesting to know when the data was last updated.
+- A common function for dev-mode logging.
+- A singular function for Twitch API calls. That way we can appropriately log in just one place.
+- Log every Twitch call made.
+- Timestamp for server restart.
+
+### Changed
+- /streams/game -> /streams/list. This more accurately reflects what the point of that endpoint is.
+- /streams/list can handle being passed game IDs and streamer IDs/names decently.
+- "Bottom buttons" on client. Now are a set of links with relevant things.
+
+### Removed
+- /streams/details endpoint. This was a redundant one, created due to a restriction with the Twitch API. I had found a workaround, so it no longer is necessary
+
+### Personal
+
+I need to really look into VSCode debugging. It sucks throwing a billion log statements.
+I feel like there has to be a better way to handle saving Bearer token. I plan to use caching anyway, but I don't think that persists through restarts/updates. I also know that I should be updating an existing one when possible, instead of requesting a new one.
+This new version is also part of testing my changes to the "release" system.
+
+
 ## 0.2.4 - Sun, Aug 26, 2018 - Starting to make combinations
 
 ### Overview
