@@ -172,6 +172,22 @@ describe('Router', function () {
           }
         });
       });
+
+      it('Will not have duplicates', (done) => {
+        commonRequest({
+          url,
+          query: { name: [commonGames.rimworld.name, commonGames.rimworld.name], id: [commonGames.rimworld.id, commonGames.creative.id] },
+          rejectErrors: true,
+          done,
+          onSuccess: (err, res) => {
+            expect(res.body)
+              .to.be.an('array')
+              .with.lengthOf(2)
+
+            done();
+          }
+        })
+      })
     });
 
     describe.only('/games/combo', () => {
@@ -239,6 +255,37 @@ describe('Router', function () {
           url, query: { includeTop: true, first, name: [commonGames.rimworld.name, commonGames.deadCells.name] }, rejectErrors: true, done, onSuccess: (err, res) => {
             //See comment on the main /games/top test for why this is a "within" range
             res.body.should.be.an('array').and.have.lengthOf.within(10, 11);
+            done();
+          }
+        })
+      })
+
+      it('Will not have duplicates (top x name x id)', (done) => {
+        const first = 4
+        commonRequest({
+          url,
+          query: { includeTop: true, first, name: [commonGames.fortnite.name, commonGames.fortnite.name, commonGames.rimworld.name], id: [commonGames.league.id, commonGames.fortnite.id] },
+          rejectErrors: true,
+          done,
+          onSuccess: (err, res) => {
+
+            //Make a temporary array with these 3 desired games' IDs
+            let selectedIDs = [commonGames.fortnite.id, commonGames.league.id, commonGames.rimworld.id]
+
+            //We can't guarantee that Fortnite and League will be in the Top list, nor that Rimworld won't be. So we have to play with a safe guess
+            res.body.should.be.an('array').and.have.lengthOf.within(first, (first + selectedIDs.length));
+
+            //Get just the game IDs from the server's responses
+            let responseIDs = res.body.map(game => game.id)
+
+
+            //Go through that temporary array, and make sure that each of the games is found exactly once.
+            selectedIDs.forEach(id => {
+              responseIDs.indexOf(id).should
+                .equal(responseIDs.lastIndexOf(id))
+                .and.not.equal(-1)
+            })
+
             done();
           }
         })
