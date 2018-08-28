@@ -6,6 +6,7 @@ import express from 'express';
 import Game from '../Models/Game';
 import QueryOptions from '../Models/QueryOptions';
 import RoutesUtils from './routeUtils';
+import utils from '../../utils'
 
 require('dotenv').config();
 
@@ -13,7 +14,9 @@ const router = express.Router();
 
 function gamesFromData(body, selected) {
   try {
-    return body.data.map(game => new Game(game, selected));
+    let gamesArray = body.data.map(game => new Game(game, selected));
+
+    return utils.removeArrayDuplicates(gamesArray, 'id');
   } catch (ex) {
     throw ex;
   }
@@ -53,36 +56,7 @@ async function getTopAndSpecificGames(options, next) {
   //Make the two separate calls to the Twitch API
   const [specificResult, topResult] = [await getSpecificGames('/helix/games', options, next), await getTopGames('/helix/games/top', options, next)];
 
-
-
-  //If either one of the two came bacck with no results, then we an use a shortcut to return what is there
-  if (!specificResult.length || !topResult.length) {
-    return specificResult.length ? specificResult : topResult;
-  }
-
-  //Otherwise, we got both as results, so we need to carefully combine (and avoid duplicates)
-  else {
-    let combined = [];
-
-    // Start with the Specific games, because those are more important to the user. Put them in the "combined" array
-    combined = specificResult;
-
-    //Go through the list of Top games, and add all to Combined which aren't yet in there.
-    topResult.forEach(topGame => {
-      //Because it's an array of objects, we first turn it into an array of just IDs, and grab the appropriate index from that.
-      let index = combined.map(game => { return game.id }).indexOf(topGame.id)
-
-      //If the game wasn't found, then add it.
-      if (index === -1) {
-        combined.push(topGame);
-      }
-    })
-
-    return combined;
-  }
-
-
-
+  return utils.combineArraysWithoutDuplicates(specificResult, topResult, 'id');
 }
 
 /* Get details for top games
