@@ -17,7 +17,6 @@ module.exports = {
 
   // Get an array without any duplicated elements in it
   removeArrayDuplicates(array, key) {
-    console.log('Remove dupes')
     try {
       //Iterate through the array, filtering out...
       return array.filter((elem, index, self) => {
@@ -37,7 +36,6 @@ module.exports = {
   // Prime Array is the one that will be added first. In case there are additional flags or details in the object (e.g. "selected" flag), they will remain
   // passing the checkForIndividualDupes will help in case either primeArray or secondArray has dupes to begin with.
   combineArraysWithoutDuplicates(primeArray, secondArray, key, checkForIndividualDupes = false) {
-    console.log('Combine without dupes')
     try {
       //If one of the two arrays has no elements, then we can take a shortcut and just directly return the array that does have elements.
       if (!primeArray.length || !secondArray.length) {

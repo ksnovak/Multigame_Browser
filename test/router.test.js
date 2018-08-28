@@ -33,7 +33,10 @@ describe('Router', function () {
   let commonGames = {
     rimworld: { name: 'RimWorld', id: 394568 },
     alwaysOn: { name: 'Always On', id: 499973 },
-    creative: { name: 'Creative', id: 488191 }
+    creative: { name: 'Creative', id: 488191 },
+    fortnite: { name: 'Fortnite', id: 33214 },
+    deadCells: { name: 'Dead Cells', id: 495961 },
+    league: { name: 'League of Legends', id: 21779 }
   }
 
   it('Gets a response from the server', (done) => {
@@ -171,7 +174,7 @@ describe('Router', function () {
       });
     });
 
-    describe('/games/combo', () => {
+    describe.only('/games/combo', () => {
       const url = '/api/games/combo';
 
       it('Returns nothing, if nothing is specified', (done) => {
@@ -185,11 +188,11 @@ describe('Router', function () {
 
       it('Gets the top games and specified ones', (done) => {
         commonRequest({
-          url, query: { includeTop: true, name: ['Rimworld', 'Dead Cells'] }, rejectErrors: true, done, onSuccess: (err, res) => {
+          url, query: { includeTop: true, name: [commonGames.rimworld.name, commonGames.deadCells.name] }, rejectErrors: true, done, onSuccess: (err, res) => {
             //See comment on the main /games/top test for why this is a "within" range
             res.body.should.be.an('array').and.have.lengthOf.within(21, 22);
 
-            let rimworldLocation = res.body.map(game => { return game.name }).indexOf('RimWorld');
+            let rimworldLocation = res.body.map(game => { return game.name }).indexOf(commonGames.rimworld.name);
 
             rimworldLocation.should.not.equal(-1)
             res.body[rimworldLocation].should.have.property('selected', true)
@@ -200,10 +203,11 @@ describe('Router', function () {
       })
 
       it('Has a special flag for all Specified games', (done) => {
-        let gameNames = [commonGames.rimworld.name, commonGames.alwaysOn.name, 'Fortnite']
+        let gameNames = [commonGames.rimworld.name, commonGames.alwaysOn.name, commonGames.fortnite.name]
+        let first = 5;
         commonRequest({
-          url, query: { includeTop: true, name: gameNames, first: 5 }, rejectErrors: true, done, onSuccess: (err, res) => {
-            res.body.should.be.an('array').with.lengthOf.at.least(5);
+          url, query: { includeTop: true, name: gameNames, first }, rejectErrors: true, done, onSuccess: (err, res) => {
+            res.body.should.be.an('array').with.lengthOf.at.least(first);
             let foundGames = 0;
 
             res.body.forEach(game => {
@@ -221,7 +225,7 @@ describe('Router', function () {
 
       it('Does not return top games if the flag is false', (done) => {
         commonRequest({
-          url, query: { includeTop: false, name: ['Rimworld', 'Dead Cells'] }, rejectErrors: true, done, onSuccess: (err, res) => {
+          url, query: { includeTop: false, name: [commonGames.rimworld.name, commonGames.deadCells.name] }, rejectErrors: true, done, onSuccess: (err, res) => {
             res.body.should.be.an('array').and.have.lengthOf(2);
             done();
           }
@@ -232,7 +236,7 @@ describe('Router', function () {
       it('Accepts \'first\' to change the number of games', (done) => {
         const first = 9
         commonRequest({
-          url, query: { includeTop: true, first, name: ['Rimworld', 'Dead Cells'] }, rejectErrors: true, done, onSuccess: (err, res) => {
+          url, query: { includeTop: true, first, name: [commonGames.rimworld.name, commonGames.deadCells.name] }, rejectErrors: true, done, onSuccess: (err, res) => {
             //See comment on the main /games/top test for why this is a "within" range
             res.body.should.be.an('array').and.have.lengthOf.within(10, 11);
             done();
