@@ -84,11 +84,17 @@ module.exports = {
               }
             }
             else if (paramRequirements.type === 'boolean') {
-              let toLower = params[paramName].toLowerCase();
-              if (toLower === 'true' || toLower === 't')
-                cleanedVal = true;
-              else if (toLower === 'false' || toLower === 'f')
-                cleanedVal = false;
+              if (typeof params[paramName] === 'boolean') {
+                return params[paramName]
+              }
+              else {
+
+                let toLower = params[paramName].toLowerCase();
+                if (toLower === 'true' || toLower === 't')
+                  cleanedVal = true;
+                else if (toLower === 'false' || toLower === 'f')
+                  cleanedVal = false;
+              }
             }
           }
 
