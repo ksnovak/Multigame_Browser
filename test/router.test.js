@@ -9,10 +9,8 @@ const should = chai.should();
 chai.use(chaiHttp);
 
 // All requests made have some very common functionality, reducec the repetition.
-function commonRequest({
-  url, query, onSuccess, rejectErrors, done
-}) {
-  chai
+function commonRequest({ url, query, onSuccess, rejectErrors, done }) {
+  return chai
     .request(app)
     .get(url)
     .query(query)
@@ -23,6 +21,13 @@ function commonRequest({
       }
       onSuccess(err, res);
     });
+}
+
+async function asyncCommonRequest({ url, query }) {
+  return await chai
+    .request(app)
+    .get(url)
+    .query(query)
 }
 
 describe('Router', function () {
@@ -190,7 +195,7 @@ describe('Router', function () {
       })
     });
 
-    describe.only('/games/combo', () => {
+    describe('/games/combo', () => {
       const url = '/api/games/combo';
 
       it('Returns nothing, if nothing is specified', (done) => {
@@ -201,6 +206,16 @@ describe('Router', function () {
           }
         })
       })
+
+      it('Does not return top games if the flag is false', (done) => {
+        commonRequest({
+          url, query: { includeTop: false, name: [commonGames.rimworld.name, commonGames.deadCells.name] }, rejectErrors: true, done, onSuccess: (err, res) => {
+            res.body.should.be.an('array').and.have.lengthOf(2);
+            done();
+          }
+        })
+      })
+
 
       it('Gets the top games and specified ones', (done) => {
         commonRequest({
@@ -218,76 +233,54 @@ describe('Router', function () {
         })
       })
 
-      it('Has a special flag for all Specified games', (done) => {
-        let gameNames = [commonGames.rimworld.name, commonGames.alwaysOn.name, commonGames.fortnite.name]
-        let first = 5;
-        commonRequest({
-          url, query: { includeTop: true, name: gameNames, first }, rejectErrors: true, done, onSuccess: (err, res) => {
-            res.body.should.be.an('array').with.lengthOf.at.least(first);
-            let foundGames = 0;
+      describe('Supertest:', async (done) => {
+        const first = 5;
+        const passedGames = [commonGames.fortnite, commonGames.league, commonGames.rimworld]
+        let results;
 
-            res.body.forEach(game => {
-              if (gameNames.includes(game.name) && game.selected) {
-                foundGames++;
-              }
-            })
-
-            foundGames.should.equal(gameNames.length);
-
-            done();
-          }
+        before(async () => {
+          let response = await asyncCommonRequest({
+            url,
+            first,
+            query: {
+              includeTop: true,
+              first,
+              name: [passedGames[0].name, passedGames[0].name, passedGames[2].name],
+              id: [passedGames[1].id, passedGames[0].id]
+            }
+          })
+          results = response.body
         })
-      })
 
-      it('Does not return top games if the flag is false', (done) => {
-        commonRequest({
-          url, query: { includeTop: false, name: [commonGames.rimworld.name, commonGames.deadCells.name] }, rejectErrors: true, done, onSuccess: (err, res) => {
-            res.body.should.be.an('array').and.have.lengthOf(2);
-            done();
-          }
+        it('Accepts \'first\' to change the number of games', (done) => {
+          results.should.be.an('array').with.lengthOf.within(first, first + passedGames.length)
+          done();
         })
-      })
 
+        it('Has a special flag for all Specified games', (done) => {
+          let selectedCount = 0;
+          const passedIDs = passedGames.map(game => game.id)
+          results.forEach(game => {
+            if (game.selected && passedIDs.includes(game.id)) {
+              selectedCount++;
+            }
+          })
 
-      it('Accepts \'first\' to change the number of games', (done) => {
-        const first = 9
-        commonRequest({
-          url, query: { includeTop: true, first, name: [commonGames.rimworld.name, commonGames.deadCells.name] }, rejectErrors: true, done, onSuccess: (err, res) => {
-            //See comment on the main /games/top test for why this is a "within" range
-            res.body.should.be.an('array').and.have.lengthOf.within(10, 11);
-            done();
-          }
+          selectedCount.should.equal(passedGames.length);
+          done();
         })
-      })
 
-      it('Will not have duplicates (top x name x id)', (done) => {
-        const first = 4
-        commonRequest({
-          url,
-          query: { includeTop: true, first, name: [commonGames.fortnite.name, commonGames.fortnite.name, commonGames.rimworld.name], id: [commonGames.league.id, commonGames.fortnite.id] },
-          rejectErrors: true,
-          done,
-          onSuccess: (err, res) => {
+        it('Does not have any duplicated games (top x name x id)', (done) => {
+          let passedIDs = passedGames.map(game => game.id);
+          let resultsIDs = results.map(game => game.id);
 
-            //Make a temporary array with these 3 desired games' IDs
-            let selectedIDs = [commonGames.fortnite.id, commonGames.league.id, commonGames.rimworld.id]
+          passedIDs.forEach(id => {
+            resultsIDs.indexOf(id).should
+              .equal(resultsIDs.lastIndexOf(id))
+              .and.not.equal(-1)
+          })
 
-            //We can't guarantee that Fortnite and League will be in the Top list, nor that Rimworld won't be. So we have to play with a safe guess
-            res.body.should.be.an('array').and.have.lengthOf.within(first, (first + selectedIDs.length));
-
-            //Get just the game IDs from the server's responses
-            let responseIDs = res.body.map(game => game.id)
-
-
-            //Go through that temporary array, and make sure that each of the games is found exactly once.
-            selectedIDs.forEach(id => {
-              responseIDs.indexOf(id).should
-                .equal(responseIDs.lastIndexOf(id))
-                .and.not.equal(-1)
-            })
-
-            done();
-          }
+          done();
         })
       })
     })
