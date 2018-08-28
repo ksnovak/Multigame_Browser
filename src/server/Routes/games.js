@@ -120,4 +120,9 @@ router.get('/combo', async (req, res, next) => {
 
 });
 
-module.exports = router;
+module.exports = {
+  router,
+  getTopGames,
+  getSpecificGames,
+  getTopAndSpecificGames
+};

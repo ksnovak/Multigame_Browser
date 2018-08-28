@@ -80,4 +80,7 @@ router.get('/top', (req, res, next) => {
   });
 });
 
-module.exports = router;
+module.exports = {
+  router,
+  getStreams
+};
