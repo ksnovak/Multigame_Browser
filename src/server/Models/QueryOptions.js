@@ -85,7 +85,7 @@ module.exports = {
             }
             else if (paramRequirements.type === 'boolean') {
               if (typeof params[paramName] === 'boolean') {
-                return params[paramName]
+                cleanedVal = params[paramName]
               }
               else {
 
