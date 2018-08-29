@@ -32,7 +32,7 @@ async function asyncCommonRequest({ url, query }) {
 
 describe('Router', function () {
   // Define what a "slow" execution is. Because these tests all have to hit Twitch's API, they're expected to be slower than others
-  this.slow(400);
+  this.slow(1);
 
   //Some names/IDs used for multiple tests, for ease/consistenccy
   let commonGames = {
@@ -41,7 +41,7 @@ describe('Router', function () {
     creative: { name: 'Creative', id: 488191 },
     fortnite: { name: 'Fortnite', id: 33214 },
     deadCells: { name: 'Dead Cells', id: 495961 },
-    league: { name: 'League of Legends', id: 21779 }
+    league: { name: 'League of Legends', id: 21779 },
   }
 
   it('Gets a response from the server', (done) => {
@@ -75,7 +75,7 @@ describe('Router', function () {
       });
 
       const first = 4;
-      it(`Gets the specified ${first} top games`, (done) => {
+      it(`Accepts \'first\' to retrieve a specific number of games`, (done) => {
         commonRequest({
           url,
           query: { first },
@@ -107,92 +107,62 @@ describe('Router', function () {
         });
       });
 
-      it('Accepts a game by name', (done) => {
-        commonRequest({
-          url,
-          query: { name: commonGames.rimworld.name },
-          rejectErrors: true,
-          done,
-          onSuccess: (err, res) => {
-            res.should.have.status(200);
-            expect(res.body)
-              .to.be.an('array')
-              .with.lengthOf(1);
-            expect(res.body[0]).to.have.property('id', commonGames.rimworld.id);
+      describe('Multiple tests on same result:', async (done) => {
+        let results;
 
-            done();
-          }
-        });
-      });
-      it('Accepts a game by ID', (done) => {
-        commonRequest({
-          url,
-          query: { id: commonGames.rimworld.id },
-          rejectErrors: true,
-          done,
-          onSuccess: (err, res) => {
-            res.should.have.status(200);
-            expect(res.body)
-              .to.be.an('array')
-              .with.lengthOf(1);
-            expect(res.body[0]).to.have.property('name', commonGames.rimworld.name);
+        before(async () => {
+          let response = await asyncCommonRequest({
+            url,
+            query: {
+              name: [commonGames.rimworld.name, commonGames.creative.name, 'World of wo', "Tom Clancy's Rainbow Six: Siege", "Dungeons & Dragons", "Tidalis"],
+              id: [commonGames.rimworld.id, commonGames.deadCells.id]
+            }
+          })
+          results = response.body
+        })
 
-            done();
-          }
-        });
-      });
-      it('Accepts multiple games', (done) => {
-        const gameNames = [
-          'Dead Cells', // Spaces in name
-          "Tom Clancy's Rainbow Six: Siege", // Apostrophe and Colon in name
-          'Dungeons & Dragons', // Ampersand in name
-          'Tidalis' // A game that is almost guaranteed to have no viewers (sorry, Arcen Games)
-        ];
-        commonRequest({
-          url,
-          query: { name: gameNames },
-          rejectErrors: true,
-          done,
-          onSuccess: (err, res) => {
-            res.should.have.status(200);
-            expect(res.body)
-              .to.be.an('array')
-              .with.lengthOf(gameNames.length);
+        it('Accepts multiple games', (done) => {
+          results.should.have.lengthOf(6)
+          done();
+        })
+        it('Does not have duplicates', (done) => {
+          let rimworldID = commonGames.rimworld.id;
+          let resultsIDs = results.map(game => game.id);
 
-            done();
-          }
-        });
-      });
-      it('Does not return partial matches', (done) => {
-        commonRequest({
-          url,
-          query: { name: 'World of Wo' },
-          rejectErrors: true,
-          done,
-          onSuccess: (err, res) => {
-            expect(res.body)
-              .to.be.an('array')
-              .with.lengthOf(0);
-            done();
-          }
-        });
-      });
+          resultsIDs.indexOf(rimworldID).should.equal(resultsIDs.lastIndexOf(rimworldID)).and.not.equal(-1)
 
-      it('Will not have duplicates', (done) => {
-        commonRequest({
-          url,
-          query: { name: [commonGames.rimworld.name, commonGames.rimworld.name], id: [commonGames.rimworld.id, commonGames.creative.id] },
-          rejectErrors: true,
-          done,
-          onSuccess: (err, res) => {
-            expect(res.body)
-              .to.be.an('array')
-              .with.lengthOf(2)
+          done();
+        })
 
-            done();
-          }
+        it('Accepts a game by name', (done) => {
+          results.map(game => game.name).should.contain(commonGames.creative.name)
+          done();
+        })
+
+        it('Accepts a game by ID', (done) => {
+          results.map(game => game.id).should.contain(commonGames.deadCells.id)
+          done();
+
+        })
+
+        it('Does not return partial matches', (done) => {
+          results.map(game => game.name).should.not.contain('World of Warcraft')
+          done();
+        })
+
+        it('Accepts unusual characters (Apostrophe, Colon, Ampersand)', (done) => {
+          results.map(game => game.name).should.contain("Tom Clancy's Rainbow Six: Siege").and.contain("Dungeons & Dragons")
+          done();
+        })
+
+        //Imperfect test. We can't know for sure that this game has no viewers, and no streamers. It's a fairly safe bet though.
+        it('Returns a game even if it has no viewers', (done) => {
+          results.map(game => game.name).should.contain('Tidalis')
+          done()
         })
       })
+
+
     });
 
     describe('/games/combo', () => {
@@ -233,7 +203,7 @@ describe('Router', function () {
         })
       })
 
-      describe('Supertest:', async (done) => {
+      describe('Multiple tests on same result:', async (done) => {
         const first = 5;
         const passedGames = [commonGames.fortnite, commonGames.league, commonGames.rimworld]
         let results;
@@ -314,6 +284,7 @@ describe('Router', function () {
         });
       });
     });
+
     describe('/streams/list', () => {
       const url = '/api/streams/list';
       it('Returns nothing with no games specified', (done) => {
@@ -328,80 +299,60 @@ describe('Router', function () {
           }
         });
       });
-      it('Gets streamers by game ID', (done) => {
-        commonRequest({
-          url,
-          query: { game_id: commonGames.alwaysOn.id }, // Always On
-          rejectErrors: true,
-          done,
-          onSuccess: (err, res) => {
-            res.body.should.be.an('array').and.have.lengthOf.above(0);
-            done();
-          }
-        });
-      });
-      it('Accepts multiple games (awkward test)', (done) => {
-        const gameIDs = [commonGames.creative.id, commonGames.alwaysOn.id];
-        commonRequest({
-          url,
-          query: { game_id: gameIDs },
-          rejectErrors: true,
-          done,
-          onSuccess: (err, res) => {
-            let gotCreative = false;
-            let gotAlwaysOn = false;
 
-            res.body.forEach((stream) => {
-              if (stream.game_id === gameIDs[0]) {
-                gotCreative = true;
-              } else if (stream.game_id === gameIDs[1]) {
-                gotAlwaysOn = true;
-              }
-            });
+      describe('Multiple tests on same result:', async (done) => {
+        let results;
+        let first = 15;
+        let passedIDs = [commonGames.league.id, commonGames.fortnite.id]
 
-            expect(gotCreative).to.be.true;
-            expect(gotAlwaysOn).to.be.true;
-            done();
-          }
-        });
-      });
-      it("Allows 'first' to reduce the number of streams", (done) => {
-        const first = 2;
-        commonRequest({
-          url,
-          query: { game_id: commonGames.alwaysOn.id, first },
-          rejectErrors: true,
-          done,
-          onSuccess: (err, res) => {
-            res.body.should.be.an('array').and.have.lengthOf(first);
-            done();
-          }
-        });
-      });
+        before(async () => {
+          let response = await asyncCommonRequest({
+            url,
+            query: { first, game_id: passedIDs },
+          })
+          results = response.body
+        })
 
-      it("Allows 'language' to filter out certain languages", (done) => {
-        // This is an awkward test. Making two calls, one nested, and testing that they have different results.
-        commonRequest({
-          url,
-          query: { game_id: commonGames.alwaysOn.id },
-          rejectErrors: true,
-          done,
-          onSuccess: (err, res) => {
-            const results = res.body;
+        it('Gets streamers by game ID', (done) => {
+          results.should.be.an('array').with.lengthOf.above(0)
+          done();
+        })
 
-            commonRequest({
-              url,
-              query: { game_id: commonGames.alwaysOn.id, language: 'es' },
-              rejectErrors: true,
-              done,
-              onSuccess: (err2, res2) => {
-                expect(results).to.not.deep.equal(res2.body);
-                done();
-              }
-            });
-          }
-        });
-      });
+        it('Displays results from multiple specified games', (done) => {
+          let gotLeague = false;
+          let gotFortnite = false;
+
+          results.forEach(stream => {
+            if (stream.game_id === passedIDs[0])
+              gotLeague = true;
+            else if (stream.game_id === passedIDs[1])
+              gotFortnite = true;
+          })
+
+          expect(gotLeague).to.be.true;
+          expect(gotFortnite).to.be.true;
+          done();
+        })
+
+        it("Allows 'first' to reduce the number of streams", (done) => {
+          results.should.have.lengthOf.within(0, first)
+          done()
+        })
+
+        it('Allows \'language\' to filter for certain languages', (done) => {
+          commonRequest({
+            url,
+            query: { game_id: passedIDs, language: 'es' },
+            rejectErrors: true,
+            done,
+            onSuccess: (err2, innerResults) => {
+
+              expect(results).to.not.deep.equal(innerResults.body);
+              done();
+            }
+          });
+        })
+      })
     });
     describe('/streams/combo', () => {
       it('exists')
