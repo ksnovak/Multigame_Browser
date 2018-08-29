@@ -1,14 +1,16 @@
 import React, { Component } from 'react';
 import './app.css';
 import OptionsPane from './OptionsPane/OptionsPane';
-import Directory from './Directory';
+import Directory from './Directory/Directory';
+import queryString from 'query-string';
+import axios from 'axios';
 
 export default class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
       games: null,
-      // streams: null,
+      streams: null,
       include: [],
       exclude: [],
       languages: [],
@@ -18,17 +20,27 @@ export default class App extends Component {
   }
 
   componentDidMount() {
-    fetch('/api/games/top?first=10')
-      .then(res => res.json())
-      .then((games) => {
-        this.setState({ games, generatedTime: Date.now() });
-      });
+    let qs = queryString.parse(location.search);
+    console.log(qs)
+
+    axios.get('/api/combo', {
+      params: {
+        includetop: qs.includeTop || false,
+        name: qs.name
+      }
+    })
+      .then(res => {
+
+        this.setState({
+          games: res.data.games,
+          streams: res.data.streams,
+          generatedTime: res.headers.date
+        })
+      })
   }
 
   render() {
-    const {
-      games, include, exclude, languages, includeTop, generatedTime
-    } = this.state;
+    const { streams, games, include, exclude, languages, includeTop, generatedTime } = this.state;
     return (
       <div id="home" className="row">
         <OptionsPane
@@ -40,7 +52,7 @@ export default class App extends Component {
           generatedTime={generatedTime}
         />
 
-        <Directory />
+        <Directory streams={streams} games={games} />
       </div>
     );
   }

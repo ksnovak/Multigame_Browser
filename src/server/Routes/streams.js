@@ -2,6 +2,7 @@ import express from 'express';
 import Stream from '../Models/Stream';
 import QueryOptions from '../Models/QueryOptions';
 import RoutesUtils from './routeUtils';
+import utils from '../../utils'
 
 const router = express.Router();
 
@@ -9,7 +10,8 @@ function streamsFromData(body) {
   try {
     if (body.error) throw body.error;
 
-    return body.data.map(stream => new Stream(stream));
+    let streamsArray = body.data.map(stream => new Stream(stream));
+    return utils.removeArrayDuplicates(streamsArray, 'user_id')
   } catch (ex) {
     throw ex;
   }
@@ -28,28 +30,18 @@ async function getStreams(options, next) {
 
     const [userStreams, gameStreams] = [await getStreams(userOnlyOptions, next), await getStreams(gameOnlyOptions, next)]
 
-    let combinedStreams = []
-    if (!userStreams.length || !gameStreams.length) {
-      combinedStreams = userStreams.length ? userStreams : gameStreams;
-    }
-    else {
-      combinedStreams = userStreams;
-
-      gameStreams.forEach(gameStream => {
-        let index = combinedStreams.map(userStream => { return userStream.user_id }).indexOf(gameStream.user_id)
-        if (index === -1) {
-          combinedStreams.push(gameStream)
-        }
-      })
-    }
-
-    return combinedStreams;
+    return utils.combineArraysWithoutDuplicates(userStreams, gameStreams, 'user_id');
   }
   //If the user only requested one of the types, make a simpler request:
-  else {
+  else if (options.game_id || options.user_id || options.user_login) {
     const results = await RoutesUtils.commonTwitchRequest({ uri: '/helix/streams', qs: options, rejectErrors: true, next });
 
     return streamsFromData(results);
+  }
+
+  //If none was requested, skip making a request entirely.
+  else {
+    return [];
   }
 }
 
@@ -93,4 +85,7 @@ router.get('/top', (req, res, next) => {
   });
 });
 
-module.exports = router;
+module.exports = {
+  router,
+  getStreams
+};

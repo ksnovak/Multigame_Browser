@@ -12,6 +12,33 @@
 
 ### Personal
 
+## 0.3.0 - Tues, Aug 28, 2018 - The client technically works now!
+
+### Overview
+
+I was tired of sitting deep in the weeds. There's an absolute ton of cleanup and implementation that needs doing on the backend, but I wanted a win.
+The client technically works. You've got to pass things in the querystring, but it accepts name, id, user_id, user_login, includetop, and first, to get streams and games.
+
+### Added
+- Client base functionality, with React (That was, after all, why I restarted this entire project)
+- You can search for games & users (via querystring, unfortunately), and will see them appear in the directory grid.
+- /api/combo. This is our entry into the app, grabbing both Stream and Game information
+-
+
+### Changed
+- Fixed a bug with boolean queryoptions
+- Added a couple common functions for combining arrays, they are very nice and handsome.
+- Tests got cleaned up a LOT. We went from calling Twitch 20x in 20 Tests, to 17x in 32 tests (a few new tests for existing services, and a few for the new api/combo endpoint).
+
+### Personal
+
+- Even though it's ugly as sin, it felt like a huge win to get the Directory to load.
+- I'm starting to wonder why I made endpoints other than /combo, since I'm not sure how often I'll ever need JUST games or streams.
+- React is surprisingly easy to use for passing data downward. I'm worried about working on bubbling it back up though
+- My QueryOptions mess is getting increasingly uncomfortable. I want to switch to a popular Validator/Sanitizer, and I also want to have a differentiation between incoming (User -> Us) QS and outgoing (Us -> Twitch) QS. Since we combine games & streams, there is some ambiguity (is "id" for the game or the stream? is includeTop the top games or top streams? how about first?), and we shouldn't be so closely coupled with Twitch's nomenclature.
+- There was a post on dev.to, "[Sprint Planning as Self Care](https://dev.to/kathryngrayson/sprint-planning-as-self-care-j59)", that suggested to make sure you have 3 types of stories in each sprint: Exciting, Easy, Stretch. Even though I don't exactly do sprints, I want to try enforcing that. Coming up next: Hooking up client event handlers to allow searches (with hard refreshes to begin with), Fixing query param nonsense, Caching
+
+
 ## 0.2.5 - Mon, Aug 27, 2018 - Minor tweaks
 
 ### Overview

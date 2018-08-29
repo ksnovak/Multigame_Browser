@@ -1,6 +1,6 @@
 {
 	"name": "multigame_browser",
-	"version": "0.2.5",
+	"version": "0.3.0",
 	"description": "Directory for streams of multiple games on Twitch.",
 	"main": "src/server/server.js",
 	"scripts": {
@@ -30,6 +30,7 @@
 		"express": "^4.16.3",
 		"moment": "^2.22.2",
 		"prop-types": "^15.6.2",
+		"query-string": "^6.1.0",
 		"react": "^16.3.1",
 		"react-dom": "^16.3.1",
 		"request": "^2.88.0"

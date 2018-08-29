@@ -12,7 +12,7 @@ export default class GamesList extends Component {
 
     if (games) {
       const optionList = games.map(game => (
-        <option key={game.id}>{game.name}</option>
+        <option key={game.id} selected={game.selected}>{game.name}</option>
       ));
       return (
         <select id="gameList" multiple="multiple" size="10">
