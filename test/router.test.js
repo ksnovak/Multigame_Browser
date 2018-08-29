@@ -284,7 +284,6 @@ describe('Router', function () {
         });
       });
     });
-
     describe('/streams/list', () => {
       const url = '/api/streams/list';
       it('Returns nothing with no games specified', (done) => {
