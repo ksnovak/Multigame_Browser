@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './app.css';
 import OptionsPane from './OptionsPane/OptionsPane';
-import Directory from './Directory';
+import Directory from './Directory/Directory';
 import queryString from 'query-string';
 import axios from 'axios';
 
@@ -40,7 +40,7 @@ export default class App extends Component {
   }
 
   render() {
-    const { games, include, exclude, languages, includeTop, generatedTime } = this.state;
+    const { streams, games, include, exclude, languages, includeTop, generatedTime } = this.state;
     return (
       <div id="home" className="row">
         <OptionsPane
@@ -52,7 +52,7 @@ export default class App extends Component {
           generatedTime={generatedTime}
         />
 
-        <Directory />
+        <Directory streams={streams} games={games} />
       </div>
     );
   }
