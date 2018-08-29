@@ -5,7 +5,7 @@ import os from 'os';
 import chalk from 'chalk';
 import games from './games';
 import streams from './streams';
-// import combo from './combo';
+import combo from './combo';
 import utils from '../../utils';
 import Errors from '../Models/Errors';
 
@@ -25,7 +25,7 @@ router.use((req, res, next) => {
 // Note this regex allows case-insensitive, as well as either "game" or "games" to work
 router.use(/\/api\/game(s)?/i, games.router);
 router.use(/\/api\/stream(s)?/i, streams.router);
-// router.use('/api/combo', combo.router);
+router.use('/api/combo', combo.router);
 
 // Routes for api specifically
 router.get('/api/', (req, res) => {

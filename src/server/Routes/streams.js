@@ -33,10 +33,15 @@ async function getStreams(options, next) {
     return utils.combineArraysWithoutDuplicates(userStreams, gameStreams, 'user_id');
   }
   //If the user only requested one of the types, make a simpler request:
-  else {
+  else if (options.game_id || options.user_id || options.user_login) {
     const results = await RoutesUtils.commonTwitchRequest({ uri: '/helix/streams', qs: options, rejectErrors: true, next });
 
     return streamsFromData(results);
+  }
+
+  //If none was requested, skip making a request entirely.
+  else {
+    return [];
   }
 }
 

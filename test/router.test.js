@@ -32,7 +32,7 @@ async function asyncCommonRequest({ url, query }) {
 
 describe('Router', function () {
   // Define what a "slow" execution is. Because these tests all have to hit Twitch's API, they're expected to be slower than others
-  this.slow(1);
+  this.slow(400);
 
   //Some names/IDs used for multiple tests, for ease/consistenccy
   let commonGames = {
@@ -354,8 +354,87 @@ describe('Router', function () {
         })
       })
     });
-    describe('/streams/combo', () => {
-      it('exists')
-    })
   });
+
+  describe('Combo', () => {
+    const url = '/api/combo';
+
+    it('Returns nothing, if nothing is specified', (done) => {
+      commonRequest({
+        url, rejectErrors: true, done, onSuccess: (err, res) => {
+
+          res.body.games.should.have.lengthOf(0);
+          res.body.streams.should.have.lengthOf(0);
+          done();
+        }
+      })
+    })
+    it('Returns the top games and streams, when passed \'includetop\'', (done) => {
+      commonRequest({
+        url, query: { includeTop: true }, rejectErrors: true, done, onSuccess: (err, res) => {
+          res.body.games.should.have.lengthOf(20);
+          res.body.streams.should.have.lengthOf(20);
+          done();
+        }
+      })
+    })
+
+
+    describe('Multiple tests on same result:', function () {
+      const first = 25;
+      let results;
+
+      before(async function () {
+        let response = await asyncCommonRequest({
+          url, first,
+          query: {
+            first,
+            name: [commonGames.rimworld.name],
+            id: [commonGames.deadCells.id],
+            user_login: ['food'],
+            user_id: 149747285 //TwitchPresents
+          }
+        })
+
+        results = response.body
+      })
+
+      it('Returns both Game and Stream data', (done) => {
+
+        results.should.have.property('games');
+        results.should.have.property('streams')
+
+        results.games.should.have.lengthOf(2)
+        done();
+      })
+      it('Returns s&g when passed a game name', (done) => {
+
+        results.games.map(game => game.id).should.include(commonGames.rimworld.id)
+        results.streams.map(stream => stream.game_id).should.include(commonGames.rimworld.id)
+        done();
+      })
+      it('Returns s&g when passed a game ID', (done) => {
+        results.games.map(game => game.id).should.include(commonGames.deadCells.id)
+        results.streams.map(stream => stream.game_id).should.include(commonGames.deadCells.id)
+        done();
+      })
+      it('Returns stream data when passed a username', (done) => {
+        results.streams.map(stream => stream.login).should.include('food')
+        done();
+      })
+      it('Returns stream data when passed a user ID', (done) => {
+
+        results.streams.map(stream => stream.login).should.include('twitchpresents')
+        done();
+
+      })
+      it('Accepts \'first\' to specify the number of streams returned', (done) => {
+        //Expected 2 extra because of 2 special users passed
+        results.streams.should.have.lengthOf(first + 2)
+        done()
+      })
+
+    })
+
+  })
 });
