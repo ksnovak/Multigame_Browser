@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import './app.css';
-import OptionsPane from './OptionsPane/OptionsPane';
-import Directory from './Directory/Directory';
 import queryString from 'query-string';
 import axios from 'axios';
+import OptionsPane from './OptionsPane/OptionsPane';
+import Directory from './Directory/Directory';
+import { version } from '../../package.json';
 
 export default class App extends Component {
   constructor(props) {
@@ -20,23 +21,22 @@ export default class App extends Component {
   }
 
   componentDidMount() {
-    let qs = queryString.parse(location.search);
-    console.log(qs)
+    const qs = queryString.parse(window.location.search);
 
-    axios.get('/api/combo', {
-      params: {
-        includetop: qs.includeTop || false,
-        name: qs.name
-      }
-    })
-      .then(res => {
-
+    axios
+      .get('/api/combo', {
+        params: {
+          includetop: qs.includeTop || false,
+          name: qs.name
+        }
+      })
+      .then((res) => {
         this.setState({
           games: res.data.games,
           streams: res.data.streams,
           generatedTime: res.headers.date
-        })
-      })
+        });
+      });
   }
 
   render() {
@@ -50,6 +50,7 @@ export default class App extends Component {
           languages={languages}
           includeTop={includeTop}
           generatedTime={generatedTime}
+          version={version}
         />
 
         <Directory streams={streams} games={games} />

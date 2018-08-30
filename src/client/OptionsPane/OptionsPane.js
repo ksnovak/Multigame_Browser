@@ -14,39 +14,24 @@ export default class OptionsPane extends Component {
   }
 
   render() {
-    const {
-      languages, includeTop, games, include, exclude, generatedTime
-    } = this.props;
+    const { languages, includeTop, games, include, exclude, generatedTime, version } = this.props;
 
     return (
       <div className="optionsPane col-sm-2 col-lg-3 form-group">
         <form>
           <TopButtons />
 
-          <OptionsButtons
-            englishOnly={languages.includes('en')}
-            includeTop={includeTop}
-          />
+          <OptionsButtons englishOnly={languages.includes('en')} includeTop={includeTop} />
 
           <GamesList games={games} />
 
           <TextList id="includeGames" label="Additional games: " />
-
-          <TextList
-            id="includeList"
-            label="Include these users: "
-            list={include}
-          />
-
-          <TextList
-            id="excludeList"
-            label="Exclude these users: "
-            list={exclude}
-          />
+          <TextList id="includeList" label="Include these users: " list={include} />
+          <TextList id="excludeList" label="Exclude these users: " list={exclude} />
 
           <BottomButtons />
 
-          <GeneratedAt generatedTime={generatedTime} />
+          <GeneratedAt generatedTime={generatedTime} version={version} />
         </form>
       </div>
     );
