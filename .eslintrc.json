@@ -13,6 +13,11 @@
 		"react/destructuring-assessment": "off",
 		"linebreak-style": ["error", "windows"],
 		"max-len": "off",
-		"no-tabs": "off"
+		"no-tabs": "off",
+		"brace-style": ["warn", "stroustrup"],
+		"object-curly-newline": "off",
+		"camelcase": "off",
+		"curly": "warn",
+		"nonblock-statement-body-position": "off"
 	}
 }
