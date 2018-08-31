@@ -50,10 +50,22 @@ const incomingOptions = {
   }
 };
 
+const twitchEndpoints = {
+  '/helix/games': '/games/specific',
+  '/helix/games/top': '/games/top',
+  '/helix/streams': '/streams/list'
+};
+
 module.exports = {
   // Get all of the possible options for a given endpoint
   getOptionSet(endpoint) {
     return incomingOptions[endpoint] || null;
+  },
+
+  getOptionSetFromTwitchEndpoint(twitchEndpoint) {
+    const localEndpoint = twitchEndpoints[twitchEndpoint];
+
+    return this.getOptionSet(localEndpoint);
   },
 
   // Make sure the passed-in parameter is even able to be valid
@@ -198,12 +210,13 @@ module.exports = {
   },
 
   // Convert the internal parameters to the Twitch-appropriate param name
-  getOutgoingOptions(endpoint, params) {
-    const optionSet = this.getOptionSet(endpoint);
+  getOutgoingOptions(twitchEndpoint, params) {
+    const optionSet = this.getOptionSetFromTwitchEndpoint(twitchEndpoint);
     const outgoing = {};
 
-    if (!optionSet)
+    if (!optionSet) {
       return null;
+    }
 
     Object.keys(params).forEach((paramName) => {
       const option = optionSet[paramName];
