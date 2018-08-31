@@ -177,6 +177,26 @@ describe('Models', () => {
         expect(QueryOptions.getSimplifiedArray(true, undefined)).to.equal(null);
       });
     });
+
+    describe.only('Default values', () => {
+      it('Returns a default value if the given one is invalid', () => {
+        expect(QueryOptions.getDefaultValue(37, undefined)).to.equal(37);
+        expect(QueryOptions.getDefaultValue('Rimworld', null)).to.equal('Rimworld');
+      });
+
+      it('Ignores default value if there is a valid user-passed value', () => {
+        const valueSets = [
+          { default: 37, user: 50 },
+          { default: 'Rimworld', user: 'Dead Cells' },
+          { default: true, user: false },
+          { default: 1, user: 0 }
+        ];
+
+        valueSets.forEach((vals) => {
+          expect(QueryOptions.getDefaultValue(vals.default, vals.user)).to.equal(vals.user);
+        });
+      });
+    });
     });
   });
 });
