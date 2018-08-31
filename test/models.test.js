@@ -203,14 +203,14 @@ describe('Models', () => {
         include_top_games: 'true',
         games_count: '30',
         game_id: 'Eight',
-        game_name: 'Rimworld'
+        game_name: 'A'
       };
       const output_one = QueryOptions.cleanIncomingQueryOptions('/games/combo', input_one);
 
       const input_two = {
         include_top_games: 'yes please',
-        game_name: ['Rimworld', 'Dead Cells', 'Fortnite'],
-        GAME_NAME: 'League of Legends',
+        game_name: ['A', 'B', 'C'],
+        GAME_NAME: 'D',
         game_id: [1, null, 3, 'four', '5', false]
       };
       const output_two = QueryOptions.cleanIncomingQueryOptions('/games/combo', input_two);
@@ -225,7 +225,7 @@ describe('Models', () => {
         expect(output_one.game_id).to.equal(undefined);
       });
       it('Duplicate-allowing properties accept a single value', () => {
-        expect(output_one.game_name).to.equal('Rimworld');
+        expect(output_one.game_name).to.equal('A');
       });
       it('Duplicate-allowing properties handle differing-case params being passed in', () => {
         expect(output_two.game_name)
@@ -233,12 +233,7 @@ describe('Models', () => {
           .with.lengthOf(4);
       });
       it('Duplicate-allowing properties accept multiple values', () => {
-        expect(output_two.game_name).to.deep.equal([
-          'Rimworld',
-          'Dead Cells',
-          'Fortnite',
-          'League of Legends'
-        ]);
+        expect(output_two.game_name).to.deep.equal(['A', 'B', 'C', 'D']);
       });
       it('Duplicate-allowing properties properly test for types', () => {
         expect(output_two.game_id).to.deep.equal([1, 3, 5]);
@@ -248,6 +243,44 @@ describe('Models', () => {
       });
       it('Applies default values where no valid value is specified', () => {
         expect(output_two.include_top_games).to.equal(false);
+      });
+
+      it('Has proper values after re-running the cleaning process on the same parameters', () => {
+        const output_reran = QueryOptions.cleanIncomingQueryOptions('/games/combo', input_two);
+
+        expect(output_reran).to.deep.equal({
+          include_top_games: false,
+          game_name: ['A', 'B', 'C', 'D'],
+          game_id: [1, 3, 5]
+        });
+      });
+    });
+
+    describe('Outgoing parameters', () => {
+      const params = {
+        games_count: 25,
+        games_after: 10,
+        include_top: false
+      };
+
+      const outgoingVals = QueryOptions.getOutgoingOptions('/games/top', params);
+
+      it('Converts local names to proper outgoing names', () => {
+        expect(outgoingVals).to.have.property('first', params.games_count);
+      });
+      it("Does not add keys that weren't specified by the user", () => {
+        expect(outgoingVals).to.not.have.property('before');
+      });
+      it('Properly strips a key that has no outgoing value', () => {
+        expect(outgoingVals).to.not.have.property('include_top');
+      });
+
+      it('Returns null for an invalid endpoint', () => {
+        const outgoing = QueryOptions.getOutgoingOptions('/fun', {
+          game_name: 'Rimworld',
+          user_name: 'Etalyx'
+        });
+        expect(outgoing).to.equal(null);
       });
     });
   });

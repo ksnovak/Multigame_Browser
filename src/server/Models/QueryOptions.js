@@ -49,14 +49,14 @@ const queryOptions = {
 // All options from the user that we accept
 const incomingOptions = {
   '/games/top': {
-    games_count: { type: 'number' },
-    games_before: { type: 'number' },
-    games_after: { type: 'number' },
+    games_count: { type: 'number', outgoing: 'first' },
+    games_before: { type: 'number', outgoing: 'before' },
+    games_after: { type: 'number', outgoing: 'after' },
     include_top: { type: 'boolean' }
   },
   '/games/specific': {
-    game_id: { type: 'number', duplicate: true },
-    game_name: { duplicate: true }
+    game_id: { type: 'number', duplicate: true, outgoing: 'id' },
+    game_name: { duplicate: true, outgoing: 'name' }
   },
   '/games/combo': {
     include_top_games: { type: 'boolean', default: false },
@@ -65,19 +65,19 @@ const incomingOptions = {
     game_name: { duplicate: true }
   },
   '/streams/list': {
-    streams_count: { type: 'number' },
-    streams_before: { type: 'number' },
-    streams_after: { type: 'number' },
-    game_id: { type: 'number', duplicate: true },
-    stream_id: { type: 'number', duplicate: true },
-    stream_name: { duplicate: true },
-    language: { duplicate: true }
+    streams_count: { type: 'number', outgoing: 'first' },
+    streams_before: { type: 'number', outgoing: 'before' },
+    streams_after: { type: 'number', outgoing: 'after' },
+    game_id: { type: 'number', duplicate: true, outgoing: 'game_id' },
+    stream_id: { type: 'number', duplicate: true, outgoing: 'user_id' },
+    stream_name: { duplicate: true, outgoing: 'user_login' },
+    language: { duplicate: true, outgoing: 'language' }
   },
   '/streams/top': {
-    streams_count: { type: 'number' },
-    streams_before: { type: 'number' },
-    streams_after: { type: 'number' },
-    language: { duplicate: true }
+    streams_count: { type: 'number', outgoing: 'first' },
+    streams_before: { type: 'number', outgoing: 'before' },
+    streams_after: { type: 'number', outgoing: 'after' },
+    language: { duplicate: true, outgoing: 'language' }
   },
   '/combo': {
     include_top_games: { type: 'boolean', default: false },
@@ -237,6 +237,24 @@ module.exports = {
     });
 
     return cleanedParams;
+  },
+
+  // Convert the internal parameters to the Twitch-appropriate param name
+  getOutgoingOptions(endpoint, params) {
+    const optionSet = this.getOptionSet(endpoint);
+    const outgoing = {};
+
+    if (!optionSet)
+      return null;
+
+    Object.keys(params).forEach((paramName) => {
+      const option = optionSet[paramName];
+      if (option.outgoing !== undefined) {
+        outgoing[option.outgoing] = params[paramName];
+      }
+    });
+
+    return outgoing;
   },
 
   // Return all valid and relevant querystring parameters, given the specified endpoint, and the starting querystring object.
