@@ -120,11 +120,18 @@ module.exports = {
   },
 
   // Retrieve the user-sent values that match the specified parameter
-  getPassedVals(allowedProperties, passedNames, params) {
+  getPassedVals(passedNames, params) {
     let values = [];
-    passedNames.forEach((name) => {
-      values = values.concat(params[name]);
-    });
+    if (Array.isArray(passedNames)) {
+      passedNames.forEach((name) => {
+        if (params && params[name] !== undefined) {
+          values = values.concat(params[name]);
+        }
+      });
+    }
+    else if (params && (params[passedNames] !== undefined || params[passedNames !== null])) {
+      values.push(params[passedNames]);
+    }
     return values.length ? values : null;
   },
 
@@ -132,7 +139,9 @@ module.exports = {
   getCleanedNumbers(values) {
     const cleanedNumbers = [];
     values.forEach((val) => {
-      if (!isNaN(val) && val !== null) cleanedNumbers.push(Number(val));
+      if (!isNaN(val) && val !== null && (typeof val === 'string' || typeof val === 'number')) {
+        cleanedNumbers.push(Number(val));
+      }
     });
 
     return cleanedNumbers.length ? cleanedNumbers : null;
@@ -157,6 +166,18 @@ module.exports = {
     });
 
     return cleanedBools.length ? cleanedBools : null;
+  },
+
+  getTypedValues(type, values) {
+    if (type === 'number') {
+      return this.getCleanedNumbers(values);
+    }
+
+    if (type === 'boolean') {
+      return this.getCleanedBools(values);
+    }
+
+    return values;
   },
 
   // Check if there is a default value for a given parameter, and fall back to it if the parameter value currently is invalid

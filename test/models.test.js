@@ -89,7 +89,7 @@ describe('Models', () => {
       });
     });
 
-    describe('Parameter value cleaning', () => {
+    describe('Parameter value retrieving', () => {
       const optionSet = {
         include_top_games: { type: 'boolean', default: false },
         games_count: { type: 'number' },
@@ -103,12 +103,63 @@ describe('Models', () => {
         GAME_ID: 63
       };
 
-      const vals = QueryOptions.getPassedVals(optionSet, ['game_id', 'GAME_ID'], params);
-      expect(vals)
-        .to.be.an('array')
-        .with.lengthOf(4);
+      it('Gets the values from a specified parameter', () => {
+        const vals = QueryOptions.getPassedVals('games_count', params);
+        expect(vals)
+          .to.be.an('array')
+          .with.lengthOf(1);
+      });
+      it('Gets the values when there are 2 relevant parameters', () => {
+        const vals = QueryOptions.getPassedVals(['game_id', 'GAME_ID'], params);
+        expect(vals)
+          .to.be.an('array')
+          .with.lengthOf(4);
+      });
+      it('Gracefully handles a non-existent parameter', () => {
+        expect(QueryOptions.getPassedVals('height', params)).to.equal(null);
+        expect(QueryOptions.getPassedVals('', params)).to.equal(null);
+        expect(QueryOptions.getPassedVals(null, params)).to.equal(null);
+        expect(QueryOptions.getPassedVals(54353, params)).to.equal(null);
+      });
+      it('Gracefully handles a non-existent params set', () => {
+        const vals = QueryOptions.getPassedVals('games_count', null);
+      });
     });
 
+    describe.only('Typed value cleanup', () => {
+      const optionSet = {
+        include_top_games: { type: 'boolean', duplicate: true, default: false },
+        games_count: { type: 'number' },
+        game_id: { type: 'number', duplicate: true }
+      };
+
+      it('Retrieves all numbers from the passed parameter array', () => {
+        const inValues = [5, '6', 'seven', null, undefined, true];
+        const outValues = QueryOptions.getCleanedNumbers(inValues);
+
+        expect(outValues).to.deep.equal([5, 6]);
+      });
+
+      it('Returns null if there were no valid numerical values', () => {
+        expect(QueryOptions.getCleanedNumbers(['seven', 'fifty'])).to.equal(null);
+      });
+
+      it('Retrieves all the boolean values from the passed parameter array', () => {
+        const inValues = [true, false, 'TRUE', 'f', 1, 50, null, undefined, 'tralse', false];
+        expect(QueryOptions.getCleanedBools(inValues)).to.deep.equal([
+          true,
+          false,
+          true,
+          false,
+          true,
+          false
+        ]);
+      });
+
+      it('Returns null if there wer no valid boolean values', () => {
+        expect(QueryOptions.getCleanedBools(['troo', 'flase'])).to.equal(null);
+      });
+    });
     });
   });
 });
