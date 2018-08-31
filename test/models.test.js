@@ -146,18 +146,35 @@ describe('Models', () => {
 
       it('Retrieves all the boolean values from the passed parameter array', () => {
         const inValues = [true, false, 'TRUE', 'f', 1, 50, null, undefined, 'tralse', false];
-        expect(QueryOptions.getCleanedBools(inValues)).to.deep.equal([
-          true,
-          false,
-          true,
-          false,
-          true,
-          false
-        ]);
+        const outVals = QueryOptions.getCleanedBools(inValues);
+        expect(outVals).to.deep.equal([true, false, true, false, true, false]);
       });
 
-      it('Returns null if there wer no valid boolean values', () => {
+      it('Returns null if there were no valid boolean values', () => {
         expect(QueryOptions.getCleanedBools(['troo', 'flase'])).to.equal(null);
+      });
+    });
+
+    describe('Array simplification', () => {
+      it('Retrieves the first value of an array, if arrays are disallowed', () => {
+        expect(QueryOptions.getSimplifiedArray(false, [5, 23, 900, 'awesome'])).to.equal(5);
+      });
+
+      it('Correctly handles a single element being passed in', () => {
+        expect(QueryOptions.getSimplifiedArray(true, 23)).to.equal(23);
+      });
+
+      it('Converts from array of 1 into the single element', () => {
+        expect(QueryOptions.getSimplifiedArray(true, ['Bananas'])).to.equal('Bananas');
+      });
+
+      it('Retains an array if allowed to', () => {
+        const inValues = ['Balance', 'Brilliance', 'Bravery'];
+        expect(QueryOptions.getSimplifiedArray(true, inValues)).to.equal(inValues);
+      });
+
+      it('Returns null if there are no valid values to return', () => {
+        expect(QueryOptions.getSimplifiedArray(true, undefined)).to.equal(null);
       });
     });
     });
