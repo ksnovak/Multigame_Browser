@@ -10,10 +10,10 @@ require('dotenv').config();
 const router = express.Router();
 
 async function getGamesAndStreams(options, next) {
-	const gamesOptions = QueryOptions.getValidQueryOptions('/games/combo', options);
+	const gamesOptions = QueryOptions.cleanIncomingQueryOptions('/games/combo', options);
 	const gamesResult = await Games.getTopAndSpecificGames(gamesOptions, next)
 
-	const streamsOptions = QueryOptions.getValidQueryOptions('/streams/list', options);
+	const streamsOptions = QueryOptions.cleanIncomingQueryOptions('/streams/list', options);
 	if (gamesResult.length)
 		streamsOptions.game_id = (streamsOptions.game_id || []).concat(gamesResult.filter(game => game.selected).map(game => game.id))
 
@@ -22,7 +22,7 @@ async function getGamesAndStreams(options, next) {
 }
 
 router.get('/', async (req, res, next) => {
-	const options = QueryOptions.getValidQueryOptions('/combo', req.query);
+	const options = QueryOptions.cleanIncomingQueryOptions('/combo', req.query);
 
 	if (options.includetop === undefined) {
 		options.includetop = false;
