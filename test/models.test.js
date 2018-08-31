@@ -126,7 +126,7 @@ describe('Models', () => {
       });
     });
 
-    describe.only('Typed value cleanup', () => {
+    describe('Typed value cleanup', () => {
       const optionSet = {
         include_top_games: { type: 'boolean', duplicate: true, default: false },
         games_count: { type: 'number' },
@@ -178,7 +178,7 @@ describe('Models', () => {
       });
     });
 
-    describe.only('Default values', () => {
+    describe('Default values', () => {
       it('Returns a default value if the given one is invalid', () => {
         expect(QueryOptions.getDefaultValue(37, undefined)).to.equal(37);
         expect(QueryOptions.getDefaultValue('Rimworld', null)).to.equal('Rimworld');
@@ -260,10 +260,11 @@ describe('Models', () => {
       const params = {
         games_count: 25,
         games_after: 10,
-        include_top: false
+        include_top_games: false
       };
 
-      const outgoingVals = QueryOptions.getOutgoingOptions('/games/top', params);
+      const outgoingVals = QueryOptions.getOutgoingOptions('/helix/games/top', params);
+
 
       it('Converts local names to proper outgoing names', () => {
         expect(outgoingVals).to.have.property('first', params.games_count);
@@ -272,7 +273,7 @@ describe('Models', () => {
         expect(outgoingVals).to.not.have.property('before');
       });
       it('Properly strips a key that has no outgoing value', () => {
-        expect(outgoingVals).to.not.have.property('include_top');
+        expect(outgoingVals).to.not.have.property('include_top_games');
       });
 
       it('Returns null for an invalid endpoint', () => {

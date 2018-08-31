@@ -1,44 +1,43 @@
-
 import express from 'express';
 import QueryOptions from '../Models/QueryOptions';
-import RoutesUtils from './routeUtils';
-import Games from './games'
-import Streams from './streams'
+import Games from './games';
+import Streams from './streams';
 
 require('dotenv').config();
 
 const router = express.Router();
 
 async function getGamesAndStreams(options, next) {
-	const gamesOptions = QueryOptions.cleanIncomingQueryOptions('/games/combo', options);
-	const gamesResult = await Games.getTopAndSpecificGames(gamesOptions, next)
+  const gamesOptions = QueryOptions.cleanIncomingQueryOptions('/games/combo', options);
 
-	const streamsOptions = QueryOptions.cleanIncomingQueryOptions('/streams/list', options);
-	if (gamesResult.length)
-		streamsOptions.game_id = (streamsOptions.game_id || []).concat(gamesResult.filter(game => game.selected).map(game => game.id))
+  const gamesResult = await Games.getTopAndSpecificGames(gamesOptions, next);
 
-	const streamsResult = await Streams.getStreams(streamsOptions, next);
-	return { games: gamesResult, streams: streamsResult }
+  const streamsOptions = QueryOptions.cleanIncomingQueryOptions('/streams/list', options);
+
+  if (gamesResult.length) {
+    const gameIDs = gamesResult.filter(game => game.selected).map(game => game.id);
+
+    streamsOptions.game_id = gameIDs.concat(streamsOptions.game_id);
+  }
+
+  const streamsResult = await Streams.getTopAndSpecificStreams(streamsOptions, next);
+  return { games: gamesResult, streams: streamsResult };
 }
 
 router.get('/', async (req, res, next) => {
-	const options = QueryOptions.cleanIncomingQueryOptions('/combo', req.query);
+  try {
+    const options = QueryOptions.cleanIncomingQueryOptions('/combo', req.query);
 
-	if (options.includetop === undefined) {
-		options.includetop = false;
-	}
+    const results = await getGamesAndStreams(options, next);
 
-	try {
-		const results = await getGamesAndStreams(options, next);
-		res.send(results)
-	}
-	catch (err) {
-		next(err)
-	}
+    res.send(results);
+  }
+  catch (err) {
+    next(err);
+  }
 });
 
-
 module.exports = {
-	router,
-	getGamesAndStreams
+  router,
+  getGamesAndStreams
 };

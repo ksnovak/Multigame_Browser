@@ -24,25 +24,25 @@ function commonRequest({ url, query, onSuccess, rejectErrors, done }) {
 }
 
 async function asyncCommonRequest({ url, query }) {
-  return await chai
+  return chai
     .request(app)
     .get(url)
-    .query(query)
+    .query(query);
 }
 
 describe('Router', function () {
   // Define what a "slow" execution is. Because these tests all have to hit Twitch's API, they're expected to be slower than others
   this.slow(400);
 
-  //Some names/IDs used for multiple tests, for ease/consistenccy
-  let commonGames = {
+  // Some names/IDs used for multiple tests, for ease/consistenccy
+  const commonGames = {
     rimworld: { name: 'RimWorld', id: 394568 },
     alwaysOn: { name: 'Always On', id: 499973 },
     creative: { name: 'Creative', id: 488191 },
     fortnite: { name: 'Fortnite', id: 33214 },
     deadCells: { name: 'Dead Cells', id: 495961 },
-    league: { name: 'League of Legends', id: 21779 },
-  }
+    league: { name: 'League of Legends', id: 21779 }
+  };
 
   it('Gets a response from the server', (done) => {
     commonRequest({
@@ -58,10 +58,9 @@ describe('Router', function () {
   });
 
   describe('Games', () => {
-
     describe('/games/top', () => {
       const url = '/api/games/top';
-      //Awkward test because for some reason the Twitch API sometimes returns 1-too-few games in the /top list.
+      // Awkward test because for some reason the Twitch API sometimes returns 1-too-few games in the /top list.
       it('Gets top 20 games by default', (done) => {
         commonRequest({
           url,
@@ -74,15 +73,15 @@ describe('Router', function () {
         });
       });
 
-      const first = 4;
-      it(`Accepts \'first\' to retrieve a specific number of games`, (done) => {
+      const games_count = 4;
+      it("Accepts 'games_count' to retrieve a specific number of games", (done) => {
         commonRequest({
           url,
-          query: { first },
+          query: { games_count },
           rejectErrors: true,
           done,
           onSuccess: (err, res) => {
-            res.body.should.be.an('array').and.have.lengthOf.within(first - 1, first);
+            res.body.should.be.an('array').and.have.lengthOf.within(games_count - 1, games_count);
             done();
           }
         });
@@ -107,62 +106,72 @@ describe('Router', function () {
         });
       });
 
-      describe('Multiple tests on same result:', async (done) => {
+      describe('Multiple tests on same result:', async () => {
         let results;
 
         before(async () => {
-          let response = await asyncCommonRequest({
+          const response = await asyncCommonRequest({
             url,
             query: {
-              name: [commonGames.rimworld.name, commonGames.creative.name, 'World of wo', "Tom Clancy's Rainbow Six: Siege", "Dungeons & Dragons", "Tidalis"],
-              id: [commonGames.rimworld.id, commonGames.deadCells.id]
+              game_name: [
+                commonGames.rimworld.name,
+                commonGames.creative.name,
+                'World of wo',
+                "Tom Clancy's Rainbow Six: Siege",
+                'Dungeons & Dragons',
+                'Tidalis'
+              ],
+              game_id: [commonGames.rimworld.id, commonGames.deadCells.id]
             }
-          })
-          results = response.body
-        })
+          });
+          results = response.body;
+        });
 
         it('Accepts multiple games', (done) => {
-          results.should.have.lengthOf(6)
+          results.should.have.lengthOf(6);
           done();
-        })
+        });
         it('Does not have duplicates', (done) => {
-          let rimworldID = commonGames.rimworld.id;
-          let resultsIDs = results.map(game => game.id);
+          const rimworldID = commonGames.rimworld.id;
+          const resultsIDs = results.map(game => game.id);
 
-          resultsIDs.indexOf(rimworldID).should.equal(resultsIDs.lastIndexOf(rimworldID)).and.not.equal(-1)
+          resultsIDs
+            .indexOf(rimworldID)
+            .should.equal(resultsIDs.lastIndexOf(rimworldID))
+            .and.not.equal(-1);
 
           done();
-        })
+        });
 
         it('Accepts a game by name', (done) => {
-          results.map(game => game.name).should.contain(commonGames.creative.name)
+          results.map(game => game.name).should.contain(commonGames.creative.name);
           done();
-        })
+        });
 
         it('Accepts a game by ID', (done) => {
-          results.map(game => game.id).should.contain(commonGames.deadCells.id)
+          results.map(game => game.id).should.contain(commonGames.deadCells.id);
           done();
-
-        })
+        });
 
         it('Does not return partial matches', (done) => {
-          results.map(game => game.name).should.not.contain('World of Warcraft')
+          results.map(game => game.name).should.not.contain('World of Warcraft');
           done();
-        })
+        });
 
         it('Accepts unusual characters (Apostrophe, Colon, Ampersand)', (done) => {
-          results.map(game => game.name).should.contain("Tom Clancy's Rainbow Six: Siege").and.contain("Dungeons & Dragons")
+          results
+            .map(game => game.name)
+            .should.contain("Tom Clancy's Rainbow Six: Siege")
+            .and.contain('Dungeons & Dragons');
           done();
-        })
+        });
 
-        //Imperfect test. We can't know for sure that this game has no viewers, and no streamers. It's a fairly safe bet though.
+        // Imperfect test. We can't know for sure that this game has no viewers, and no streamers. It's a fairly safe bet though.
         it('Returns a game even if it has no viewers', (done) => {
-          results.map(game => game.name).should.contain('Tidalis')
-          done()
-        })
-      })
-
-
+          results.map(game => game.name).should.contain('Tidalis');
+          done();
+        });
+      });
     });
 
     describe('/games/combo', () => {
@@ -170,90 +179,109 @@ describe('Router', function () {
 
       it('Returns nothing, if nothing is specified', (done) => {
         commonRequest({
-          url, rejectErrors: true, done, onSuccess: (err, res) => {
+          url,
+          rejectErrors: true,
+          done,
+          onSuccess: (err, res) => {
             res.body.should.be.an('array').and.have.lengthOf(0);
             done();
           }
-        })
-      })
+        });
+      });
 
       it('Does not return top games if the flag is false', (done) => {
         commonRequest({
-          url, query: { includeTop: false, name: [commonGames.rimworld.name, commonGames.deadCells.name] }, rejectErrors: true, done, onSuccess: (err, res) => {
+          url,
+          query: {
+            include_top_games: false,
+            game_name: [commonGames.rimworld.name, commonGames.deadCells.name]
+          },
+          rejectErrors: true,
+          done,
+          onSuccess: (err, res) => {
             res.body.should.be.an('array').and.have.lengthOf(2);
             done();
           }
-        })
-      })
-
+        });
+      });
 
       it('Gets the top games and specified ones', (done) => {
         commonRequest({
-          url, query: { includeTop: true, name: [commonGames.rimworld.name, commonGames.deadCells.name] }, rejectErrors: true, done, onSuccess: (err, res) => {
-            //See comment on the main /games/top test for why this is a "within" range
+          url,
+          query: {
+            include_top_games: true,
+            game_name: [commonGames.rimworld.name, commonGames.deadCells.name]
+          },
+          rejectErrors: true,
+          done,
+          onSuccess: (err, res) => {
+            // See comment on the main /games/top test for why this is a "within" range
             res.body.should.be.an('array').and.have.lengthOf.within(21, 22);
 
-            let rimworldLocation = res.body.map(game => { return game.name }).indexOf(commonGames.rimworld.name);
+            const rimworldLocation = res.body
+              .map(game => game.name)
+              .indexOf(commonGames.rimworld.name);
 
-            rimworldLocation.should.not.equal(-1)
-            res.body[rimworldLocation].should.have.property('selected', true)
+            rimworldLocation.should.not.equal(-1);
+            res.body[rimworldLocation].should.have.property('selected', true);
 
             done();
           }
-        })
-      })
+        });
+      });
 
-      describe('Multiple tests on same result:', async (done) => {
-        const first = 5;
-        const passedGames = [commonGames.fortnite, commonGames.league, commonGames.rimworld]
+      describe('Multiple tests on same result:', async () => {
+        const games_count = 5;
+        const passedGames = [commonGames.fortnite, commonGames.league, commonGames.rimworld];
         let results;
 
         before(async () => {
-          let response = await asyncCommonRequest({
+          const response = await asyncCommonRequest({
             url,
-            first,
+            games_count,
             query: {
-              includeTop: true,
-              first,
-              name: [passedGames[0].name, passedGames[0].name, passedGames[2].name],
-              id: [passedGames[1].id, passedGames[0].id]
+              include_top_games: true,
+              games_count,
+              game_name: [passedGames[0].name, passedGames[0].name, passedGames[2].name],
+              game_id: [passedGames[1].id, passedGames[0].id]
             }
-          })
-          results = response.body
-        })
+          });
+          results = response.body;
+        });
 
-        it('Accepts \'first\' to change the number of games', (done) => {
-          results.should.be.an('array').with.lengthOf.within(first, first + passedGames.length)
+        it("Accepts 'games_count' to change the number of games", (done) => {
+          results.should.be.an('array').with.lengthOf.within(games_count, games_count + passedGames.length);
           done();
-        })
+        });
 
         it('Has a special flag for all Specified games', (done) => {
           let selectedCount = 0;
-          const passedIDs = passedGames.map(game => game.id)
-          results.forEach(game => {
+          const passedIDs = passedGames.map(game => game.id);
+          results.forEach((game) => {
             if (game.selected && passedIDs.includes(game.id)) {
-              selectedCount++;
+              selectedCount += 1;
             }
-          })
+          });
 
           selectedCount.should.equal(passedGames.length);
           done();
-        })
+        });
 
         it('Does not have any duplicated games (top x name x id)', (done) => {
-          let passedIDs = passedGames.map(game => game.id);
-          let resultsIDs = results.map(game => game.id);
+          const passedIDs = passedGames.map(game => game.id);
+          const resultsIDs = results.map(game => game.id);
 
-          passedIDs.forEach(id => {
-            resultsIDs.indexOf(id).should
-              .equal(resultsIDs.lastIndexOf(id))
-              .and.not.equal(-1)
-          })
+          passedIDs.forEach((id) => {
+            resultsIDs
+              .indexOf(id)
+              .should.equal(resultsIDs.lastIndexOf(id))
+              .and.not.equal(-1);
+          });
 
           done();
-        })
-      })
-    })
+        });
+      });
+    });
   });
 
   describe('Streams', () => {
@@ -270,15 +298,15 @@ describe('Router', function () {
           }
         });
       });
-      it("Accepts 'first' to reduce the number of streams", (done) => {
-        const first = 7;
+      it("Accepts 'streams_count' to reduce the number of streams", (done) => {
+        const streams_count = 7;
         commonRequest({
           url,
-          query: { first },
+          query: { streams_count },
           rejectErrors: true,
           done,
           onSuccess: (err, res) => {
-            res.body.should.be.an('array').and.have.lengthOf(first);
+            res.body.should.be.an('array').and.have.lengthOf(streams_count);
             done();
           }
         });
@@ -299,59 +327,56 @@ describe('Router', function () {
         });
       });
 
-      describe('Multiple tests on same result:', async (done) => {
+      describe('Multiple tests on same result:', async () => {
         let results;
-        let first = 15;
-        let passedIDs = [commonGames.league.id, commonGames.fortnite.id]
+        const streams_count = 15;
+        const passedIDs = [commonGames.league.id, commonGames.fortnite.id];
 
         before(async () => {
-          let response = await asyncCommonRequest({
+          const response = await asyncCommonRequest({
             url,
-            query: { first, game_id: passedIDs },
-          })
-          results = response.body
-        })
+            query: { streams_count, game_id: passedIDs }
+          });
+          results = response.body;
+        });
 
         it('Gets streamers by game ID', (done) => {
-          results.should.be.an('array').with.lengthOf.above(0)
+          results.should.be.an('array').with.lengthOf.above(0);
           done();
-        })
+        });
 
         it('Displays results from multiple specified games', (done) => {
           let gotLeague = false;
           let gotFortnite = false;
 
-          results.forEach(stream => {
-            if (stream.game_id === passedIDs[0])
-              gotLeague = true;
-            else if (stream.game_id === passedIDs[1])
-              gotFortnite = true;
-          })
+          results.forEach((stream) => {
+            if (stream.game_id === passedIDs[0]) gotLeague = true;
+            else if (stream.game_id === passedIDs[1]) gotFortnite = true;
+          });
 
           expect(gotLeague).to.be.true;
           expect(gotFortnite).to.be.true;
           done();
-        })
+        });
 
-        it("Allows 'first' to reduce the number of streams", (done) => {
-          results.should.have.lengthOf.within(0, first)
-          done()
-        })
+        it("Allows 'streams_count' to reduce the number of streams", (done) => {
+          results.should.have.lengthOf.within(0, streams_count);
+          done();
+        });
 
-        it('Allows \'language\' to filter for certain languages', (done) => {
+        it("Allows 'language' to filter for certain languages", (done) => {
           commonRequest({
             url,
             query: { game_id: passedIDs, language: 'es' },
             rejectErrors: true,
             done,
             onSuccess: (err2, innerResults) => {
-
               expect(results).to.not.deep.equal(innerResults.body);
               done();
             }
           });
-        })
-      })
+        });
+      });
     });
   });
 
@@ -360,80 +385,91 @@ describe('Router', function () {
 
     it('Returns nothing, if nothing is specified', (done) => {
       commonRequest({
-        url, rejectErrors: true, done, onSuccess: (err, res) => {
-
+        url,
+        rejectErrors: true,
+        done,
+        onSuccess: (err, res) => {
           res.body.games.should.have.lengthOf(0);
           res.body.streams.should.have.lengthOf(0);
           done();
         }
-      })
-    })
-    it('Returns the top games and streams, when passed \'includetop\'', (done) => {
+      });
+    });
+    it("Returns the top games, when passed 'include_top_games'", (done) => {
       commonRequest({
-        url, query: { includeTop: true }, rejectErrors: true, done, onSuccess: (err, res) => {
+        url,
+        query: { include_top_games: true },
+        rejectErrors: true,
+        done,
+        onSuccess: (err, res) => {
           res.body.games.should.have.lengthOf(20);
+          done();
+        }
+      });
+    });
+
+    it("Returns the top streams, when passed 'include_top_streams'", (done) => {
+      commonRequest({
+        url,
+        query: { include_top_streams: true },
+        rejectErrors: true,
+        done,
+        onSuccess: (err, res) => {
           res.body.streams.should.have.lengthOf(20);
           done();
         }
-      })
-    })
+      });
+    });
 
-
-    describe('Multiple tests on same result:', function () {
-      const first = 25;
+    describe('Multiple tests on same result:', () => {
+      const streams_count = 25;
       let results;
 
-      before(async function () {
-        let response = await asyncCommonRequest({
-          url, first,
+      before(async () => {
+        const response = await asyncCommonRequest({
+          url,
           query: {
-            first,
-            name: [commonGames.rimworld.name],
-            id: [commonGames.deadCells.id],
-            user_login: ['food'],
-            user_id: 149747285 //TwitchPresents
+            streams_count,
+            game_name: [commonGames.rimworld.name],
+            game_id: [commonGames.deadCells.id],
+            stream_name: ['food'],
+            stream_id: 7832442 // RiffTrax
           }
-        })
+        });
 
-        results = response.body
-      })
+        results = response.body;
+      });
 
       it('Returns both Game and Stream data', (done) => {
-
         results.should.have.property('games');
-        results.should.have.property('streams')
+        results.should.have.property('streams');
 
-        results.games.should.have.lengthOf(2)
+        results.games.should.have.lengthOf(2);
         done();
-      })
+      });
       it('Returns s&g when passed a game name', (done) => {
-
-        results.games.map(game => game.id).should.include(commonGames.rimworld.id)
-        results.streams.map(stream => stream.game_id).should.include(commonGames.rimworld.id)
+        results.games.map(game => game.id).should.include(commonGames.rimworld.id);
+        results.streams.map(stream => stream.game_id).should.include(commonGames.rimworld.id);
         done();
-      })
+      });
       it('Returns s&g when passed a game ID', (done) => {
-        results.games.map(game => game.id).should.include(commonGames.deadCells.id)
-        results.streams.map(stream => stream.game_id).should.include(commonGames.deadCells.id)
+        results.games.map(game => game.id).should.include(commonGames.deadCells.id);
+        results.streams.map(stream => stream.game_id).should.include(commonGames.deadCells.id);
         done();
-      })
+      });
       it('Returns stream data when passed a username', (done) => {
-        results.streams.map(stream => stream.login).should.include('food')
+        results.streams.map(stream => stream.login).should.include('food');
         done();
-      })
+      });
       it('Returns stream data when passed a user ID', (done) => {
-
-        results.streams.map(stream => stream.login).should.include('twitchpresents')
+        results.streams.map(stream => stream.login).should.include('rifftrax');
         done();
-
-      })
-      it('Accepts \'first\' to specify the number of streams returned', (done) => {
-        //Expected 2 extra because of 2 special users passed
-        results.streams.should.have.lengthOf(first + 2)
-        done()
-      })
-
-    })
-
-  })
+      });
+      it("Accepts 'streams_count' to specify the number of streams returned", (done) => {
+        // Expected 2 extra because of 2 special users passed
+        results.streams.should.have.lengthOf(streams_count + 2);
+        done();
+      });
+    });
+  });
 });

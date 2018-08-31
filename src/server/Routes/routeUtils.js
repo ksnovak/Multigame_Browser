@@ -1,8 +1,8 @@
-import request from 'request';
 import axios from 'axios';
-import Errors from '../Models/Errors';
 import fs from 'fs';
-import utils from '../../utils'
+import Errors from '../Models/Errors';
+import utils from '../../utils';
+import QueryOptions from '../Models/QueryOptions';
 
 require('dotenv').config();
 
@@ -43,7 +43,7 @@ module.exports = {
     }
   },
 
-  async commonTwitchRequest({ uri, qs, onResponse, rejectErrors, next }) {
+  async commonTwitchRequest({ uri, options, onResponse, rejectErrors, next }) {
     // Get a bearer token if we don't have one; this allows 120 requests instead of 30 from Twitch
     if (this.isNewBearerTokenNeeded()) {
       await this.generateBearerToken();
@@ -68,14 +68,12 @@ module.exports = {
           verb: 'get',
           uri,
           headers: { Authorization: `Bearer ${this.bearerToken.access_token}` },
-          params: QueryOptions.getOutgoingOptions(uri, qs)
+          params: QueryOptions.getOutgoingOptions(uri, options)
         });
 
         // If a callback function was provided, call it
-        if (onResponse)
-          onResponse(null, results, results.data);
+        if (onResponse) onResponse(null, results, results.data);
 
-        //Otherwise, just return with the data
         // Otherwise, just return with the data
         return results.data;
 
@@ -93,8 +91,7 @@ module.exports = {
         }
         // Otherwise, send the error back to be handled by the caller.
         else {
-          if (onResponse)
-            onResponse(err)
+          if (onResponse) onResponse(err);
 
           return err;
         }

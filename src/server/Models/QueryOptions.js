@@ -10,7 +10,7 @@ const incomingOptions = {
     games_count: { type: 'number', outgoing: 'first' },
     games_before: { type: 'number', outgoing: 'before' },
     games_after: { type: 'number', outgoing: 'after' },
-    include_top: { type: 'boolean' }
+    include_top_games: { type: 'boolean' }
   },
   '/games/specific': {
     game_id: { type: 'number', duplicate: true, outgoing: 'id' },
@@ -23,6 +23,7 @@ const incomingOptions = {
     game_name: { duplicate: true }
   },
   '/streams/list': {
+    include_top_streams: { type: 'boolean', default: false },
     streams_count: { type: 'number', outgoing: 'first' },
     streams_before: { type: 'number', outgoing: 'before' },
     streams_after: { type: 'number', outgoing: 'after' },
@@ -35,7 +36,8 @@ const incomingOptions = {
     streams_count: { type: 'number', outgoing: 'first' },
     streams_before: { type: 'number', outgoing: 'before' },
     streams_after: { type: 'number', outgoing: 'after' },
-    language: { duplicate: true, outgoing: 'language' }
+    language: { duplicate: true, outgoing: 'language' },
+    include_top_streams: { type: 'boolean' },
   },
   '/combo': {
     include_top_games: { type: 'boolean', default: false },
@@ -224,6 +226,7 @@ module.exports = {
         outgoing[option.outgoing] = params[paramName];
       }
     });
+
 
     return outgoing;
   }

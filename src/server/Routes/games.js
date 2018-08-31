@@ -27,26 +27,29 @@ router.get('/', (req, res) => {
   res.send('games home');
 });
 
-async function getTopGames(uri, qs, next) {
-  if (qs.include_top === false) {
+async function getTopGames(uri, params, next) {
+  const options = QueryOptions.cleanIncomingQueryOptions('/games/top', params);
+  if (options.include_top_games === false) {
     return [];
   }
   const results = await RoutesUtils.commonTwitchRequest({
     uri,
-    qs,
+    options,
     rejectErrors: true,
     next
   });
   return gamesFromData(results);
 }
 
-async function getSpecificGames(uri, qs, next) {
-  if (!qs.game_name && !qs.game_id) {
+async function getSpecificGames(uri, params, next) {
+  const options = QueryOptions.cleanIncomingQueryOptions('/games/specific', params);
+
+  if (!options.game_name && !options.game_id) {
     return [];
   }
   const results = await RoutesUtils.commonTwitchRequest({
     uri,
-    qs,
+    options,
     rejectErrors: true,
     next
   });
@@ -70,11 +73,7 @@ async function getTopAndSpecificGames(options, next) {
 */
 router.get('/top', async (req, res, next) => {
   try {
-    const results = await getTopGames(
-      '/helix/games/top',
-      QueryOptions.cleanIncomingQueryOptions('/games/top', req.query),
-      next
-    );
+    const results = await getTopGames('/helix/games/top', req.query, next);
     res.send(results || []);
   }
   catch (err) {
@@ -88,9 +87,7 @@ router.get('/top', async (req, res, next) => {
 */
 router.get('/specific', async (req, res, next) => {
   try {
-    const options = QueryOptions.cleanIncomingQueryOptions('/games/specific', req.query);
-
-    const results = await getSpecificGames('/helix/games', options, next);
+    const results = await getSpecificGames('/helix/games', req.query, next);
     res.send(results);
   }
   catch (err) {
@@ -102,14 +99,10 @@ router.get('/combo', async (req, res, next) => {
   try {
     const options = QueryOptions.cleanIncomingQueryOptions('/games/combo', req.query);
 
-    if (!options.id && !options.name && !options.include_top) {
+    if (!options.game_id && !options.game_name && !options.include_top_games) {
       res.send([]);
     }
     else {
-      // If include_top wasn't passed, then we're going to set it to false.
-      if (options.include_top == undefined) {
-        options.include_top = false;
-      }
       const results = await getTopAndSpecificGames(options, next);
       res.send(results);
     }
