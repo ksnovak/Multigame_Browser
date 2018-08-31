@@ -197,6 +197,58 @@ describe('Models', () => {
         });
       });
     });
+
+    describe('Property validation (overall functionality)', (done) => {
+      const input_one = {
+        include_top_games: 'true',
+        games_count: '30',
+        game_id: 'Eight',
+        game_name: 'Rimworld'
+      };
+      const output_one = QueryOptions.cleanIncomingQueryOptions('/games/combo', input_one);
+
+      const input_two = {
+        include_top_games: 'yes please',
+        game_name: ['Rimworld', 'Dead Cells', 'Fortnite'],
+        GAME_NAME: 'League of Legends',
+        game_id: [1, null, 3, 'four', '5', false]
+      };
+      const output_two = QueryOptions.cleanIncomingQueryOptions('/games/combo', input_two);
+
+      it('Boolean-only properties convert string to boolean', () => {
+        expect(output_one.include_top_games).to.equal(true);
+      });
+      it('Number-only properties convert string to number', () => {
+        expect(output_one.games_count).to.equal(30);
+      });
+      it('Number-only properties reject non-numeric values', () => {
+        expect(output_one.game_id).to.equal(undefined);
+      });
+      it('Duplicate-allowing properties accept a single value', () => {
+        expect(output_one.game_name).to.equal('Rimworld');
+      });
+      it('Duplicate-allowing properties handle differing-case params being passed in', () => {
+        expect(output_two.game_name)
+          .to.be.an('array')
+          .with.lengthOf(4);
+      });
+      it('Duplicate-allowing properties accept multiple values', () => {
+        expect(output_two.game_name).to.deep.equal([
+          'Rimworld',
+          'Dead Cells',
+          'Fortnite',
+          'League of Legends'
+        ]);
+      });
+      it('Duplicate-allowing properties properly test for types', () => {
+        expect(output_two.game_id).to.deep.equal([1, 3, 5]);
+      });
+      it('Does not apply default values if a valid value is given', () => {
+        expect(output_one.include_top_games).to.equal(true);
+      });
+      it('Applies default values where no valid value is specified', () => {
+        expect(output_two.include_top_games).to.equal(false);
+      });
     });
   });
 });

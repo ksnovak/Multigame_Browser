@@ -49,7 +49,7 @@ const queryOptions = {
 // All options from the user that we accept
 const incomingOptions = {
   '/games/top': {
-    games_count: { type: 'number', default: 30, duplicate: true },
+    games_count: { type: 'number' },
     games_before: { type: 'number' },
     games_after: { type: 'number' },
     include_top: { type: 'boolean' }
@@ -208,6 +208,37 @@ module.exports = {
   },
 
   //
+  cleanIncomingQueryOptions(endpoint, params) {
+    const optionSet = this.getOptionSet(endpoint);
+    const cleanedParams = {};
+
+    // Iterate through all of the acceptable parameters
+    Object.keys(optionSet).forEach((optionName) => {
+      // See if the user passed anything that matches the current acceptable param
+      const passedNames = this.getMatchingNames(params, optionName);
+      const allowedProperties = optionSet[optionName];
+      let cleanedVal;
+
+      if (passedNames) {
+        const passedVal = this.getPassedVals(passedNames, params);
+
+        if (passedVal != null) {
+          cleanedVal = this.getTypedValues(allowedProperties.type, passedVal);
+        }
+      }
+
+      cleanedVal = this.getSimplifiedArray(allowedProperties.duplicate, cleanedVal);
+
+      cleanedVal = this.getDefaultValue(allowedProperties.default, cleanedVal);
+
+      if (cleanedVal !== undefined && cleanedVal !== null) {
+        cleanedParams[optionName] = cleanedVal;
+      }
+    });
+
+    return cleanedParams;
+  },
+
   // Return all valid and relevant querystring parameters, given the specified endpoint, and the starting querystring object.
   getValidQueryOptions(endpoint, params) {
     const allowedParams = queryOptions[endpoint]; // Based on the endpoint, get the list of allowed parameters
