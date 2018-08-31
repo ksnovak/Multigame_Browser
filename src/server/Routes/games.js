@@ -41,7 +41,7 @@ async function getTopGames(uri, params, next) {
   return gamesFromData(results);
 }
 
-async function getSpecificGames(uri, params, next) {
+async function getSpecificGames(uri, params, next, isSelected = false) {
   const options = QueryOptions.cleanIncomingQueryOptions('/games/specific', params);
 
   if (!options.game_name && !options.game_id) {
@@ -54,13 +54,13 @@ async function getSpecificGames(uri, params, next) {
     next
   });
 
-  return gamesFromData(results, true);
+  return gamesFromData(results, isSelected);
 }
 
 async function getTopAndSpecificGames(options, next) {
   // Make the two separate calls to the Twitch API
   const [specificResult, topResult] = [
-    await getSpecificGames('/helix/games', options, next),
+    await getSpecificGames('/helix/games', options, next, true),
     await getTopGames('/helix/games/top', options, next)
   ];
 
@@ -87,7 +87,7 @@ router.get('/top', async (req, res, next) => {
 */
 router.get('/specific', async (req, res, next) => {
   try {
-    const results = await getSpecificGames('/helix/games', req.query, next);
+    const results = await getSpecificGames('/helix/games', req.query, next, true);
     res.send(results);
   }
   catch (err) {

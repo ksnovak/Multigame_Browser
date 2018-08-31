@@ -421,6 +421,26 @@ describe('Router', function () {
       });
     });
 
+    it('Makes sure to obtain game information for streams before returning', (done) => {
+      commonRequest({
+        url,
+        query: { stream_name: 'rifftrax' },
+        rejectErrors: true,
+        done,
+        onSuccess: (err, res) => {
+          const stream = res.body.streams[0];
+          const gameDetails = res.body.games.filter(game => game.id === stream.game_id);
+
+          gameDetails.should.be.an('array').with.lengthOf(1);
+          gameDetails[0].should.have.property('id');
+          gameDetails[0].should.have.property('name');
+          gameDetails[0].should.not.have.property('selected');
+
+          done();
+        }
+      });
+    });
+
     describe('Multiple tests on same result:', () => {
       const streams_count = 25;
       let results;
@@ -444,7 +464,7 @@ describe('Router', function () {
         results.should.have.property('games');
         results.should.have.property('streams');
 
-        results.games.should.have.lengthOf(2);
+        results.games.should.have.lengthOf.at.least(2);
         done();
       });
       it('Returns s&g when passed a game name', (done) => {
