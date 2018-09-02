@@ -26,8 +26,12 @@ export default class App extends Component {
     axios
       .get('/api/combo', {
         params: {
-          includetop: qs.includeTop || false,
-          name: qs.name
+          include_top_games: qs.include_top_games || false,
+          game_name: qs.game_name,
+          game_id: qs.game_id,
+          stream_name: qs.stream_name,
+          stream_id: qs.stream_id,
+          language: qs.language
         }
       })
       .then((res) => {
@@ -39,10 +43,38 @@ export default class App extends Component {
       });
   }
 
+  handleChange(event) {
+    const { id } = event.target;
+
+    console.log(`Change in ${id}`);
+
+    switch (id) {
+      case 'englishOnly':
+        this.setState({ languages: event.target.checked ? ['en'] : [] });
+        break;
+
+      case 'includeTop':
+        this.setState({ includeTop: event.target.checked });
+        break;
+
+      case 'gameList':
+        break;
+      case 'includeGames':
+        break;
+      case 'includeList':
+        break;
+      case 'excludeList':
+        break;
+      default:
+        console.log(`Fell to default with ${id}`);
+        break;
+    }
+  }
+
   render() {
     const { streams, games, include, exclude, languages, includeTop, generatedTime } = this.state;
     return (
-      <div id="home" className="row">
+      <div id="home" className="row" onChange={this.handleChange.bind(this)}>
         <OptionsPane
           games={games}
           include={include}

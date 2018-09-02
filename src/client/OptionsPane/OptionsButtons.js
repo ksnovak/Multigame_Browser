@@ -8,30 +8,20 @@ export default class OptionsButtons extends Component {
   }
 
   render() {
-    const { englishOnly, includeTop } = this.props;
+    const { languages, includeTop } = this.props;
 
     return (
-      <div id="optionsButtons" className="custom-checkbox">
-        <div className="custom-control">
-          <label className="custom-control-label" htmlFor="englishOnly">
-            <input
-              className="custom-control-input"
-              id="englishOnly"
-              type="checkbox"
-              checked={englishOnly}
-            />
-						English only?
+      <div id="optionsButtons">
+        <div>
+          <label htmlFor="englishOnly">
+            <input id="englishOnly" type="checkbox" defaultChecked={languages.includes('en')} />
+            English only?
           </label>
           <br />
 
-          <label className="custom-control-label" htmlFor="includeTop">
-            <input
-              className="custom-control-input"
-              id="includeTop"
-              type="checkbox"
-              checked={includeTop}
-            />
-						Include Top games?
+          <label htmlFor="includeTop">
+            <input id="includeTop" type="checkbox" defaultChecked={includeTop} />
+            Include Top games?
           </label>
         </div>
       </div>
