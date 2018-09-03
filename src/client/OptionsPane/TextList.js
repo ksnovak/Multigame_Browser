@@ -50,7 +50,7 @@ export default class TextList extends Component {
   }
 
   render() {
-    const { label, list, defaultSelected, id, handleEvent } = this.props;
+    const { label, list, defaultSelected, id, handleListChange } = this.props;
 
     return (
       <div className="textList">
@@ -61,7 +61,7 @@ export default class TextList extends Component {
           styles={customStyles}
           placeholder={label}
           closeMenuOnSelect={false}
-          onChange={handleEvent}
+          onChange={handleListChange}
           options={getValueAndLabel(mergeArrays(defaultSelected, list))}
           defaultValue={getValueAndLabel(defaultSelected)}
         />

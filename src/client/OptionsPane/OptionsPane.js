@@ -11,12 +11,6 @@ import GeneratedAt from './GeneratedAt';
 export default class OptionsPane extends Component {
   constructor(props) {
     super(props);
-
-    this.state = {
-      newGameNames: [],
-      newStreams: [],
-      newExclude: []
-    };
   }
 
   componentDidMount() {
@@ -24,18 +18,10 @@ export default class OptionsPane extends Component {
   }
 
 
-  // In the event of games being selected, created, or de-selected in the GamesList
-  // NewValue is the new array of games; actionMeta is the action of the individual game that was just added/removed
-  handleNewGames = (newValue, actionMeta) => {
-    this.setState({ newGames: newValue.map(game => game.label) });
-  };
-
-  handleInclude = (newValue, actionMeta) => {
-    this.setState({ include: newValue.map(name => name.label) });
-  };
-
-  handleExclude = (newValue, actionMeta) => {
-    this.setState({ exclude: newValue.map(name => name.label) });
+  handleListChange = name => (newValue, actionMeta) => {
+    if (this.props.handleListChange) {
+      this.props.handleListChange(name, newValue);
+    }
   };
 
   render() {
@@ -47,7 +33,8 @@ export default class OptionsPane extends Component {
       include,
       exclude,
       generatedTime,
-      version
+      version,
+      handleListChange
     } = this.props;
 
     // Don't generate this panel if we haven't gotten the initial response from the server yet.
@@ -62,18 +49,18 @@ export default class OptionsPane extends Component {
         <form onSubmit={this.handleSubmit}>
           <TopButtons />
           <OptionsButtons language={language} includeTop={includeTop} />
-          <GamesList games={games} handleNewGames={this.handleNewGames} />
+          <GamesList games={games} handleListChange={this.handleListChange('includeGames')} />
           <TextList
             id="includeList"
             label="Include these users: "
-            handleAction={this.handleInclude}
+            handleListChange={this.handleListChange('include')}
             list={simplifiedStreamsList}
             defaultSelected={include}
           />
           <TextList
             id="excludeList"
             label="Exclude these users: "
-            handleAction={this.handleExclude}
+            handleListChange={this.handleListChange('exclude')}
             list={simplifiedStreamsList}
             defaultSelected={exclude}
           />

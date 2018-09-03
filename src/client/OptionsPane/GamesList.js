@@ -21,7 +21,7 @@ export default class GamesList extends Component {
   }
 
   render() {
-    const { games, handleNewGames } = this.props;
+    const { games, handleListChange } = this.props;
 
     if (games) {
       return (
@@ -32,7 +32,7 @@ export default class GamesList extends Component {
             styles={customStyles}
             placeholder="What games would you like to see?"
             closeMenuOnSelect={false}
-            onChange={handleNewGames}
+            onChange={handleListChange}
             options={games.map(GamesList.getOptionValues)}
             defaultValue={games.filter(game => game.selected).map(GamesList.getOptionValues)}
           />

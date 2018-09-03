@@ -23,6 +23,7 @@ export default class App extends Component {
     this.state = {
       games: null,
       streams: null,
+      includeGames: [],
       include: [],
       exclude: [],
       language: [],
@@ -30,6 +31,12 @@ export default class App extends Component {
       generatedTime: null
     };
   }
+
+  // Update the inclusion/exclusion arrays whenever their Select is changed
+  handleListChange = (key, array) => {
+    // doing [key] will find the element of that string value, since it could be 'include', 'exclude', or 'includeGames'
+    this.setState({ [key]: array.map(obj => obj.label) });
+  };
 
   componentDidMount() {
     const qs = queryString.parse(window.location.search);
@@ -103,6 +110,7 @@ export default class App extends Component {
           includeTop={includeTop}
           generatedTime={generatedTime}
           version={version}
+          handleListChange={this.handleListChange}
         />
 
         <Directory streams={streams} games={games} />
