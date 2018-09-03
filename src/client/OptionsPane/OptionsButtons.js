@@ -8,13 +8,13 @@ export default class OptionsButtons extends Component {
   }
 
   render() {
-    const { languages, includeTop } = this.props;
+    const { language, includeTop } = this.props;
 
     return (
       <div id="optionsButtons">
         <div>
           <label htmlFor="englishOnly">
-            <input id="englishOnly" type="checkbox" defaultChecked={languages.includes('en')} />
+            <input id="englishOnly" type="checkbox" defaultChecked={language.includes('en')} />
             English only?
           </label>
           <br />

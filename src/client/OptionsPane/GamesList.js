@@ -1,26 +1,46 @@
 import React, { Component } from 'react';
+import Select from 'react-select';
+import CreatableSelect from 'react-select/lib/Creatable';
 import './OptionsPane.css';
 import PropTypes from 'prop-types';
+
+const customStyles = {
+  option: (base, state) => ({
+    ...base,
+    color: '#777777'
+  })
+};
 
 export default class GamesList extends Component {
   componentDidMount() {
     // asdf
   }
 
+  static getOptionValues(game) {
+    return { value: game.name, label: game.name };
+  }
+
   render() {
-    const { games } = this.props;
+    const { games, handleNewGames } = this.props;
 
     if (games) {
-      const optionList = games.map(game => (
-        <option key={game.id} selected={game.selected}>{game.name}</option>
-      ));
       return (
-        <select id="gameList" multiple="multiple" size="10">
-          {optionList}
-        </select>
+        <div id="gamesList">
+          <CreatableSelect
+            isClearable
+            isMulti
+            styles={customStyles}
+            placeholder="What games would you like to see?"
+            closeMenuOnSelect={false}
+            onChange={handleNewGames}
+            options={games.map(GamesList.getOptionValues)}
+            defaultValue={games.filter(game => game.selected).map(GamesList.getOptionValues)}
+          />
+        </div>
       );
     }
-    return <select id="gameList" multiple="multiple" size="10" />;
+
+    return null;
   }
 }
 

@@ -6,6 +6,17 @@ import OptionsPane from './OptionsPane/OptionsPane';
 import Directory from './Directory/Directory';
 import { version } from '../../package.json';
 
+function getArray(value) {
+  if (value == null || value == undefined) {
+    return [];
+  }
+  if (Array.isArray(value)) {
+    return value;
+  }
+
+  return [value];
+}
+
 export default class App extends Component {
   constructor(props) {
     super(props);
@@ -14,7 +25,7 @@ export default class App extends Component {
       streams: null,
       include: [],
       exclude: [],
-      languages: [],
+      language: [],
       includeTop: true,
       generatedTime: null
     };
@@ -23,18 +34,25 @@ export default class App extends Component {
   componentDidMount() {
     const qs = queryString.parse(window.location.search);
 
+    this.setState({
+      includeTop: qs.include_top_games === 'true',
+      language: getArray(qs.language).sort(),
+      include: getArray(qs.stream_name).sort(),
+      exclude: getArray(qs.exclude_stream_name).sort()
+    });
+
     axios
       .get('/api/combo', {
         params: {
-          include_top_games: qs.include_top_games || false,
+          include_top_games: this.state.includeTop,
           game_name: qs.game_name,
           game_id: qs.game_id,
           stream_name: qs.stream_name,
           stream_id: qs.stream_id,
-          language: qs.language
+          language: this.state.language
         }
       })
-      .then((res) => {
+      .then(res => {
         this.setState({
           games: res.data.games,
           streams: res.data.streams,
@@ -43,21 +61,21 @@ export default class App extends Component {
       });
   }
 
-  handleChange(event) {
+  handleChange = event => {
     const { id } = event.target;
 
     console.log(`Change in ${id}`);
 
     switch (id) {
       case 'englishOnly':
-        this.setState({ languages: event.target.checked ? ['en'] : [] });
+        this.setState({ language: event.target.checked ? ['en'] : [] });
         break;
 
       case 'includeTop':
         this.setState({ includeTop: event.target.checked });
         break;
 
-      case 'gameList':
+      case 'gamesList':
         break;
       case 'includeGames':
         break;
@@ -69,17 +87,19 @@ export default class App extends Component {
         console.log(`Fell to default with ${id}`);
         break;
     }
-  }
+  };
 
   render() {
-    const { streams, games, include, exclude, languages, includeTop, generatedTime } = this.state;
+    const { streams, games, include, exclude, language, includeTop, generatedTime } = this.state;
+
     return (
-      <div id="home" className="row" onChange={this.handleChange.bind(this)}>
+      <div id="home" className="row" onChange={this.handleChange}>
         <OptionsPane
           games={games}
+          streams={streams}
           include={include}
           exclude={exclude}
-          languages={languages}
+          language={language}
           includeTop={includeTop}
           generatedTime={generatedTime}
           version={version}
