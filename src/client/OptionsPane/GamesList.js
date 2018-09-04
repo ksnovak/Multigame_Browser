@@ -31,6 +31,7 @@ export default class GamesList extends Component {
             isClearable
             isMulti
             styles={customStyles}
+            classNamePrefix="react-select"
             placeholder="What games would you like to see?"
             closeMenuOnSelect={false}
             onChange={handleListChange}
@@ -46,7 +47,8 @@ export default class GamesList extends Component {
 }
 
 GamesList.propTypes = {
-  games: PropTypes.arrayOf(PropTypes.object)
+  games: PropTypes.arrayOf(PropTypes.object),
+  handleListChange: PropTypes.func.isRequired
 };
 
 GamesList.defaultProps = {

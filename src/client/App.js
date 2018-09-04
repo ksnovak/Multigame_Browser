@@ -4,6 +4,7 @@ import queryString from 'query-string';
 import axios from 'axios';
 import OptionsPane from './OptionsPane/OptionsPane';
 import Directory from './Directory/Directory';
+import NoStreams from './Directory/NoStreams';
 import { version } from '../../package.json';
 
 function getArray(value) {
@@ -85,7 +86,7 @@ export default class App extends Component {
   handleChange = event => {
     const { id } = event.target;
 
-    console.log(`Change in ${id}`);
+    // console.log(`Change in ${id}`);
 
     switch (id) {
       case 'englishOnly':
@@ -105,7 +106,7 @@ export default class App extends Component {
       case 'excludeList':
         break;
       default:
-        console.log(`Fell to default with ${id}`);
+        // console.log(`Fell to default with ${id}`);
         break;
     }
   };
@@ -127,8 +128,7 @@ export default class App extends Component {
           handleListChange={this.handleListChange}
           handleSubmit={this.handleSubmit}
         />
-
-        <Directory streams={streams} games={games} />
+        {streams && streams.length ? <Directory streams={streams} games={games} /> : <NoStreams />}
       </div>
     );
   }

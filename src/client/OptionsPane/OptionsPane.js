@@ -9,10 +9,6 @@ import OptionsButtons from './OptionsButtons';
 import GeneratedAt from './GeneratedAt';
 
 export default class OptionsPane extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   componentDidMount() {
     // asdf
   }
