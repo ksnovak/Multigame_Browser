@@ -26,6 +26,7 @@ export default class GamesList extends Component {
     if (games) {
       return (
         <div id="gamesList">
+          <label>Games: </label>
           <CreatableSelect
             isClearable
             isMulti

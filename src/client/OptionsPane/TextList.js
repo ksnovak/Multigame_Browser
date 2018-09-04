@@ -54,6 +54,7 @@ export default class TextList extends Component {
 
     return (
       <div className="textList">
+        <label>{label}</label>
         <CreatableSelect
           id={id}
           isClearable

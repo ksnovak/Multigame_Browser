@@ -49,6 +49,7 @@ export default class OptionsPane extends Component {
           <TopButtons />
           <OptionsButtons language={language} includeTop={includeTop} />
           <GamesList games={games} handleListChange={this.handleListChange('includeGames')} />
+          <br />
           <TextList
             id="includeList"
             label="Include these users: "
@@ -56,6 +57,7 @@ export default class OptionsPane extends Component {
             list={simplifiedStreamsList}
             defaultSelected={include}
           />
+          <br />
           <TextList
             id="excludeList"
             label="Exclude these users: "
@@ -63,6 +65,8 @@ export default class OptionsPane extends Component {
             list={simplifiedStreamsList}
             defaultSelected={exclude}
           />
+          <br />
+          <br />
           <BottomButtons />
           <GeneratedAt generatedTime={generatedTime} version={version} />
         </form>
