@@ -1,8 +1,8 @@
-import request from 'request';
 import axios from 'axios';
-import Errors from '../Models/Errors';
 import fs from 'fs';
-import utils from '../../utils'
+import Errors from '../Models/Errors';
+import utils from '../../utils';
+import QueryOptions from '../Models/QueryOptions';
 
 require('dotenv').config();
 
@@ -16,7 +16,6 @@ module.exports = {
 
   // Get the Bearer token from Twitch; this allows for a greater rate limit
   async generateBearerToken() {
-
     utils.devLog('Generating new Bearer token');
 
     const results = await this.makeTwitchRequest({
@@ -37,13 +36,14 @@ module.exports = {
         url: uri,
         headers,
         params
-      })
-    } catch (err) {
-      throw err
+      });
+    }
+    catch (err) {
+      throw err;
     }
   },
 
-  async commonTwitchRequest({ uri, qs, onResponse, rejectErrors, next }) {
+  async commonTwitchRequest({ uri, options, onResponse, rejectErrors, next }) {
     // Get a bearer token if we don't have one; this allows 120 requests instead of 30 from Twitch
     if (this.isNewBearerTokenNeeded()) {
       await this.generateBearerToken();
@@ -51,43 +51,47 @@ module.exports = {
 
     // Check if we have exceeded our API rate limit. If so, immediately reject; otherwise, continue the request
     if (this.isRateLimitExceeded()) {
-      let err = Errors.tooManyRequests
-      if (rejectErrors && next)
+      const err = Errors.tooManyRequests;
+      if (rejectErrors && next) {
         next(err);
-      else if (onResponse)
+      }
+      else if (onResponse) {
         onResponse(err);
-      else
+      }
+      else {
         return err;
-
+      }
     }
     else {
       try {
-        let results = await this.makeTwitchRequest({
+        const results = await this.makeTwitchRequest({
           verb: 'get',
           uri,
           headers: { Authorization: `Bearer ${this.bearerToken.access_token}` },
-          params: qs
-        })
+          params: QueryOptions.getOutgoingOptions(uri, options)
+        });
 
-        //If a callback function was provided, call it
-        if (onResponse)
-          onResponse(null, results, results.data);
+        // If a callback function was provided, call it
+        if (onResponse) onResponse(null, results, results.data);
 
-        //Otherwise, just return with the data
+        // Otherwise, just return with the data
         return results.data;
 
-      } catch (err) {
-        //If the flag to automatically reject errors was passed, then do so.
+      }
+      catch (err) {
+        // If the flag to automatically reject errors was passed, then do so.
         if (rejectErrors && next) {
-          if (err.response) //If this was an error from Twitch
-            next(Errors.twitchError({ code: err.response.status, message: err.response.statusText }));
-          else
-            next(Errors.genericError);
+          if (err.response) {
+            // If this was an error from Twitch
+            next(
+              Errors.twitchError({ code: err.response.status, message: err.response.statusText })
+            );
+          }
+          else next(Errors.genericError);
         }
-        //Otherwise, send the error back to be handled by the caller.
+        // Otherwise, send the error back to be handled by the caller.
         else {
-          if (onResponse)
-            onResponse(err)
+          if (onResponse) onResponse(err);
 
           return err;
         }
@@ -104,7 +108,7 @@ module.exports = {
   updateBearerToken({ access_token, expires_at, expires_in, token_type }) {
     // Find out when the access token expires; The "expires_in" value from Twitch is a number of seconds from now, which is tougher to handle
     // Figure out the time at which it expires, instead, and save that.
-    const expiration_time = expires_at ? expires_at : (Date.now() + expires_in * 1000);
+    const expiration_time = expires_at || Date.now() + expires_in * 1000;
 
     if (process.env.NODE_ENV === 'dev') {
       const daysTillExpire = parseInt(expires_in / 60 / 60 / 24);
@@ -118,28 +122,27 @@ module.exports = {
     this.writeBearerTokenInFile();
   },
 
-
-  //We try to save bearer tokens in file, so look for it and parse it into an object if possible
+  // We try to save bearer tokens in file, so look for it and parse it into an object if possible
   readBearerTokenFromFile() {
     try {
       const results = JSON.parse(fs.readFileSync('bearerToken').toString());
       return results;
     }
     catch (err) {
-      return null
+      return null;
     }
   },
 
-  //Save the bearer token as a file, since we need it to persist through restarts and updates
+  // Save the bearer token as a file, since we need it to persist through restarts and updates
   writeBearerTokenInFile() {
-    fs.writeFileSync('bearerToken', JSON.stringify(this.bearerToken))
+    fs.writeFileSync('bearerToken', JSON.stringify(this.bearerToken));
   },
 
   // Check if we need a new bearer token
   isNewBearerTokenNeeded() {
     const tokenFromFile = this.readBearerTokenFromFile();
 
-    //If we don't have one in memory, try getting one from a file.
+    // If we don't have one in memory, try getting one from a file.
     if (this.bearerToken.access_token == null) {
       if (tokenFromFile != null) {
         this.updateBearerToken(tokenFromFile);
@@ -150,7 +153,7 @@ module.exports = {
     }
 
     // If the token isn't set, or if we've gone past the expire time, then we need to get a new token.
-    return (this.bearerToken.access_token == null || Date.now() > this.bearerToken.expires_at);
+    return this.bearerToken.access_token == null || Date.now() > this.bearerToken.expires_at;
   },
 
   // Twitch's API rate limits say how many more requests we can make, we have to keep track of it in order to avoid unexpected errors
@@ -169,16 +172,12 @@ module.exports = {
   // See if we have exceeded Twitch's API limit. This is a really rough guess.
   // If we have rateLimit details set, and it says we have no Remaining requests, and that there is still time until the Reset, then we consider it exceeded
   isRateLimitExceeded() {
-    const timeTillReset = this.rateLimit.reset - parseInt(Date.now() / 1000);
-    if (
+    const timeTillReset = this.rateLimit.reset - parseInt(Date.now() / 1000, 10);
+    return (
       this.rateLimit.remaining != null
       && this.rateLimit.remaining < 1
       && this.rateLimit.reset != null
       && timeTillReset > 1
-    ) {
-      return true;
-    }
-
-    return false;
+    );
   }
 };

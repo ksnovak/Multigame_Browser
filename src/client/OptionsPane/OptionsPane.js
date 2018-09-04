@@ -13,53 +13,75 @@ export default class OptionsPane extends Component {
     // asdf
   }
 
+  handleListChange = name => (newValue, actionMeta) => {
+    if (this.props.handleListChange) {
+      this.props.handleListChange(name, newValue);
+    }
+  };
+
   render() {
     const {
-      languages, includeTop, games, include, exclude, generatedTime
+      language,
+      includeTop,
+      games,
+      streams,
+      include,
+      exclude,
+      generatedTime,
+      version,
+      handleSubmit
     } = this.props;
 
+    // Don't generate this panel if we haven't gotten the initial response from the server yet.
+    if (generatedTime === null) {
+      return null;
+    }
+
+    const simplifiedStreamsList = streams ? streams.map(stream => stream.login).sort() : null;
+
     return (
-      <div className="optionsPane col-sm-2 col-lg-3 form-group">
-        <form>
+      <div className="optionsPane col-sm-6 col-lg-3 form-group">
+        <form onSubmit={handleSubmit}>
           <TopButtons />
-
-          <OptionsButtons
-            englishOnly={languages.includes('en')}
-            includeTop={includeTop}
-          />
-
-          <GamesList games={games} />
-
-          <TextList id="includeGames" label="Additional games: " />
-
+          <OptionsButtons language={language} includeTop={includeTop} />
+          <GamesList games={games} handleListChange={this.handleListChange('includeGames')} />
+          <br />
           <TextList
             id="includeList"
             label="Include these users: "
-            list={include}
+            handleListChange={this.handleListChange('include')}
+            list={simplifiedStreamsList}
+            defaultSelected={include}
           />
-
+          <br />
           <TextList
             id="excludeList"
             label="Exclude these users: "
-            list={exclude}
+            handleListChange={this.handleListChange('exclude')}
+            list={simplifiedStreamsList}
+            defaultSelected={exclude}
           />
-
+          <br />
+          <br />
           <BottomButtons />
-
-          <GeneratedAt generatedTime={generatedTime} />
+          <GeneratedAt generatedTime={generatedTime} version={version} />
         </form>
       </div>
     );
   }
 }
 OptionsPane.propTypes = {
-  languages: PropTypes.arrayOf(PropTypes.string).isRequired,
+  language: PropTypes.arrayOf(PropTypes.string).isRequired,
   includeTop: PropTypes.bool.isRequired,
   games: PropTypes.arrayOf(PropTypes.object),
-  include: PropTypes.arrayOf(PropTypes.object).isRequired,
-  exclude: PropTypes.arrayOf(PropTypes.object).isRequired
+  include: PropTypes.arrayOf(PropTypes.string).isRequired,
+  exclude: PropTypes.arrayOf(PropTypes.string).isRequired,
+  generatedTime: PropTypes.string,
+  version: PropTypes.string
 };
 
 OptionsPane.defaultProps = {
-  games: null
+  games: null,
+  generatedTime: null,
+  version: null
 };

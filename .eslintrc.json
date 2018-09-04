@@ -1,18 +1,25 @@
 {
-	"extends": ["airbnb"],
-	"env": {
-		"browser": true,
-		"node": true,
-		"mocha": true
-	},
-	"rules": {
-		"no-console": "off",
-		"comma-dangle": "off",
-		"react/jsx-filename-extension": "off",
-		"react/jsx-one-expression-per-line": "off",
-		"react/destructuring-assessment": "off",
-		"linebreak-style": ["error", "windows"],
-		"max-len": "off",
-		"no-tabs": "off"
-	}
+  "extends": ["airbnb"],
+  "env": {
+    "browser": true,
+    "node": true,
+    "mocha": true
+  },
+  "plugins": ["react", "jsx-a11y", "import"],
+  "rules": {
+    "no-console": "off",
+    "comma-dangle": "off",
+    "react/jsx-filename-extension": "off",
+    "react/jsx-one-expression-per-line": "off",
+    "react/destructuring-assessment": "off",
+    "linebreak-style": ["error", "windows"],
+    "max-len": ["warn", { "code": 100 }],
+    "no-tabs": "off",
+    "brace-style": ["warn", "stroustrup"],
+    "object-curly-newline": "off",
+    "camelcase": "off",
+    "curly": "warn",
+    "nonblock-statement-body-position": "off",
+    "no-restricted-globals": "off"
+  }
 }

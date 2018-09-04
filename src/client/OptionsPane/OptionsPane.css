@@ -1,9 +1,13 @@
 .buttonSet a,
 .buttonSet button {
-	margin: 10px 2px;
+  margin: 10px 2px;
 }
 
-
 #generatedAt {
-	color: #777777;
+  color: #777777;
+}
+
+.textList label,
+#gameList {
+  width: 100%;
 }

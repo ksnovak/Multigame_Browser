@@ -12,6 +12,37 @@
 
 ### Personal
 
+## 0.4.0 - Mon, Sept 3, 2018 - Searching, and hooking up React events
+
+### Overview
+
+This is another one for important, focused wins. Querystring parsing, actual search functionality
+
+### Added
+
+- Brand new way of handling querystring params, decoupled from Twitch's naming schema.
+- Tons of tests that were way overdue for querystring parsing.
+- Changed our 4 different inputs for games/streamers to 3 really nice tag-like [React-Select](https://github.com/jedwatson/react-select) elements
+- Search button works!
+- A version number on the client screen, pulled from package.json.
+
+### Changed
+
+- Went back to ESLint/Prettier. A lot of formatting in the code is changing.
+- Updated to Babel 7, which allegedly comes with a lot of performance updates, and does things in a much more Modern way, in terms of NPM usage.
+
+### Removed
+
+### Personal
+
+- I did a really awful job of having Monolithic commits. It felt awkward, though, because I broke a lot of things in the process of changing other things. But that's what I should be going to new Branches for. I need to get more comfortable with that idea.
+- I grossly over-engineered the querystring situation, but I really like the way it was done regardless. I could've gotten away with 10% of the effort and had it work for 90% of the situations. I wonder how often something like my solution is needed by others, and if it's worth making an external module to share.
+- I don't like the naming system I used for query params. It seems... over-specific? We'll see how it feels later on with other things implemented.
+- The QS situation was relatively easy (which was expected), but took more time and effort than I did expect. There was a lot of consideration for edge cases. So I'm counting that as both Easy and a Stretch for my "_Sprint Planning as Self Care_". Caching will have to wait till later.
+- [The best way to bind event handlers in React](https://medium.freecodecamp.org/the-best-way-to-bind-event-handlers-in-react-282db2cf1530) really helped with react event handlers
+- Bubbling events up was really hard for me to grasp, but it's really cool to see it work.
+- [React-Select](https://github.com/jedwatson/react-select) is an awesome module.
+
 ## 0.3.0 - Tues, Aug 28, 2018 - The client technically works now!
 
 ### Overview
@@ -20,12 +51,14 @@ I was tired of sitting deep in the weeds. There's an absolute ton of cleanup and
 The client technically works. You've got to pass things in the querystring, but it accepts name, id, user_id, user_login, includetop, and first, to get streams and games.
 
 ### Added
+
 - Client base functionality, with React (That was, after all, why I restarted this entire project)
 - You can search for games & users (via querystring, unfortunately), and will see them appear in the directory grid.
 - /api/combo. This is our entry into the app, grabbing both Stream and Game information
 -
 
 ### Changed
+
 - Fixed a bug with boolean queryoptions
 - Added a couple common functions for combining arrays, they are very nice and handsome.
 - Tests got cleaned up a LOT. We went from calling Twitch 20x in 20 Tests, to 17x in 32 tests (a few new tests for existing services, and a few for the new api/combo endpoint).
@@ -38,7 +71,6 @@ The client technically works. You've got to pass things in the querystring, but 
 - My QueryOptions mess is getting increasingly uncomfortable. I want to switch to a popular Validator/Sanitizer, and I also want to have a differentiation between incoming (User -> Us) QS and outgoing (Us -> Twitch) QS. Since we combine games & streams, there is some ambiguity (is "id" for the game or the stream? is includeTop the top games or top streams? how about first?), and we shouldn't be so closely coupled with Twitch's nomenclature.
 - There was a post on dev.to, "[Sprint Planning as Self Care](https://dev.to/kathryngrayson/sprint-planning-as-self-care-j59)", that suggested to make sure you have 3 types of stories in each sprint: Exciting, Easy, Stretch. Even though I don't exactly do sprints, I want to try enforcing that. Coming up next: Hooking up client event handlers to allow searches (with hard refreshes to begin with), Fixing query param nonsense, Caching
 
-
 ## 0.2.5 - Mon, Aug 27, 2018 - Minor tweaks
 
 ### Overview
@@ -46,6 +78,7 @@ The client technically works. You've got to pass things in the querystring, but 
 There were a handful of small things that I really wanted to tackle here.
 
 ### Added
+
 - Saving Twitch Bearer token in file, and reading from it.
 - "Generated At" timestamp on the client. It's interesting to know when the data was last updated.
 - A common function for dev-mode logging.
@@ -54,11 +87,13 @@ There were a handful of small things that I really wanted to tackle here.
 - Timestamp for server restart.
 
 ### Changed
+
 - /streams/game -> /streams/list. This more accurately reflects what the point of that endpoint is.
 - /streams/list can handle being passed game IDs and streamer IDs/names decently.
 - "Bottom buttons" on client. Now are a set of links with relevant things.
 
 ### Removed
+
 - /streams/details endpoint. This was a redundant one, created due to a restriction with the Twitch API. I had found a workaround, so it no longer is necessary
 
 ### Personal
@@ -66,7 +101,6 @@ There were a handful of small things that I really wanted to tackle here.
 I need to really look into VSCode debugging. It sucks throwing a billion log statements.
 I feel like there has to be a better way to handle saving Bearer token. I plan to use caching anyway, but I don't think that persists through restarts/updates. I also know that I should be updating an existing one when possible, instead of requesting a new one.
 This new version is also part of testing my changes to the "release" system.
-
 
 ## 0.2.4 - Sun, Aug 26, 2018 - Starting to make combinations
 
@@ -86,11 +120,9 @@ Big change: I'm changing how I'm doing Git branches. The current way is kind of 
 
 - Working on making some functions (in this case, ones in the Games router class) more generic and re-usable
 
-
 ### Removed
 
 - Got rid of the /streams/details endpoint. I used this in the earlier version because the main Twitch api call for users never directly gives their name, so we needed a separate API call for that. But I've since found a way to grab it from the thumbnail URL.
-
 
 ### Personal
 
@@ -100,7 +132,6 @@ Big change: I'm changing how I'm doing Git branches. The current way is kind of 
 - I'm stopping the "Release" system. That's all very irrelevant and just adding unnecessary overhead.
 - Twitch's inconsistent returns from their API is getting frustrating. If you try to get the top N games, it will very often return N-1, meaning you have to always allow for a range of results.
 - I'm getting a lot more comfortable with making unit tests. My biggest concern now is making them more performant, and wanting to use before() hooks better; I think every API all actually resets the "server", as opposed to having it persistently running.
-
 
 ## 0.2.3 - Sat, Aug 25, 2018 - Safeguards for Twitch calls
 

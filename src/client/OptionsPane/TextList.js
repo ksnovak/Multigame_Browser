@@ -1,6 +1,48 @@
 import React, { Component } from 'react';
+import Select from 'react-select';
+import CreatableSelect from 'react-select/lib/Creatable';
 import './OptionsPane.css';
 import PropTypes from 'prop-types';
+
+const customStyles = {
+  option: (base, state) => ({
+    ...base,
+    color: '#777777'
+  })
+};
+
+function getValueAndLabel(arr) {
+  if (arr === null || arr === undefined) {
+    return null;
+  }
+
+  if (Array.isArray(arr)) {
+    return arr.map(name => ({ value: name, label: name }));
+  }
+  return { value: arr, label: arr };
+}
+
+function mergeArrays(special, base) {
+  let newArr = [];
+
+  if (Array.isArray(special)) {
+    newArr = Array.from(special);
+  }
+  else if (special !== null && special !== undefined) {
+    newArr.push(special);
+  }
+
+  if (Array.isArray(base)) {
+    base.forEach((name) => {
+      if (!newArr.includes(name)) newArr.push(name);
+    });
+  }
+  else if (base !== null && base !== undefined) {
+    if (!newArr.includes(base)) newArr.push(base);
+  }
+
+  return newArr;
+}
 
 export default class TextList extends Component {
   componentDidMount() {
@@ -8,18 +50,22 @@ export default class TextList extends Component {
   }
 
   render() {
-    const { label, list, id } = this.props;
+    const { label, list, defaultSelected, id, handleListChange } = this.props;
 
     return (
-      <div>
-        <label htmlFor={id}>
-          {label}
-          <input
-            type="text"
-            className="form-control"
-            defaultValue={list.join(', ')}
-          />
-        </label>
+      <div className="textList">
+        <label>{label}</label>
+        <CreatableSelect
+          id={id}
+          isClearable
+          isMulti
+          styles={customStyles}
+          placeholder={label}
+          closeMenuOnSelect={false}
+          onChange={handleListChange}
+          options={getValueAndLabel(mergeArrays(defaultSelected, list))}
+          defaultValue={getValueAndLabel(defaultSelected)}
+        />
       </div>
     );
   }

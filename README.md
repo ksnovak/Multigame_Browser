@@ -1,5 +1,9 @@
 # Multigame_Browser
 
+[Try it out now!](https://multigame-browser.herokuapp.com/) - If the request hangs, wait ~30 seconds and refresh
+
+[Changelog](https://github.com/ksnovak/Multigame_Browser/blob/master/CHANGELOG.md)
+
 ## Primer for those unfamiliar with Twitch:
 
 Twitch.tv is a website where anyone can live-stream things. Primarily focused around video games, but you also have [Art and other creative avenues](https://www.twitch.tv/directory/creative), physical card games like [Old-fashioned poker](https://www.twitch.tv/directory/game/Poker) and [Magic: the Gathering](https://www.twitch.tv/directory/game/Magic%3A%20The%20Gathering), [Pen-and-paper RPGs like Dungeons and Dragons](https://www.twitch.tv/directory/game/Dungeons%20%26%20Dragons), [Talk shows/podcasts](https://www.twitch.tv/directory/game/Talk%20Shows), [a 24/7 stream of cooking shows](https://www.twitch.tv/food), and a smorgasbord called [IRL](https://www.twitch.tv/directory/game/IRL) where people do all sorts of weird stuff - even just broadcasting them walking around in different cities.
