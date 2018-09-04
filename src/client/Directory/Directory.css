@@ -1,0 +1,15 @@
+.streamThumbnail img {
+  width: 100%;
+}
+
+.gameThumbnail {
+  max-width: 90px;
+  width: 100%;
+}
+
+.centeredText {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

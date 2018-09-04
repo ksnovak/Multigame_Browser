@@ -1,42 +1,36 @@
 import React, { Component } from 'react';
 import './Directory.css';
-import StreamCell from './StreamCell'
+import PropTypes from 'prop-types';
+import StreamCell from './StreamCell';
 
 export default class Directory extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
-
-  componentDidMount() { }
+  componentDidMount() {}
 
   render() {
     const { streams, games } = this.props;
 
     if (streams && streams.length && games && games.length) {
-      let gameIDs = games.map(game => game.id)
+      const gameIDs = games.map(game => game.id);
 
-      let streamCells = streams.map(stream => {
-        let correctGameIndex = gameIDs.indexOf(stream.game_id);
-        let game = (correctGameIndex > -1) ? games[correctGameIndex] : null
+      const streamCells = streams.map((stream) => {
+        const correctGameIndex = gameIDs.indexOf(stream.game_id);
+        const game = correctGameIndex > -1 ? games[correctGameIndex] : null;
 
+        return <StreamCell key={stream.user_id} stream={stream} game={game} />;
+      });
 
-        return <StreamCell stream={stream} game={game} />
-      })
-
-      return (
-        <div className="directory col-sm-10 col-lg-9 row">
-          {streamCells}
-        </div>
-      );
+      return <div className="directory col-sm-10 col-lg-9 row">{streamCells}</div>;
     }
-    else {
-      return (
-
-        <div className="directory col-sm-10 col-lg-9">
-          Still Loadening
-        </div>
-      )
-    }
+    return <div className="directory col-sm-10 col-lg-9">Still loading</div>;
   }
 }
+
+Directory.propTypes = {
+  games: PropTypes.arrayOf(PropTypes.object),
+  streams: PropTypes.arrayOf(PropTypes.object)
+};
+
+Directory.defaultProps = {
+  games: null,
+  streams: null
+};
