@@ -12,6 +12,25 @@
 
 ### Personal
 
+## 0.4.1 - Tues, Sept 4, 2018 - "My favorites" button
+
+### Overview
+
+Extremely minor, but a lifesaver in making a simple search.
+
+### Added
+
+- Functionality on the "My favorites" button
+- "Home" now just changes the state instead of being a full reload
+
+### Removed
+
+- Temporarily removed the Exclude Select, since the server has nothing to handle it yet.
+
+### Personal
+
+- I don't like that, despite updating the state and causing appropriate renders to trigger, this button doesn't make the Games/Inludes Selects update visually.
+
 ## 0.4.0 - Mon, Sept 3, 2018 - Searching, and hooking up React events
 
 ### Overview
