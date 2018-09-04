@@ -7,16 +7,23 @@ export default class MajorButton extends Component {
   }
 
   render() {
+    const { handleHomeClick, handleFavoritesClick } = this.props;
+
     return (
       <div id="topButtons" className="buttonSet">
-        <a href="/" id="home" className="btn btn-info" role="button">
-					Home
-        </a>
-        <button id="search" className="btn btn-primary" type="submit">
-					Search
+        <button id="home" className="btn btn-info" type="button" onClick={handleHomeClick}>
+          Home
         </button>
-        <button id="myFaves" className="btn btn-success" type="button">
-					My favorites
+        <button id="search" className="btn btn-primary" type="submit">
+          Search
+        </button>
+        <button
+          id="myFaves"
+          className="btn btn-success"
+          type="button"
+          onClick={handleFavoritesClick}
+        >
+          My favorites
         </button>
       </div>
     );

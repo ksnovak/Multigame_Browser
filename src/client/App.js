@@ -40,13 +40,68 @@ export default class App extends Component {
   };
 
   handleSubmit = event => {
-    this.getStreams({
+    const details = {
       include_top_games: this.state.includeTop,
       game_name: this.state.includeGames,
       stream_name: this.state.include,
       language: this.state.language
-    });
-    event.preventDefault();
+    };
+
+    this.getStreams(details);
+
+    const newParams = '?' + queryString.stringify(details);
+    this.pushNewState(newParams);
+
+    if (event) event.preventDefault();
+  };
+
+  handleHomeClick = event => {
+    this.setState(
+      {
+        includeGames: [],
+        include: [],
+        language: []
+      },
+      () => {
+        this.handleSubmit();
+      }
+    );
+  };
+
+  //
+  handleFavoritesClick = event => {
+    this.setState(
+      {
+        includeTop: false,
+        includeGames: [
+          'Cities: Skylines',
+          'Stardew Valley',
+          'Guild Wars 2',
+          'Into the Breach',
+          'RimWorld',
+          'Terraria',
+          'Dungeon of the Endless',
+          'Slay the Spire',
+          'Dead Cells'
+        ],
+        include: [
+          'aphromoo',
+          'lethalfrag',
+          'scarra',
+          'meteos',
+          'day9tv',
+          'dismaid',
+          'scarizardplays',
+          'kitboga',
+          'albinoliger',
+          'cilantrogamer'
+        ],
+        language: ['en']
+      },
+      () => {
+        this.handleSubmit();
+      }
+    );
   };
 
   getStreams(params) {
@@ -61,6 +116,11 @@ export default class App extends Component {
           generatedTime: res.headers.date
         });
       });
+  }
+
+  pushNewState(newUrl) {
+    if (history.pushState) window.history.pushState({ path: newUrl }, '', newUrl);
+    else window.location.href = newUrl;
   }
 
   componentDidMount() {
@@ -86,8 +146,8 @@ export default class App extends Component {
   handleChange = event => {
     const { id } = event.target;
 
-    // console.log(`Change in ${id}`);
-
+    console.log(`Change in ${id}`);
+    
     switch (id) {
       case 'englishOnly':
         this.setState({ language: event.target.checked ? ['en'] : [] });
@@ -127,6 +187,8 @@ export default class App extends Component {
           version={version}
           handleListChange={this.handleListChange}
           handleSubmit={this.handleSubmit}
+          handleFavoritesClick={this.handleFavoritesClick}
+          handleHomeClick={this.handleHomeClick}
         />
         {streams && streams.length ? <Directory streams={streams} games={games} /> : <NoStreams />}
       </div>
