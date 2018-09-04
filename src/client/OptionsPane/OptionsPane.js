@@ -29,7 +29,9 @@ export default class OptionsPane extends Component {
       exclude,
       generatedTime,
       version,
-      handleSubmit
+      handleSubmit,
+      handleFavoritesClick,
+      handleHomeClick
     } = this.props;
 
     // Don't generate this panel if we haven't gotten the initial response from the server yet.
@@ -42,7 +44,10 @@ export default class OptionsPane extends Component {
     return (
       <div className="optionsPane col-sm-6 col-lg-3 form-group">
         <form onSubmit={handleSubmit}>
-          <TopButtons />
+          <TopButtons
+            handleFavoritesClick={handleFavoritesClick}
+            handleHomeClick={handleHomeClick}
+          />
           <OptionsButtons language={language} includeTop={includeTop} />
           <GamesList games={games} handleListChange={this.handleListChange('includeGames')} />
           <br />
@@ -53,14 +58,14 @@ export default class OptionsPane extends Component {
             list={simplifiedStreamsList}
             defaultSelected={include}
           />
-          <br />
+          {/* <br />
           <TextList
             id="excludeList"
             label="Exclude these users: "
             handleListChange={this.handleListChange('exclude')}
             list={simplifiedStreamsList}
             defaultSelected={exclude}
-          />
+          /> */}
           <br />
           <br />
           <BottomButtons />
