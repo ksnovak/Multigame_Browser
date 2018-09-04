@@ -147,7 +147,7 @@ export default class App extends Component {
     const { id } = event.target;
 
     console.log(`Change in ${id}`);
-
+    
     switch (id) {
       case 'englishOnly':
         this.setState({ language: event.target.checked ? ['en'] : [] });
