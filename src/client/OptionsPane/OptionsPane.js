@@ -17,7 +17,6 @@ export default class OptionsPane extends Component {
     // asdf
   }
 
-
   handleListChange = name => (newValue, actionMeta) => {
     if (this.props.handleListChange) {
       this.props.handleListChange(name, newValue);
@@ -34,7 +33,7 @@ export default class OptionsPane extends Component {
       exclude,
       generatedTime,
       version,
-      handleListChange
+      handleSubmit
     } = this.props;
 
     // Don't generate this panel if we haven't gotten the initial response from the server yet.
@@ -46,7 +45,7 @@ export default class OptionsPane extends Component {
 
     return (
       <div className="optionsPane col-sm-6 col-lg-3 form-group">
-        <form onSubmit={this.handleSubmit}>
+        <form onSubmit={handleSubmit}>
           <TopButtons />
           <OptionsButtons language={language} includeTop={includeTop} />
           <GamesList games={games} handleListChange={this.handleListChange('includeGames')} />

@@ -38,6 +38,30 @@ export default class App extends Component {
     this.setState({ [key]: array.map(obj => obj.label) });
   };
 
+  handleSubmit = event => {
+    this.getStreams({
+      include_top_games: this.state.includeTop,
+      game_name: this.state.includeGames,
+      stream_name: this.state.include,
+      language: this.state.language
+    });
+    event.preventDefault();
+  };
+
+  getStreams(params) {
+    axios
+      .get('/api/combo', {
+        params
+      })
+      .then(res => {
+        this.setState({
+          games: res.data.games,
+          streams: res.data.streams,
+          generatedTime: res.headers.date
+        });
+      });
+  }
+
   componentDidMount() {
     const qs = queryString.parse(window.location.search);
 
@@ -48,24 +72,14 @@ export default class App extends Component {
       exclude: getArray(qs.exclude_stream_name).sort()
     });
 
-    axios
-      .get('/api/combo', {
-        params: {
-          include_top_games: this.state.includeTop,
-          game_name: qs.game_name,
-          game_id: qs.game_id,
-          stream_name: qs.stream_name,
-          stream_id: qs.stream_id,
-          language: this.state.language
-        }
-      })
-      .then(res => {
-        this.setState({
-          games: res.data.games,
-          streams: res.data.streams,
-          generatedTime: res.headers.date
-        });
-      });
+    this.getStreams({
+      include_top_games: this.state.includeTop,
+      game_name: qs.game_name,
+      game_id: qs.game_id,
+      stream_name: qs.stream_name,
+      stream_id: qs.stream_id,
+      language: this.state.language
+    });
   }
 
   handleChange = event => {
@@ -111,6 +125,7 @@ export default class App extends Component {
           generatedTime={generatedTime}
           version={version}
           handleListChange={this.handleListChange}
+          handleSubmit={this.handleSubmit}
         />
 
         <Directory streams={streams} games={games} />
