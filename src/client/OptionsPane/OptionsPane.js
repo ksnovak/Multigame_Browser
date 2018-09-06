@@ -34,11 +34,6 @@ export default class OptionsPane extends Component {
       handleHomeClick
     } = this.props;
 
-    // Don't generate this panel if we haven't gotten the initial response from the server yet.
-    if (generatedTime === null) {
-      return null;
-    }
-
     const simplifiedStreamsList = streams ? streams.map(stream => stream.login).sort() : null;
 
     return (
@@ -68,11 +63,12 @@ export default class OptionsPane extends Component {
           /> */}
           <br />
           <br />
-          <div className="floatBottom">
-            <BottomLinks />
-            <GeneratedAt generatedTime={generatedTime} version={version} />
-          </div>
         </form>
+
+        <div className="floatBottom">
+          <BottomLinks />
+          <GeneratedAt generatedTime={generatedTime} version={version} />
+        </div>
       </div>
     );
   }

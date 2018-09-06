@@ -23,26 +23,24 @@ export default class GamesList extends Component {
   render() {
     const { games, handleListChange } = this.props;
 
-    if (games) {
-      return (
-        <div id="gamesList">
-          <label>Games: </label>
-          <CreatableSelect
-            isClearable
-            isMulti
-            styles={customStyles}
-            classNamePrefix="react-select"
-            placeholder="What games would you like to see?"
-            closeMenuOnSelect={false}
-            onChange={handleListChange}
-            options={games.map(GamesList.getOptionValues)}
-            defaultValue={games.filter(game => game.selected).map(GamesList.getOptionValues)}
-          />
-        </div>
-      );
-    }
-
-    return null;
+    return (
+      <div id="gamesList">
+        <label>Games: </label>
+        <CreatableSelect
+          isClearable
+          isMulti
+          styles={customStyles}
+          classNamePrefix="react-select"
+          placeholder="What games would you like to see?"
+          closeMenuOnSelect={false}
+          onChange={handleListChange}
+          options={games ? games.map(GamesList.getOptionValues) : null}
+          defaultValue={
+            games ? games.filter(game => game.selected).map(GamesList.getOptionValues) : null
+          }
+        />
+      </div>
+    );
   }
 }
 
