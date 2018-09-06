@@ -32,7 +32,11 @@ export default class StreamCell extends Component {
         </div>
         <div className="row px-1">
           <div className="col-sm-2 px-0">
-            <a href={`https://twitch.tv/directory/${game.name}`}>
+            <a
+              href={`https://twitch.tv/directory/game/${game.name}`}
+              target="_blank"
+              rel="noopener"
+            >
               <img
                 src={this.getThumbnail(game.box_art, GameWidth, GameAspectRatio)}
                 className="gameThumbnail"
