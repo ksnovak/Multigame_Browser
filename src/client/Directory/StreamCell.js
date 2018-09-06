@@ -21,8 +21,8 @@ export default class StreamCell extends Component {
     const GameAspectRatio = 0.75;
 
     return (
-      <div id="streamCell" className="col-sm-2 py-1 px-1">
-        <div className="row py-1 px-1">
+      <div id="streamCell" className="col-sm-2 m-1">
+        <div className="row">
           <a className="streamThumbnail" href={`https://twitch.tv/${stream.login}`}>
             <img
               src={this.getThumbnail(stream.thumbnail_url, StreamWidth, StreamAspectRatio)}
@@ -30,8 +30,8 @@ export default class StreamCell extends Component {
             />
           </a>
         </div>
-        <div className="row px-1">
-          <div className="col-sm-2 px-0">
+        <div className="row py-1">
+          <div className="col-sm-2 p-0">
             <a
               href={`https://twitch.tv/directory/game/${game.name}`}
               target="_blank"
@@ -45,9 +45,9 @@ export default class StreamCell extends Component {
             </a>
           </div>
           <div className="col-sm-10">
-            <span className="login">{stream.login}</span> with{' '}
-            <span className="viewerCount">{stream.viewer_count} viewers</span>
-            <span className="streamGame">{game ? `playing ${game.name}` : ''}</span>
+            <span className="login">{stream.login}</span> with
+            <span className="viewerCount"> {stream.viewer_count} viewers</span>
+            <span className="streamGame">{game ? ` playing ${game.name}` : ''}</span>
           </div>
           <span className="streamTitle">{stream.title}</span>
         </div>
