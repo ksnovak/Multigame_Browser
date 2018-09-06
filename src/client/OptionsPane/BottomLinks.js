@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './OptionsPane.css';
 
-export default class BottomButtons extends Component {
+export default class BottomLinks extends Component {
   componentDidMount() {
     // asdf
   }
@@ -10,7 +10,7 @@ export default class BottomButtons extends Component {
     const githubUrl = 'https://github.com/ksnovak/Multigame_Browser';
     return (
       <div className="buttonSet">
-        <span>Links: </span>
+        <span>Helpful Links: </span>
         <br />
         <a href={githubUrl} rel="noopener" target="_blank" id="git_repo">
           Github

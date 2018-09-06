@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import GamesList from './GamesList';
 import TextList from './TextList';
 import TopButtons from './TopButtons';
-import BottomButtons from './BottomButtons';
+import BottomLinks from './BottomLinks';
 import OptionsButtons from './OptionsButtons';
 import GeneratedAt from './GeneratedAt';
 
@@ -68,8 +68,10 @@ export default class OptionsPane extends Component {
           /> */}
           <br />
           <br />
-          <BottomButtons />
-          <GeneratedAt generatedTime={generatedTime} version={version} />
+          <div className="floatBottom">
+            <BottomLinks />
+            <GeneratedAt generatedTime={generatedTime} version={version} />
+          </div>
         </form>
       </div>
     );
