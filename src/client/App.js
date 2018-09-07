@@ -134,21 +134,29 @@ export default class App extends Component {
   componentDidMount() {
     const qs = queryString.parse(window.location.search);
 
-    this.setState({
-      includeTop: qs.include_top_games !== 'false',
-      language: getArray(qs.language).sort(),
-      include: getArray(qs.stream_name).sort(),
-      exclude: getArray(qs.exclude_stream_name).sort()
-    });
+    //Set the state based on querystring values as appropriate
+    this.setState(
+      {
+        includeTop: qs.include_top_games !== 'false',
+        language: getArray(qs.language).sort(),
+        include: getArray(qs.stream_name).sort(),
+        exclude: getArray(qs.exclude_stream_name).sort(),
+        includeGames: getArray(qs.game_name).sort()
+      },
+      () => {
+        //After the state values are set, make our initial query.
+        this.getStreams({
+          include_top_games: this.state.includeTop,
+          game_name: this.state.includeGames,
+          stream_name: this.state.include,
+          language: this.state.language,
 
-    this.getStreams({
-      include_top_games: this.state.includeTop,
-      game_name: qs.game_name,
-      game_id: qs.game_id,
-      stream_name: qs.stream_name,
-      stream_id: qs.stream_id,
-      language: this.state.language
-    });
+          //These two aren't stored in State. Not sure if they should be, since they're only used for passing to the server.
+          game_id: qs.game_id,
+          stream_id: qs.stream_id
+        });
+      }
+    );
   }
 
   render() {
