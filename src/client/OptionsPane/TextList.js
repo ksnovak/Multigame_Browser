@@ -64,7 +64,7 @@ export default class TextList extends Component {
           closeMenuOnSelect={false}
           onChange={handleListChange}
           options={getValueAndLabel(mergeArrays(defaultSelected, list))}
-          defaultValue={getValueAndLabel(defaultSelected)}
+          value={getValueAndLabel(defaultSelected)}
         />
       </div>
     );

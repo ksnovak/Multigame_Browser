@@ -35,9 +35,7 @@ export default class GamesList extends Component {
           closeMenuOnSelect={false}
           onChange={handleListChange}
           options={games ? games.map(GamesList.getOptionValues) : null}
-          defaultValue={
-            games ? games.filter(game => game.selected).map(GamesList.getOptionValues) : null
-          }
+          value={games ? games.filter(game => game.selected).map(GamesList.getOptionValues) : null}
         />
       </div>
     );
