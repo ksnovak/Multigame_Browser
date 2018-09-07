@@ -39,6 +39,14 @@ export default class App extends Component {
     this.setState({ [key]: array.map(obj => obj.label) });
   };
 
+  handleToggle = (name, newValue) => {
+    if (name === 'includeTop') {
+      this.setState({ includeTop: newValue });
+    } else if (name === 'language') {
+      this.setState({ language: newValue ? ['en'] : [] });
+    }
+  };
+
   handleSubmit = event => {
     const details = {
       include_top_games: this.state.includeTop,
@@ -127,7 +135,7 @@ export default class App extends Component {
     const qs = queryString.parse(window.location.search);
 
     this.setState({
-      includeTop: qs.include_top_games === 'true',
+      includeTop: qs.include_top_games !== 'false',
       language: getArray(qs.language).sort(),
       include: getArray(qs.stream_name).sort(),
       exclude: getArray(qs.exclude_stream_name).sort()
@@ -143,39 +151,11 @@ export default class App extends Component {
     });
   }
 
-  handleChange = event => {
-    const { id } = event.target;
-
-    console.log(`Change in ${id}`);
-    
-    switch (id) {
-      case 'englishOnly':
-        this.setState({ language: event.target.checked ? ['en'] : [] });
-        break;
-
-      case 'includeTop':
-        this.setState({ includeTop: event.target.checked });
-        break;
-
-      case 'gamesList':
-        break;
-      case 'includeGames':
-        break;
-      case 'includeList':
-        break;
-      case 'excludeList':
-        break;
-      default:
-        // console.log(`Fell to default with ${id}`);
-        break;
-    }
-  };
-
   render() {
     const { streams, games, include, exclude, language, includeTop, generatedTime } = this.state;
 
     return (
-      <div id="home" className="row" onChange={this.handleChange}>
+      <div id="home" className="row">
         <OptionsPane
           games={games}
           streams={streams}
@@ -189,6 +169,7 @@ export default class App extends Component {
           handleSubmit={this.handleSubmit}
           handleFavoritesClick={this.handleFavoritesClick}
           handleHomeClick={this.handleHomeClick}
+          handleToggle={this.handleToggle}
         />
         {streams && streams.length ? <Directory streams={streams} games={games} /> : <NoStreams />}
       </div>

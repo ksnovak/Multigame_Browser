@@ -31,7 +31,8 @@ export default class OptionsPane extends Component {
       version,
       handleSubmit,
       handleFavoritesClick,
-      handleHomeClick
+      handleHomeClick,
+      handleToggle
     } = this.props;
 
     const simplifiedStreamsList = streams ? streams.map(stream => stream.login).sort() : null;
@@ -43,7 +44,7 @@ export default class OptionsPane extends Component {
             handleFavoritesClick={handleFavoritesClick}
             handleHomeClick={handleHomeClick}
           />
-          <OptionsButtons language={language} includeTop={includeTop} />
+          <OptionsButtons language={language} includeTop={includeTop} handleToggle={handleToggle} />
           <GamesList games={games} handleListChange={this.handleListChange('includeGames')} />
           <br />
           <TextList
