@@ -4,13 +4,6 @@ import CreatableSelect from 'react-select/lib/Creatable';
 import './OptionsPane.css';
 import PropTypes from 'prop-types';
 
-const customStyles = {
-  option: (base, state) => ({
-    ...base,
-    color: '#777777'
-  })
-};
-
 export default class GamesList extends Component {
   componentDidMount() {
     // asdf
@@ -29,7 +22,6 @@ export default class GamesList extends Component {
         <CreatableSelect
           isClearable
           isMulti
-          styles={customStyles}
           classNamePrefix="react-select"
           placeholder="What games would you like to see?"
           closeMenuOnSelect={false}

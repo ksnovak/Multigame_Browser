@@ -4,13 +4,6 @@ import CreatableSelect from 'react-select/lib/Creatable';
 import './OptionsPane.css';
 import PropTypes from 'prop-types';
 
-const customStyles = {
-  option: (base, state) => ({
-    ...base,
-    color: '#777777'
-  })
-};
-
 function getValueAndLabel(arr) {
   if (arr === null || arr === undefined) {
     return null;
@@ -59,7 +52,7 @@ export default class TextList extends Component {
           id={id}
           isClearable
           isMulti
-          styles={customStyles}
+          classNamePrefix="react-select"
           placeholder={label}
           closeMenuOnSelect={false}
           onChange={handleListChange}
