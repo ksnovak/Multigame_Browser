@@ -47,7 +47,9 @@ export default class App extends Component {
     }
   };
 
+  // Submitting the form: Get the new games & streams, and update the querystring
   handleSubmit = event => {
+    //Grab the important details from the state
     const details = {
       include_top_games: this.state.includeTop,
       game_name: this.state.includeGames,
@@ -55,9 +57,17 @@ export default class App extends Component {
       language: this.state.language
     };
 
+    // Call the API to get the new games & streams
     this.getStreams(details);
 
-    const newParams = '?' + queryString.stringify(details);
+    // Update the querystring. Sorting just so that the less-spammy params get listed first
+    const order = ['include_top_games', 'language', 'stream_name', 'game_name'];
+    const newParams =
+      '?' +
+      queryString.stringify(details, {
+        sort: (left, right) => order.indexOf(left) >= order.indexOf(right)
+      });
+
     this.pushNewState(newParams);
 
     if (event) event.preventDefault();
@@ -68,7 +78,8 @@ export default class App extends Component {
       {
         includeGames: [],
         include: [],
-        language: []
+        language: [],
+        includeTop: undefined
       },
       () => {
         this.handleSubmit();
