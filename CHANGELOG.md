@@ -12,6 +12,31 @@
 
 ### Personal
 
+## 0.4.2 - Sun, Sept 9, 2018 - Cleanup day
+
+### Overview
+
+After a few iterations of bigger changes, it's time to go back and clean up the mess. Particularly, the Select components.
+
+### Changed
+
+- Made sure State was properly updating and getting reflected upon using the top shortcut buttons (Home and Favorites).
+- A lot of cleanup surrounding the Select components; making sure that elements are properly addable and removable. There were issues surrounding removing a game from the Games list that was part of existing search results.
+- Querystring param ordering; Now the less-spammy params (include_top and language) show first, since that's more important to see than the list of all games/streams.
+- Worked on the stream directory visuals: no more text overlap, slightly more spacing between elements, bolding streamers' names, italicizing stream titles, fixed the Game thumbnail links.
+- Renamed BottomButtons to BottomLinks to better match what they are.
+- Bottom links, Generated time, and version number are all sticky to the bottom of the screen.
+
+### Removed
+
+- GamesList component; now merged into Textlist component.
+
+### Personal
+
+- I had a big interview for a company, and one of the interviewers mentioned that he tried out this project and thought it was cool. That was a great boost of confidence, but it was also kind of scary because I know just how much is completely Wrong with it now. If he tried it literally a night before, it would've not worked at all.
+- I also really ran out of steam this week too. I reached the point that I had been stretching for a long time: implementing React. Even though there are so many other things to do, that was kind of a plateau and I had a hard time of mentally moving forward once I was there. Which tells me that it's time to clean up a bit more, and have people actually test it out to help guide me.
+- During my interview, an interviewer asked me about time complexity of an algorithm (removing duplicates from an array), which now has me super-conscious of how little I think about that stuff, and now I have to work hard to resist the urge to spend hours trying to optimize that all. Something for the backburner certainly, but our current datasets are so small that the gains are negligible compared to other things.
+
 ## 0.4.1 - Tues, Sept 4, 2018 - "My favorites" button
 
 ### Overview
