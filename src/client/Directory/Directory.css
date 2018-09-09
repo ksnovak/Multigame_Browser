@@ -13,3 +13,12 @@
   left: 50%;
   transform: translate(-50%, -50%);
 }
+
+.login {
+  font-weight: bold;
+}
+
+.streamTitle {
+  font-style: italic;
+  text-overflow: clip;
+}

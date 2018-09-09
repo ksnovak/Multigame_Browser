@@ -12,7 +12,7 @@ function getArray(value) {
     return [];
   }
   if (Array.isArray(value)) {
-    return value;
+    return value.sort();
   }
 
   return [value];
@@ -22,8 +22,8 @@ export default class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      games: null,
-      streams: null,
+      games: [],
+      streams: [],
       includeGames: [],
       include: [],
       exclude: [],
@@ -39,7 +39,17 @@ export default class App extends Component {
     this.setState({ [key]: array.map(obj => obj.label) });
   };
 
+  handleToggle = (name, newValue) => {
+    if (name === 'includeTop') {
+      this.setState({ includeTop: newValue });
+    } else if (name === 'language') {
+      this.setState({ language: newValue ? ['en'] : [] });
+    }
+  };
+
+  // Submitting the form: Get the new games & streams, and update the querystring
   handleSubmit = event => {
+    //Grab the important details from the state
     const details = {
       include_top_games: this.state.includeTop,
       game_name: this.state.includeGames,
@@ -47,9 +57,17 @@ export default class App extends Component {
       language: this.state.language
     };
 
+    // Call the API to get the new games & streams
     this.getStreams(details);
 
-    const newParams = '?' + queryString.stringify(details);
+    // Update the querystring. Sorting just so that the less-spammy params get listed first
+    const order = ['include_top_games', 'language', 'stream_name', 'game_name'];
+    const newParams =
+      '?' +
+      queryString.stringify(details, {
+        sort: (left, right) => order.indexOf(left) >= order.indexOf(right)
+      });
+
     this.pushNewState(newParams);
 
     if (event) event.preventDefault();
@@ -60,7 +78,8 @@ export default class App extends Component {
       {
         includeGames: [],
         include: [],
-        language: []
+        language: [],
+        includeTop: undefined
       },
       () => {
         this.handleSubmit();
@@ -112,6 +131,7 @@ export default class App extends Component {
       .then(res => {
         this.setState({
           games: res.data.games,
+          includeGames: res.data.games.filter(game => game.selected).map(game => game.name),
           streams: res.data.streams,
           generatedTime: res.headers.date
         });
@@ -126,58 +146,48 @@ export default class App extends Component {
   componentDidMount() {
     const qs = queryString.parse(window.location.search);
 
-    this.setState({
-      includeTop: qs.include_top_games === 'true',
-      language: getArray(qs.language).sort(),
-      include: getArray(qs.stream_name).sort(),
-      exclude: getArray(qs.exclude_stream_name).sort()
-    });
+    //Set the state based on querystring values as appropriate
+    this.setState(
+      {
+        includeTop: qs.include_top_games !== 'false',
+        language: getArray(qs.language),
+        include: getArray(qs.stream_name),
+        exclude: getArray(qs.exclude_stream_name),
+        includeGames: getArray(qs.game_name)
+      },
+      () => {
+        //After the state values are set, make our initial query.
+        this.getStreams({
+          include_top_games: this.state.includeTop,
+          game_name: this.state.includeGames,
+          stream_name: this.state.include,
+          language: this.state.language,
 
-    this.getStreams({
-      include_top_games: this.state.includeTop,
-      game_name: qs.game_name,
-      game_id: qs.game_id,
-      stream_name: qs.stream_name,
-      stream_id: qs.stream_id,
-      language: this.state.language
-    });
+          //These two aren't stored in State. Not sure if they should be, since they're only used for passing to the server.
+          game_id: qs.game_id,
+          stream_id: qs.stream_id
+        });
+      }
+    );
   }
 
-  handleChange = event => {
-    const { id } = event.target;
-
-    console.log(`Change in ${id}`);
-    
-    switch (id) {
-      case 'englishOnly':
-        this.setState({ language: event.target.checked ? ['en'] : [] });
-        break;
-
-      case 'includeTop':
-        this.setState({ includeTop: event.target.checked });
-        break;
-
-      case 'gamesList':
-        break;
-      case 'includeGames':
-        break;
-      case 'includeList':
-        break;
-      case 'excludeList':
-        break;
-      default:
-        // console.log(`Fell to default with ${id}`);
-        break;
-    }
-  };
-
   render() {
-    const { streams, games, include, exclude, language, includeTop, generatedTime } = this.state;
+    const {
+      streams,
+      games,
+      includeGames,
+      include,
+      exclude,
+      language,
+      includeTop,
+      generatedTime
+    } = this.state;
 
     return (
-      <div id="home" className="row" onChange={this.handleChange}>
+      <div id="home" className="row">
         <OptionsPane
           games={games}
+          includeGames={includeGames}
           streams={streams}
           include={include}
           exclude={exclude}
@@ -189,6 +199,7 @@ export default class App extends Component {
           handleSubmit={this.handleSubmit}
           handleFavoritesClick={this.handleFavoritesClick}
           handleHomeClick={this.handleHomeClick}
+          handleToggle={this.handleToggle}
         />
         {streams && streams.length ? <Directory streams={streams} games={games} /> : <NoStreams />}
       </div>

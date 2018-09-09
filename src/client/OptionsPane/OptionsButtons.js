@@ -7,6 +7,12 @@ export default class OptionsButtons extends Component {
     // asdf
   }
 
+  handleTog = name => event => {
+    if (this.props.handleToggle) {
+      this.props.handleToggle(name, event.target.checked);
+    }
+  };
+
   render() {
     const { language, includeTop } = this.props;
 
@@ -14,13 +20,23 @@ export default class OptionsButtons extends Component {
       <div id="optionsButtons">
         <div>
           <label htmlFor="englishOnly">
-            <input id="englishOnly" type="checkbox" defaultChecked={language.includes('en')} />
+            <input
+              id="englishOnly"
+              type="checkbox"
+              checked={language.includes('en')}
+              onChange={this.handleTog('language')}
+            />
             English only?
           </label>
           <br />
 
           <label htmlFor="includeTop">
-            <input id="includeTop" type="checkbox" defaultChecked={includeTop} />
+            <input
+              id="includeTop"
+              type="checkbox"
+              checked={includeTop}
+              onChange={this.handleTog('includeTop')}
+            />
             Include Top games?
           </label>
         </div>

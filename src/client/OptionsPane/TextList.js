@@ -4,13 +4,6 @@ import CreatableSelect from 'react-select/lib/Creatable';
 import './OptionsPane.css';
 import PropTypes from 'prop-types';
 
-const customStyles = {
-  option: (base, state) => ({
-    ...base,
-    color: '#777777'
-  })
-};
-
 function getValueAndLabel(arr) {
   if (arr === null || arr === undefined) {
     return null;
@@ -50,21 +43,20 @@ export default class TextList extends Component {
   }
 
   render() {
-    const { label, list, defaultSelected, id, handleListChange } = this.props;
+    const { label, placeholder, list, defaultSelected, handleListChange } = this.props;
 
     return (
       <div className="textList">
         <label>{label}</label>
         <CreatableSelect
-          id={id}
           isClearable
           isMulti
-          styles={customStyles}
-          placeholder={label}
+          classNamePrefix="react-select"
+          placeholder={placeholder}
           closeMenuOnSelect={false}
           onChange={handleListChange}
           options={getValueAndLabel(mergeArrays(defaultSelected, list))}
-          defaultValue={getValueAndLabel(defaultSelected)}
+          value={getValueAndLabel(defaultSelected)}
         />
       </div>
     );
@@ -74,9 +66,12 @@ export default class TextList extends Component {
 TextList.propTypes = {
   label: PropTypes.string.isRequired,
   list: PropTypes.arrayOf(PropTypes.string),
-  id: PropTypes.string.isRequired
+  placeholder: PropTypes.string,
+  defaultSelected: PropTypes.arrayOf(PropTypes.string)
 };
 
 TextList.defaultProps = {
-  list: []
+  list: [],
+  defaultSelected: [],
+  placeholder: ''
 };

@@ -3,11 +3,18 @@
   margin: 10px 2px;
 }
 
-#generatedAt {
-  color: #777777;
-}
-
 .textList label,
 #gameList {
   width: 100%;
+}
+
+.floatBottom {
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+}
+
+.react-select__menu-list,
+#generatedAt {
+  color: #777777;
 }
