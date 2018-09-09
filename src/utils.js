@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-module.exports = {
+export default {
   devLog(message) {
     if (process.env.NODE_ENV === 'dev') {
       console.log(message);
@@ -8,10 +8,8 @@ module.exports = {
   },
 
   devChalk(color, message) {
-    if (message === undefined)
-      return chalk.keyword(color)
-    else
-      return chalk.keyword(color)(message);
+    if (message === undefined) return chalk.keyword(color);
+    return chalk.keyword(color)(message);
   },
 
   // Get an array without any duplicated elements in it
@@ -61,5 +59,49 @@ module.exports = {
     catch (err) {
       throw err;
     }
+  },
+
+  // Within a given array, get rid of duplicate values, as well as undefined and null values.
+  // To be used with an `array.filter` run
+  filterSelfDuplicatesAndInvalid(elem, index, arr) {
+    return arr.indexOf(elem) === index && elem !== undefined && elem != null;
+  },
+
+  // Filter out elements that are present in another array
+  filterMergedDupes(elem) {
+    return this.indexOf(elem) === -1;
+  },
+
+  // Turn the given element into an array
+  getArrayFromPassedElem(elem) {
+    // If it's already an array, simply return it.
+    if (Array.isArray(elem)) {
+      return elem;
+    }
+
+    // If it is an individual (and valid) value, return that as an array
+    if (elem != null && elem !== undefined) {
+      return [elem];
+    }
+
+    // Else, return an empty array
+    return [];
+  },
+
+  // Given two arrays, return them as a single combined array.
+  // Allows sorting and filtering duplicates.
+  mergeArraysOfValues(prime, second, sortResults = false, filterDuplicates = true) {
+    // Depending on whether duplicates should get filtered, decide the filter function to use.
+    const selfFilter = filterDuplicates ? this.filterSelfDuplicatesAndInvalid : () => true;
+
+    // No matter what is passed in, we turn it into a usable array, and filter out duplicates if necessary.
+    const left = this.getArrayFromPassedElem(prime).filter(selfFilter);
+    const right = this.getArrayFromPassedElem(second).filter(selfFilter);
+
+    // Combine the two arrays, removing duplicates between them if necessary.
+    const res = left.concat(filterDuplicates ? right.filter(this.filterMergedDupes, left) : right);
+
+    // Return the resultant array, sorting if necessary.
+    return sortResults ? res.sort() : res;
   }
 };
