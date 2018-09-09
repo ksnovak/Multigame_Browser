@@ -12,7 +12,7 @@ function getArray(value) {
     return [];
   }
   if (Array.isArray(value)) {
-    return value;
+    return value.sort();
   }
 
   return [value];
@@ -131,6 +131,7 @@ export default class App extends Component {
       .then(res => {
         this.setState({
           games: res.data.games,
+          includeGames: res.data.games.filter(game => game.selected).map(game => game.name),
           streams: res.data.streams,
           generatedTime: res.headers.date
         });
@@ -149,10 +150,10 @@ export default class App extends Component {
     this.setState(
       {
         includeTop: qs.include_top_games !== 'false',
-        language: getArray(qs.language).sort(),
-        include: getArray(qs.stream_name).sort(),
-        exclude: getArray(qs.exclude_stream_name).sort(),
-        includeGames: getArray(qs.game_name).sort()
+        language: getArray(qs.language),
+        include: getArray(qs.stream_name),
+        exclude: getArray(qs.exclude_stream_name),
+        includeGames: getArray(qs.game_name)
       },
       () => {
         //After the state values are set, make our initial query.
