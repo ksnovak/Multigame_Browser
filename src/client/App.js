@@ -22,8 +22,8 @@ export default class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      games: null,
-      streams: null,
+      games: [],
+      streams: [],
       includeGames: [],
       include: [],
       exclude: [],
@@ -171,12 +171,22 @@ export default class App extends Component {
   }
 
   render() {
-    const { streams, games, include, exclude, language, includeTop, generatedTime } = this.state;
+    const {
+      streams,
+      games,
+      includeGames,
+      include,
+      exclude,
+      language,
+      includeTop,
+      generatedTime
+    } = this.state;
 
     return (
       <div id="home" className="row">
         <OptionsPane
           games={games}
+          includeGames={includeGames}
           streams={streams}
           include={include}
           exclude={exclude}

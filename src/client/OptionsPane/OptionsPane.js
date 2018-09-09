@@ -24,6 +24,7 @@ export default class OptionsPane extends Component {
       language,
       includeTop,
       games,
+      includeGames,
       streams,
       include,
       exclude,
@@ -77,7 +78,7 @@ export default class OptionsPane extends Component {
 OptionsPane.propTypes = {
   language: PropTypes.arrayOf(PropTypes.string).isRequired,
   includeTop: PropTypes.bool.isRequired,
-  games: PropTypes.arrayOf(PropTypes.object),
+  games: PropTypes.arrayOf(PropTypes.object).isRequired,
   include: PropTypes.arrayOf(PropTypes.string).isRequired,
   exclude: PropTypes.arrayOf(PropTypes.string).isRequired,
   generatedTime: PropTypes.string,
