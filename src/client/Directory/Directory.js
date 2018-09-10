@@ -9,19 +9,16 @@ export default class Directory extends Component {
   render() {
     const { streams, games } = this.props;
 
-    if (streams && streams.length && games && games.length) {
-      const gameIDs = games.map(game => game.id);
+    const gameIDs = games.map(game => game.id);
 
-      const streamCells = streams.map((stream) => {
-        const correctGameIndex = gameIDs.indexOf(stream.game_id);
-        const game = correctGameIndex > -1 ? games[correctGameIndex] : null;
+    const streamCells = streams.map((stream) => {
+      const correctGameIndex = gameIDs.indexOf(stream.game_id);
+      const game = correctGameIndex > -1 ? games[correctGameIndex] : null;
 
-        return <StreamCell key={stream.user_id} stream={stream} game={game} />;
-      });
+      return <StreamCell key={stream.user_id} stream={stream} game={game} />;
+    });
 
-      return <div className="directory col-sm-10 col-lg-9 row">{streamCells}</div>;
-    }
-    return <div className="directory col-sm-10 col-lg-9">Still loading</div>;
+    return <div className="directory col-sm-10 col-lg-9 row">{streamCells || 'Still loading'}</div>;
   }
 }
 
