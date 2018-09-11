@@ -4,7 +4,6 @@ import queryString from 'query-string';
 import axios from 'axios';
 import OptionsPane from './OptionsPane/OptionsPane';
 import Directory from './Directory/Directory';
-import NoStreams from './Directory/NoStreams';
 import { version } from '../../package.json';
 
 function getArray(value) {
@@ -201,7 +200,8 @@ export default class App extends Component {
           handleHomeClick={this.handleHomeClick}
           handleToggle={this.handleToggle}
         />
-        {streams && streams.length ? <Directory streams={streams} games={games} /> : <NoStreams />}
+
+        <Directory streams={streams} games={games} isLoading={isLoading} />
       </div>
     );
   }

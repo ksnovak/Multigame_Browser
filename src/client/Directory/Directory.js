@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './Directory.css';
 import PropTypes from 'prop-types';
 import StreamCell from './StreamCell';
+import NoStreams from './NoStreams';
 
 export default class Directory extends Component {
   componentDidMount() {}
@@ -18,7 +19,12 @@ export default class Directory extends Component {
       return <StreamCell key={stream.user_id} stream={stream} game={game} />;
     });
 
-    return <div className="directory col-sm-10 col-lg-9 row">{streamCells || 'Still loading'}</div>;
+    return (
+      <div className="col-sm-10 col-lg-9">
+        <StatusAlert />
+        {streamCells.length ? <div className="directory row">{streamCells}</div> : <NoStreams />}
+      </div>
+    );
   }
 }
 
