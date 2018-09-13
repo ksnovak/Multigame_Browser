@@ -201,7 +201,7 @@ export default class App extends Component {
           handleToggle={this.handleToggle}
         />
 
-        <Directory streams={streams} games={games} isLoading={isLoading} />
+        <Directory streams={streams} games={games} />
       </div>
     );
   }

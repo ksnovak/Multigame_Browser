@@ -21,7 +21,6 @@ export default class Directory extends Component {
 
     return (
       <div className="col-sm-10 col-lg-9">
-        <StatusAlert />
         {streamCells.length ? <div className="directory row">{streamCells}</div> : <NoStreams />}
       </div>
     );
