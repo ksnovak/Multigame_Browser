@@ -113,7 +113,7 @@ describe('Router', function () {
           const response = await asyncCommonRequest({
             url,
             query: {
-              game_name: [
+              game: [
                 commonGames.rimworld.name,
                 commonGames.creative.name,
                 'World of wo',
@@ -193,8 +193,8 @@ describe('Router', function () {
         commonRequest({
           url,
           query: {
-            include_top_games: false,
-            game_name: [commonGames.rimworld.name, commonGames.deadCells.name]
+            include_top: false,
+            game: [commonGames.rimworld.name, commonGames.deadCells.name]
           },
           rejectErrors: true,
           done,
@@ -209,8 +209,8 @@ describe('Router', function () {
         commonRequest({
           url,
           query: {
-            include_top_games: true,
-            game_name: [commonGames.rimworld.name, commonGames.deadCells.name]
+            include_top: true,
+            game: [commonGames.rimworld.name, commonGames.deadCells.name]
           },
           rejectErrors: true,
           done,
@@ -240,9 +240,9 @@ describe('Router', function () {
             url,
             games_count,
             query: {
-              include_top_games: true,
+              include_top: true,
               games_count,
-              game_name: [passedGames[0].name, passedGames[0].name, passedGames[2].name],
+              game: [passedGames[0].name, passedGames[0].name, passedGames[2].name],
               game_id: [passedGames[1].id, passedGames[0].id]
             }
           });
@@ -441,10 +441,10 @@ describe('Router', function () {
         }
       });
     });
-    it("Returns the top games, when passed 'include_top_games'", (done) => {
+    it("Returns the top games, when passed 'include_top'", (done) => {
       commonRequest({
         url,
-        query: { include_top_games: true },
+        query: { include_top: true },
         rejectErrors: true,
         done,
         onSuccess: (err, res) => {
@@ -470,7 +470,7 @@ describe('Router', function () {
     it('Makes sure to obtain game information for streams before returning', (done) => {
       commonRequest({
         url,
-        query: { stream_name: 'rifftrax' },
+        query: { name: 'rifftrax' },
         rejectErrors: true,
         done,
         onSuccess: (err, res) => {
@@ -496,9 +496,9 @@ describe('Router', function () {
           url,
           query: {
             streams_count,
-            game_name: [commonGames.rimworld.name],
+            game: [commonGames.rimworld.name],
             game_id: [commonGames.deadCells.id],
-            stream_name: ['food'],
+            name: ['food'],
             stream_id: 7832442 // RiffTrax
           }
         });
@@ -543,9 +543,9 @@ describe('Router', function () {
           url,
           query: {
             streams_count,
-            game_name: [commonGames.rimworld.name],
+            game: [commonGames.rimworld.name],
             game_id: [commonGames.deadCells.id],
-            stream_name: ['food'],
+            name: ['food'],
             stream_id: 7832442, // RiffTrax,
             exclude: outerNames[2]
           }

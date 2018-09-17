@@ -50,9 +50,9 @@ export default class App extends Component {
   handleSubmit = event => {
     //Grab the important details from the state
     const details = {
-      include_top_games: this.state.includeTop,
-      game_name: this.state.includeGames,
-      stream_name: this.state.include,
+      include_top: this.state.includeTop,
+      game: this.state.includeGames,
+      name: this.state.include,
       exclude: this.state.exclude,
       language: this.state.language
     };
@@ -61,7 +61,7 @@ export default class App extends Component {
     this.getStreams(details);
 
     // Update the querystring. Sorting just so that the less-spammy params get listed first
-    const order = ['include_top_games', 'language', 'stream_name', 'exclude', 'game_name'];
+    const order = ['include_top', 'language', 'name', 'exclude', 'game'];
     const newParams =
       '?' +
       queryString.stringify(details, {
@@ -149,18 +149,18 @@ export default class App extends Component {
     //Set the state based on querystring values as appropriate
     this.setState(
       {
-        includeTop: qs.include_top_games !== 'false',
+        includeTop: qs.include_top !== 'false',
         language: getArray(qs.language),
-        include: getArray(qs.stream_name),
-        exclude: getArray(qs.exclude_stream_name),
-        includeGames: getArray(qs.game_name)
+        include: getArray(qs.name),
+        exclude: getArray(qs.exclude_name),
+        includeGames: getArray(qs.game)
       },
       () => {
         //After the state values are set, make our initial query.
         this.getStreams({
-          include_top_games: this.state.includeTop,
-          game_name: this.state.includeGames,
-          stream_name: this.state.include,
+          include_top: this.state.includeTop,
+          game: this.state.includeGames,
+          name: this.state.include,
           language: this.state.language,
 
           //These two aren't stored in State. Not sure if they should be, since they're only used for passing to the server.

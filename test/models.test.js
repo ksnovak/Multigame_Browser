@@ -30,8 +30,8 @@ describe('Models', () => {
 
     describe('Name cleaning', () => {
       it('Can parse all-caps query values passed in', (done) => {
-        const cleanName = QueryOptions.getCleanName('GAME_NAME');
-        cleanName.should.equal('game_name');
+        const cleanName = QueryOptions.getCleanName('game');
+        cleanName.should.equal('game');
         done();
       });
 
@@ -44,13 +44,13 @@ describe('Models', () => {
 
     describe('Allowed qualities', () => {
       const optionSet = {
-        include_top_games: { type: 'boolean', default: false },
+        include_top: { type: 'boolean', default: false },
         games_count: { type: 'number' },
         game_id: { type: 'number', duplicate: true }
       };
 
       it('Lists the qualities a given parameter can have', (done) => {
-        const qualities = QueryOptions.getAllowedProperties(optionSet, 'include_top_games');
+        const qualities = QueryOptions.getAllowedProperties(optionSet, 'include_top');
         expect(qualities).to.have.property('type', 'boolean');
         expect(qualities).to.have.property('default', false);
         done();
@@ -80,7 +80,7 @@ describe('Models', () => {
             include_t: true,
             games_first: 20,
             games_before: 5,
-            game_name: 'Rimworld'
+            game: 'Rimworld'
           },
           'include_top'
         );
@@ -91,13 +91,13 @@ describe('Models', () => {
 
     describe('Parameter value retrieving', () => {
       const optionSet = {
-        include_top_games: { type: 'boolean', default: false },
+        include_top: { type: 'boolean', default: false },
         games_count: { type: 'number' },
         game_id: { type: 'number', duplicate: true }
       };
 
       const params = {
-        INCLUDE_TOP_GAMES: false,
+        include_top: false,
         games_count: 5,
         game_id: [1, 20, 500],
         GAME_ID: 63
@@ -128,7 +128,7 @@ describe('Models', () => {
 
     describe('Typed value cleanup', () => {
       const optionSet = {
-        include_top_games: { type: 'boolean', duplicate: true, default: false },
+        include_top: { type: 'boolean', duplicate: true, default: false },
         games_count: { type: 'number' },
         game_id: { type: 'number', duplicate: true }
       };
@@ -200,23 +200,23 @@ describe('Models', () => {
 
     describe('Property validation (overall functionality)', (done) => {
       const input_one = {
-        include_top_games: 'true',
+        include_top: 'true',
         games_count: '30',
         game_id: 'Eight',
-        game_name: 'A'
+        game: 'A'
       };
       const output_one = QueryOptions.cleanIncomingQueryOptions('/games/combo', input_one);
 
       const input_two = {
-        include_top_games: 'yes please',
-        game_name: ['A', 'B', 'C'],
-        GAME_NAME: 'D',
+        include_top: 'yes please',
+        game: ['A', 'B', 'C'],
+        GAME: 'D',
         game_id: [1, null, 3, 'four', '5', false]
       };
       const output_two = QueryOptions.cleanIncomingQueryOptions('/games/combo', input_two);
 
       it('Boolean-only properties convert string to boolean', () => {
-        expect(output_one.include_top_games).to.equal(true);
+        expect(output_one.include_top).to.equal(true);
       });
       it('Number-only properties convert string to number', () => {
         expect(output_one.games_count).to.equal(30);
@@ -225,32 +225,32 @@ describe('Models', () => {
         expect(output_one.game_id).to.equal(undefined);
       });
       it('Duplicate-allowing properties accept a single value', () => {
-        expect(output_one.game_name).to.equal('A');
+        expect(output_one.game).to.equal('A');
       });
       it('Duplicate-allowing properties handle differing-case params being passed in', () => {
-        expect(output_two.game_name)
+        expect(output_two.game)
           .to.be.an('array')
           .with.lengthOf(4);
       });
       it('Duplicate-allowing properties accept multiple values', () => {
-        expect(output_two.game_name).to.deep.equal(['A', 'B', 'C', 'D']);
+        expect(output_two.game).to.deep.equal(['A', 'B', 'C', 'D']);
       });
       it('Duplicate-allowing properties properly test for types', () => {
         expect(output_two.game_id).to.deep.equal([1, 3, 5]);
       });
       it('Does not apply default values if a valid value is given', () => {
-        expect(output_one.include_top_games).to.equal(true);
+        expect(output_one.include_top).to.equal(true);
       });
       it('Applies default values where no valid value is specified', () => {
-        expect(output_two.include_top_games).to.equal(false);
+        expect(output_two.include_top).to.equal(false);
       });
 
       it('Has proper values after re-running the cleaning process on the same parameters', () => {
         const output_reran = QueryOptions.cleanIncomingQueryOptions('/games/combo', input_two);
 
         expect(output_reran).to.deep.equal({
-          include_top_games: false,
-          game_name: ['A', 'B', 'C', 'D'],
+          include_top: false,
+          game: ['A', 'B', 'C', 'D'],
           game_id: [1, 3, 5]
         });
       });
@@ -260,11 +260,10 @@ describe('Models', () => {
       const params = {
         games_count: 25,
         games_after: 10,
-        include_top_games: false
+        include_top: false
       };
 
       const outgoingVals = QueryOptions.getOutgoingOptions('/helix/games/top', params);
-
 
       it('Converts local names to proper outgoing names', () => {
         expect(outgoingVals).to.have.property('first', params.games_count);
@@ -273,12 +272,12 @@ describe('Models', () => {
         expect(outgoingVals).to.not.have.property('before');
       });
       it('Properly strips a key that has no outgoing value', () => {
-        expect(outgoingVals).to.not.have.property('include_top_games');
+        expect(outgoingVals).to.not.have.property('include_top');
       });
 
       it('Returns null for an invalid endpoint', () => {
         const outgoing = QueryOptions.getOutgoingOptions('/fun', {
-          game_name: 'Rimworld',
+          game: 'Rimworld',
           user_name: 'Etalyx'
         });
         expect(outgoing).to.equal(null);
