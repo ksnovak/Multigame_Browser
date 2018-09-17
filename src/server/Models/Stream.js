@@ -18,33 +18,22 @@
 */
 
 module.exports = class Stream {
-  constructor({
-    id,
-    user_id,
-    title,
-    viewer_count,
-    game_id,
-    thumbnail_url,
-    login
-  }) {
-    this.id = Number(id);
-    this.user_id = Number(user_id);
+  constructor({ title, viewer_count, game_id, thumbnail_url, login, language }) {
     this.title = title;
-    this.viewer_count = viewer_count;
+    this.viewers = viewer_count;
     this.game_id = Number(game_id);
-    this.thumbnail_url = thumbnail_url;
+    this.language = language;
 
     if (login) {
-      this.login = login;
-    } else if (this.thumbnail_url) {
-      this.login = this.setNameFromThumbnail();
+      this.name = login;
+    }
+    else if (thumbnail_url) {
+      this.name = this.setNameFromThumbnail(thumbnail_url);
     }
   }
 
-  setNameFromThumbnail() {
-    return this.thumbnail_url
-      ? String(this.thumbnail_url.match(/(?<=live_user_)\w+(?=-\{width)/gi))
-      : null;
+  setNameFromThumbnail(thumbnail_url) {
+    return thumbnail_url ? String(thumbnail_url.match(/(?<=live_user_)\w+(?=-\{width)/gi)) : null;
   }
 
   // What the fuck is this.

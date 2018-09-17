@@ -35,7 +35,7 @@ export default class OptionsPane extends Component {
       handleToggle
     } = this.props;
 
-    const simplifiedStreamsList = streams ? streams.map(stream => stream.login) : [];
+    const simplifiedStreamsList = streams ? streams.map(stream => stream.name) : [];
 
     return (
       <div className="optionsPane col-sm-6 col-lg-3 form-group">

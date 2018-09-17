@@ -19,8 +19,8 @@ function streamsFromData(body, exclude) {
 
       // Make sure that the stream isn't part of our Exclude list, and isn't already in the array
       if (
-        !utils.isInExclude(streamObj.login, exclude)
-        && !utils.isAlreadyInArray(streamObj, 'user_id', streamsArray)
+        !utils.isInExclude(streamObj.name, exclude)
+        && !utils.isAlreadyInArray(streamObj, 'name', streamsArray)
       ) {
         streamsArray.push(streamObj);
       }
@@ -56,7 +56,7 @@ async function getStreams(params, next) {
       await getStreams(gameOnlyOptions, next)
     ];
 
-    return utils.combineArraysWithoutDuplicates(userStreams, gameStreams, 'user_id');
+    return utils.combineArraysWithoutDuplicates(userStreams, gameStreams, 'name');
   }
   // If the user only requested one of the types, make a simpler request:
   if (options.game_id || options.stream_id || options.name) {
@@ -96,7 +96,8 @@ async function getTopAndSpecificStreams(params, next) {
     await getStreams(params, next),
     await getTopStreams(params, next)
   ];
-  return utils.combineArraysWithoutDuplicates(specificResult, topResult, 'user_id');
+
+  return utils.combineArraysWithoutDuplicates(specificResult, topResult, 'name');
 }
 
 /* Get list of live streams, for either the specified game or specified users

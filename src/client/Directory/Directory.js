@@ -16,7 +16,7 @@ export default class Directory extends Component {
       const correctGameIndex = gameIDs.indexOf(stream.game_id);
       const game = correctGameIndex > -1 ? games[correctGameIndex] : null;
 
-      return <StreamCell key={stream.user_id} stream={stream} game={game} />;
+      return <StreamCell key={stream.name} stream={stream} game={game} />;
     });
 
     return (

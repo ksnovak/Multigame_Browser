@@ -246,6 +246,7 @@ describe('Router', function () {
               game_id: [passedGames[1].id, passedGames[0].id]
             }
           });
+
           results = response.body;
         });
 
@@ -320,7 +321,7 @@ describe('Router', function () {
           rejectErrors: true,
           done,
           onSuccess: (err, res) => {
-            const outerNames = res.body.map(stream => stream.login);
+            const outerNames = res.body.map(stream => stream.name);
 
             commonRequest({
               url,
@@ -328,7 +329,7 @@ describe('Router', function () {
               rejectErrors: true,
               done,
               onSuccess: (err, innerRes) => {
-                const innerNames = innerRes.body.map(stream => stream.login);
+                const innerNames = innerRes.body.map(stream => stream.name);
 
                 expect(innerNames).to.not.contain(outerNames[0]);
                 done();
@@ -406,7 +407,7 @@ describe('Router', function () {
 
         // Has an inner request
         it("Allows 'exclude' to prevent certain streamers from showing up", (done) => {
-          const outerNames = results.map(stream => stream.login);
+          const outerNames = results.map(stream => stream.name);
 
           commonRequest({
             url,
@@ -414,7 +415,7 @@ describe('Router', function () {
             rejectErrors: true,
             done,
             onSuccess: (err2, innerResults) => {
-              const innerNames = innerResults.body.map(stream => stream.login);
+              const innerNames = innerResults.body.map(stream => stream.name);
 
               expect(innerNames).to.not.contain(outerNames[0]);
 
@@ -524,11 +525,11 @@ describe('Router', function () {
         done();
       });
       it('Returns stream data when passed a username', (done) => {
-        results.streams.map(stream => stream.login).should.include('food');
+        results.streams.map(stream => stream.name).should.include('food');
         done();
       });
       it('Returns stream data when passed a user ID', (done) => {
-        results.streams.map(stream => stream.login).should.include('rifftrax');
+        results.streams.map(stream => stream.name).should.include('rifftrax');
         done();
       });
       it("Accepts 'streams_count' to specify the number of streams returned", (done) => {
@@ -537,7 +538,7 @@ describe('Router', function () {
         done();
       });
       it("Accepts 'exclude' to remove specific streams from the results", async () => {
-        const outerNames = results.streams.map(stream => stream.login);
+        const outerNames = results.streams.map(stream => stream.name);
 
         const innerResponse = await asyncCommonRequest({
           url,
@@ -551,7 +552,7 @@ describe('Router', function () {
           }
         });
 
-        const innerNames = innerResponse.body.streams.map(stream => stream.login);
+        const innerNames = innerResponse.body.streams.map(stream => stream.name);
 
         expect(innerNames).to.not.include(outerNames[2]);
       });
