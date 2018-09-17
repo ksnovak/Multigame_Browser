@@ -8,13 +8,20 @@
   width: 100%;
 }
 
+/* Keep the links and generated data floating at the bottom of the screen */
 .floatBottom {
   position: fixed;
   width: 100%;
-  bottom: 0;
+  bottom: 4px;
 }
 
 .react-select__menu-list,
 #generatedAt {
-  color: #777777;
+  color: var(--gray);
+}
+
+/* The remove button ('x') on each React-Select element; color it red to signify that it's a Danger action */
+.react-select__multi-value__remove,
+.react-select__indicators > .react-select__clear-indicator {
+  color: var(--danger);
 }
