@@ -53,6 +53,7 @@ export default class App extends Component {
       include_top_games: this.state.includeTop,
       game_name: this.state.includeGames,
       stream_name: this.state.include,
+      exclude: this.state.exclude,
       language: this.state.language
     };
 
@@ -60,7 +61,7 @@ export default class App extends Component {
     this.getStreams(details);
 
     // Update the querystring. Sorting just so that the less-spammy params get listed first
-    const order = ['include_top_games', 'language', 'stream_name', 'game_name'];
+    const order = ['include_top_games', 'language', 'stream_name', 'exclude', 'game_name'];
     const newParams =
       '?' +
       queryString.stringify(details, {

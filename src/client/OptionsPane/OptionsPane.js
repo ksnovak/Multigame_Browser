@@ -60,14 +60,15 @@ export default class OptionsPane extends Component {
             list={simplifiedStreamsList}
             defaultSelected={include}
           />
-          {/* <br />
+          <br />
           <TextList
             id="excludeList"
             label="Exclude these users: "
+            placeholder="Enter some names"
             handleListChange={this.handleListChange('exclude')}
             list={simplifiedStreamsList}
             defaultSelected={exclude}
-          /> */}
+          />
           <br />
           <br />
         </form>
