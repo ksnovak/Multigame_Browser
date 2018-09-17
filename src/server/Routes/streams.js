@@ -6,12 +6,27 @@ import utils from '../../utils';
 
 const router = express.Router();
 
-function streamsFromData(body) {
+// Get an array of streams, from the raw Twitch data
+function streamsFromData(body, exclude) {
   try {
     if (body.error) throw body.error;
 
-    const streamsArray = body.data.map(stream => new Stream(stream));
-    return utils.removeArrayDuplicates(streamsArray, 'user_id');
+    const streamsArray = [];
+
+    // Go through each of the raw streams
+    body.data.forEach((stream) => {
+      const streamObj = new Stream(stream);
+
+      // Make sure that the stream isn't part of our Exclude list, and isn't already in the array
+      if (
+        !utils.isInExclude(streamObj.login, exclude)
+        && !utils.isAlreadyInArray(streamObj, 'user_id', streamsArray)
+      ) {
+        streamsArray.push(streamObj);
+      }
+    });
+
+    return streamsArray;
   }
   catch (ex) {
     throw ex;
@@ -52,7 +67,7 @@ async function getStreams(params, next) {
       next
     });
 
-    return streamsFromData(results);
+    return streamsFromData(results, options.exclude);
   }
 
   // If none was requested, skip making a request entirely.
@@ -73,11 +88,14 @@ async function getTopStreams(params, next) {
     next
   });
 
-  return streamsFromData(results);
+  return streamsFromData(results, options.exclude);
 }
 
 async function getTopAndSpecificStreams(params, next) {
-  const [specificResult, topResult] = [await getStreams(params, next), await getTopStreams(params, next)];
+  const [specificResult, topResult] = [
+    await getStreams(params, next),
+    await getTopStreams(params, next)
+  ];
   return utils.combineArraysWithoutDuplicates(specificResult, topResult, 'user_id');
 }
 

@@ -30,6 +30,7 @@ const incomingOptions = {
     game_id: { type: 'number', duplicate: true, outgoing: 'game_id' },
     stream_id: { type: 'number', duplicate: true, outgoing: 'user_id' },
     stream_name: { duplicate: true, outgoing: 'user_login' },
+    exclude: { duplicate: true },
     language: { duplicate: true, outgoing: 'language' }
   },
   '/streams/top': {
@@ -38,6 +39,7 @@ const incomingOptions = {
     streams_after: { type: 'number', outgoing: 'after' },
     language: { duplicate: true, outgoing: 'language' },
     include_top_streams: { type: 'boolean' },
+    exclude: { duplicate: true },
   },
   '/combo': {
     include_top_games: { type: 'boolean', default: false },
@@ -48,7 +50,8 @@ const incomingOptions = {
     game_name: { duplicate: true }, // game name
     stream_id: { type: 'number', duplicate: true },
     stream_name: { duplicate: true },
-    language: { duplicate: true }
+    language: { duplicate: true },
+    exclude: { duplicate: true },
   }
 };
 
