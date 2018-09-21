@@ -11,7 +11,11 @@ export default class GeneratedAt extends Component {
     // Wed, 29 Aug 2018 04:57:49 GMT
     const { generatedTime, version } = this.props;
 
-    return generatedTime && version ? (
+    if (!generatedTime && !version) {
+      return null;
+    }
+
+    return (
       <div id="generatedAt">
         Generated at&nbsp;
         <AnimateOnChange
@@ -23,6 +27,6 @@ export default class GeneratedAt extends Component {
         </AnimateOnChange>
         <div id="version">v{version}</div>
       </div>
-    ) : null;
+    );
   }
 }
