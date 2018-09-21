@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './OptionsPane.css';
+import AnimateOnChange from 'react-animate-on-change';
 
 export default class GeneratedAt extends Component {
   componentDidMount() {
@@ -12,7 +13,14 @@ export default class GeneratedAt extends Component {
 
     return generatedTime && version ? (
       <div id="generatedAt">
-        Generated at <span id="generatedTime">{new Date(generatedTime).toLocaleString()}</span>
+        Generated at&nbsp;
+        <AnimateOnChange
+          baseClassName="generatedTime"
+          animationClassName="generatedTime--animate"
+          animate
+        >
+          {new Date(generatedTime).toLocaleString()}
+        </AnimateOnChange>
         <div id="version">v{version}</div>
       </div>
     ) : null;
