@@ -3,12 +3,13 @@ import './Directory.css';
 import PropTypes from 'prop-types';
 import StreamCell from './StreamCell';
 import NoStreams from './NoStreams';
+import Loading from './Loading';
 
 export default class Directory extends Component {
   componentDidMount() {}
 
   render() {
-    const { streams, games } = this.props;
+    const { streams, games, loading } = this.props;
 
     const gameIDs = games.map(game => game.id);
 
@@ -21,6 +22,7 @@ export default class Directory extends Component {
 
     return (
       <div className="col-sm-10 col-lg-9">
+        <Loading isLoading={loading} />
         {streamCells.length ? <div className="directory row">{streamCells}</div> : <NoStreams />}
       </div>
     );

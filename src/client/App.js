@@ -28,7 +28,8 @@ export default class App extends Component {
       exclude: [],
       language: [],
       includeTop: true,
-      generatedTime: null
+      generatedTime: null,
+      loading: false
     };
   }
 
@@ -124,6 +125,7 @@ export default class App extends Component {
   };
 
   getStreams(params) {
+    this.setState({ loading: true });
     axios
       .get('/api/combo', {
         params
@@ -133,7 +135,8 @@ export default class App extends Component {
           games: res.data.games,
           includeGames: res.data.games.filter(game => game.selected).map(game => game.name),
           streams: res.data.streams,
-          generatedTime: res.headers.date
+          generatedTime: res.headers.date,
+          loading: false
         });
       });
   }
@@ -180,7 +183,8 @@ export default class App extends Component {
       exclude,
       language,
       includeTop,
-      generatedTime
+      generatedTime,
+      loading
     } = this.state;
 
     return (
@@ -200,9 +204,10 @@ export default class App extends Component {
           handleFavoritesClick={this.handleFavoritesClick}
           handleHomeClick={this.handleHomeClick}
           handleToggle={this.handleToggle}
+          loading={loading}
         />
 
-        <Directory streams={streams} games={games} />
+        <Directory streams={streams} games={games} loading={loading} />
       </div>
     );
   }

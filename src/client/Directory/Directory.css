@@ -22,3 +22,19 @@
   font-style: italic;
   text-overflow: clip;
 }
+
+#loadingIndicator {
+  /* Display this on top of the Directory */
+  position: absolute;
+  top: 1em;
+  z-index: 1;
+
+  /* Allow the loading text to appear next to the indicator */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#loadingIndicator span {
+  margin-left: 10px;
+}
