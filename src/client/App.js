@@ -191,7 +191,7 @@ export default class App extends Component {
     } = this.state;
 
     return (
-      <div id="home" className="row">
+      <div id="home" className="row py-1">
         <OptionsPane
           games={games}
           includeGames={includeGames}
