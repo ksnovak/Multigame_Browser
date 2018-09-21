@@ -152,7 +152,7 @@ export default class App extends Component {
         includeTop: qs.include_top !== 'false',
         language: getArray(qs.language),
         include: getArray(qs.name),
-        exclude: getArray(qs.exclude_name),
+        exclude: getArray(qs.exclude),
         includeGames: getArray(qs.game)
       },
       () => {
