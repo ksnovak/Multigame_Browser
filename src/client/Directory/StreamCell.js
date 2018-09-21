@@ -39,7 +39,7 @@ export default class StreamCell extends Component {
     const { stream, game } = this.props;
 
     return (
-      <div id="streamCell" className="col-sm-2 m-1">
+      <div className="streamCell col-sm-2 m-1">
         <div className="row">
           <a className="streamThumbnail" href={`https://twitch.tv/${stream.name}`}>
             <img src={this.getStreamThumbnail(stream.name)} alt={`${stream.name}'s thumbnail`} />
@@ -60,10 +60,11 @@ export default class StreamCell extends Component {
             </a>
           </div>
           <div className="col-sm-10">
-            <span className="name">{stream.name}</span> with
-            <span className="viewerCount"> {stream.viewers} viewers</span>
-            <span className="streamGame">{game ? ` playing ${game.name}` : ''}</span>
+            <span className="name">{stream.name}</span>
+            <br />
+            <span className="viewerCount">{stream.viewers} viewers</span>
           </div>
+          <span className="streamGame">{game ? ` playing ${game.name}` : ''}</span>
           <span className="streamTitle">{stream.title}</span>
         </div>
       </div>

@@ -14,13 +14,16 @@
   transform: translate(-50%, -50%);
 }
 
-.login {
+.name {
   font-weight: bold;
 }
 
 .streamTitle {
   font-style: italic;
-  text-overflow: clip;
+  white-space: normal;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-height: 68px;
 }
 
 #loadingIndicator {
