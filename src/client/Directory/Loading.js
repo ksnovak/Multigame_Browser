@@ -8,11 +8,9 @@ export default class NoStreams extends Component {
   render() {
     const { isLoading } = this.props;
 
-    if (!isLoading) return null;
-
     return (
-      <div id="loadingIndicator">
-        <Spinner name="folding-cube" color="white" fadeIn="quarter" />
+      <div id="loadingIndicator" className={isLoading ? 'show' : ''}>
+        <Spinner name="folding-cube" fadeIn="none" />
         <span>Loading streams...</span>
       </div>
     );

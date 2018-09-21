@@ -33,8 +33,23 @@
   display: flex;
   align-items: center;
   justify-content: center;
+
+  /* Hide the indicator by default */
+  transition: opacity 1000ms 500ms; /* Property, duration, and delay. Do nothing for 500ms, and then fade-out over the span of 1 sec*/
+  opacity: 0;
+}
+
+/**/
+#loadingIndicator.show {
+  transition: opacity 0ms 500ms; /* Property, duration, and delay. After .5s, completely show the indicator*/
+  opacity: 1;
+}
+
+#loadingIndicator .sk-spinner {
+  color: var(--green);
 }
 
 #loadingIndicator span {
   margin-left: 10px;
+  color: var(--dark);
 }
