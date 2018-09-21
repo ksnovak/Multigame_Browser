@@ -138,6 +138,9 @@ export default class App extends Component {
           generatedTime: res.headers.date,
           loading: false
         });
+      })
+      .catch(err => {
+        this.setState({ loading: false });
       });
   }
 
