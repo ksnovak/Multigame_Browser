@@ -17,7 +17,7 @@ export default class GeneratedAt extends Component {
 
     return (
       <div id="generatedAt">
-        Streams updated at&nbsp;
+        Streams updated at
         <AnimateOnChange
           baseClassName="generatedTime"
           animationClassName="generatedTime--animate"

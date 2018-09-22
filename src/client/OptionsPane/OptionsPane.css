@@ -15,7 +15,6 @@
   bottom: 4px;
 }
 
-
 @keyframes flashBackground {
   from {
     background-color: var(--secondary);
