@@ -3,7 +3,6 @@ import './OptionsPane.css';
 import PropTypes from 'prop-types';
 import TextList from './TextList';
 import TopButtons from './TopButtons';
-import BottomLinks from './BottomLinks';
 import OptionsButtons from './OptionsButtons';
 import GeneratedAt from './GeneratedAt';
 
@@ -74,7 +73,6 @@ export default class OptionsPane extends Component {
         </form>
 
         <div className="floatBottom">
-          <BottomLinks />
           <GeneratedAt generatedTime={generatedTime} version={version} />
         </div>
       </div>

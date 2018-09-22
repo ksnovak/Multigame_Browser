@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './Directory.css';
 import PropTypes from 'prop-types';
 import StreamCell from './StreamCell';
+import BottomLinks from './BottomLinks';
 import NoStreams from './NoStreams';
 import Loading from './Loading';
 
@@ -24,6 +25,8 @@ export default class Directory extends Component {
       <div className="col-sm-10 col-lg-9">
         <Loading isLoading={loading} />
         {streamCells.length ? <div className="directory row">{streamCells}</div> : <NoStreams />}
+        <br />
+        <BottomLinks />
       </div>
     );
   }

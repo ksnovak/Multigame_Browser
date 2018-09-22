@@ -11,21 +11,21 @@ export default class GeneratedAt extends Component {
     // Wed, 29 Aug 2018 04:57:49 GMT
     const { generatedTime, version } = this.props;
 
-    if (!generatedTime && !version) {
+    if (!generatedTime || !version) {
       return null;
     }
 
     return (
       <div id="generatedAt">
-        Generated at&nbsp;
+        Streams updated at&nbsp;
         <AnimateOnChange
           baseClassName="generatedTime"
           animationClassName="generatedTime--animate"
           animate
         >
-          {new Date(generatedTime).toLocaleString()}
+          {new Date(generatedTime).toLocaleTimeString()}
         </AnimateOnChange>
-        <div id="version">v{version}</div>
+        <div id="version">version {version}</div>
       </div>
     );
   }
