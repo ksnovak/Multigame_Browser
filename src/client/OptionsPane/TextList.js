@@ -37,6 +37,30 @@ function mergeArrays(special, base) {
   return newArr;
 }
 
+const customStyles = {
+  menuList: (base, state) => ({
+    ...base,
+    color: '#999'
+  }),
+  multiValueLabel: (base, state) => ({
+    ...base,
+    fontSize: '75%'
+  }),
+  multiValueRemove: (base, state) => ({
+    ...base,
+    color: '#E74C3C'
+  }),
+  clearIndicator: (base, state) => ({
+    ...base,
+    color: '#E74C3C',
+    padding: '3px'
+  }),
+  dropdownIndicator: (base, state) => ({
+    ...base,
+    padding: '3px'
+  })
+};
+
 export default class TextList extends Component {
   componentDidMount() {
     // asdf
@@ -52,8 +76,10 @@ export default class TextList extends Component {
           isClearable
           isMulti
           classNamePrefix="react-select"
+          styles={customStyles}
           placeholder={placeholder}
           closeMenuOnSelect={false}
+          menuPlacement="auto"
           onChange={handleListChange}
           options={getValueAndLabel(mergeArrays(defaultSelected, list))}
           value={getValueAndLabel(defaultSelected)}

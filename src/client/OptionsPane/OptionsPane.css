@@ -15,16 +15,6 @@
   bottom: 4px;
 }
 
-.react-select__menu-list,
-#generatedAt {
-  color: var(--gray);
-}
-
-/* The remove button ('x') on each React-Select element; color it red to signify that it's a Danger action */
-.react-select__multi-value__remove,
-.react-select__indicators > .react-select__clear-indicator {
-  color: var(--danger);
-}
 
 @keyframes flashBackground {
   from {
