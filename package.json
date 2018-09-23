@@ -23,7 +23,9 @@
   "author": "Kevin Novak",
   "license": "MIT",
   "dependencies": {
+    "@babel/cli": "^7.0.0",
     "@babel/core": "^7.0.0",
+    "@babel/node": "^7.0.0",
     "@babel/polyfill": "^7.0.0",
     "axios": "^0.18.0",
     "chalk": "^2.4.1",
@@ -40,8 +42,6 @@
     "request": "^2.88.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.0.0",
-    "@babel/node": "^7.0.0",
     "@babel/plugin-proposal-class-properties": "^7.0.0",
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
