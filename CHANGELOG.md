@@ -12,6 +12,32 @@
 
 ### Personal
 
+## 0.5.1 - Fri, Sept 21, 2018 - Exclude, and usability changes
+
+### Overview
+
+Making a lot of changes focused around making the app more... usable. Not necessarily new features, but just less "programmer-y".
+
+### Added
+
+- "Exclude" functionality. If there's a game you like, but don't want to see certain users, that's where this comes in handy.
+- Loading indicator. This only appears if the query takes more than a half-second, and it has a fade-out animation so that it doesn't jarringly just appear and disappear.
+- "Generated At" value flashes upon update. This works hand-in-hand with the loading indicator, to make the user aware that new data has arrived. The background color briefly changes and then animates back to normal.
+
+### Changed
+
+- The common querystring names, for simplicity. include_top_games -> include_top, stream_name -> name, game_name -> game, exclude_stream_name -> exclude
+- Data passed from the API. Streams now pass: Title, viewers, game_id, language, and name. Games now pass: ID, name, and selected.
+- Thumbnail URLs are all generated client-side. Maybe this is less future-proof, but the previous way wasn't exactly future-proof either.
+- Merged some logic for the Directory, and simplified it.
+- Stream Cell cleanup. No more overlapping text, 3-line limit to titles, less awkward whitespace due to name+viewers+game being part of a line with the game thumbnail.
+- Generated At is now "Streams updated at" for more immediate understanding, and only show the time instead of Date+Time
+- Bottom Links got separated from Generated At, now is at the bottom of the Directory, for a bit less visual clutter.
+
+### Personal
+
+- I definitely ran into the problem of running out of steam again, feeling like I was at that plateau. The #1 thing I want to change is something that's extremely daunting and way out of my knowledge range, but is incredibly important (The problem with [Heroku timeout](https://github.com/ksnovak/Multigame_Browser/issues/72)). I know that it's surrounding my Webpack and run processes, but I don't understand Webpack at all, and am scared to break it.
+
 ## 0.4.2 - Sun, Sept 9, 2018 - Cleanup day
 
 ### Overview
