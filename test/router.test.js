@@ -449,7 +449,7 @@ describe('Router', function () {
         rejectErrors: true,
         done,
         onSuccess: (err, res) => {
-          res.body.games.should.have.lengthOf(20);
+          res.body.games.should.have.lengthOf.within(19, 20);
           done();
         }
       });
