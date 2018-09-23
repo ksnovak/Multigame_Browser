@@ -12,6 +12,32 @@ export default {
     return chalk.keyword(color)(message);
   },
 
+  // Check if the given name is in the "exclude" list
+  isInExclude(name, exclude) {
+    // If no exclude is given, exit early
+    if (!exclude) {
+      return false;
+    }
+
+    // If exclude is a string, do a simple comparison
+    if (typeof exclude === 'string') {
+      return name === exclude;
+    }
+
+    // If exclude is an array, check if the name is somewhere within
+    if (Array.isArray(exclude)) {
+      return !exclude.contains(name);
+    }
+
+    return false;
+  },
+
+  // Check if the passed object is in the array.
+  isAlreadyInArray(obj, key = null, array) {
+    // If key is null, we consider the obj to be just a value, and the array to be an array of values -- instead of entire Objects
+    return array.filter(elem => (key ? elem[key] === obj[key] : elem === obj)).length > 0;
+  },
+
   // Get an array without any duplicated elements in it
   removeArrayDuplicates(array, key) {
     try {

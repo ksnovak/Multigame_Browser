@@ -113,7 +113,7 @@ describe('Router', function () {
           const response = await asyncCommonRequest({
             url,
             query: {
-              game_name: [
+              game: [
                 commonGames.rimworld.name,
                 commonGames.creative.name,
                 'World of wo',
@@ -193,8 +193,8 @@ describe('Router', function () {
         commonRequest({
           url,
           query: {
-            include_top_games: false,
-            game_name: [commonGames.rimworld.name, commonGames.deadCells.name]
+            include_top: false,
+            game: [commonGames.rimworld.name, commonGames.deadCells.name]
           },
           rejectErrors: true,
           done,
@@ -209,8 +209,8 @@ describe('Router', function () {
         commonRequest({
           url,
           query: {
-            include_top_games: true,
-            game_name: [commonGames.rimworld.name, commonGames.deadCells.name]
+            include_top: true,
+            game: [commonGames.rimworld.name, commonGames.deadCells.name]
           },
           rejectErrors: true,
           done,
@@ -240,17 +240,20 @@ describe('Router', function () {
             url,
             games_count,
             query: {
-              include_top_games: true,
+              include_top: true,
               games_count,
-              game_name: [passedGames[0].name, passedGames[0].name, passedGames[2].name],
+              game: [passedGames[0].name, passedGames[0].name, passedGames[2].name],
               game_id: [passedGames[1].id, passedGames[0].id]
             }
           });
+
           results = response.body;
         });
 
         it("Accepts 'games_count' to change the number of games", (done) => {
-          results.should.be.an('array').with.lengthOf.within(games_count, games_count + passedGames.length);
+          results.should.be
+            .an('array')
+            .with.lengthOf.within(games_count, games_count + passedGames.length);
           done();
         });
 
@@ -311,6 +314,30 @@ describe('Router', function () {
           }
         });
       });
+
+      it("Accepts 'exclude' to remove certain specific streams", (done) => {
+        commonRequest({
+          url,
+          rejectErrors: true,
+          done,
+          onSuccess: (err, res) => {
+            const outerNames = res.body.map(stream => stream.name);
+
+            commonRequest({
+              url,
+              query: { exclude: outerNames[0] },
+              rejectErrors: true,
+              done,
+              onSuccess: (err, innerRes) => {
+                const innerNames = innerRes.body.map(stream => stream.name);
+
+                expect(innerNames).to.not.contain(outerNames[0]);
+                done();
+              }
+            });
+          }
+        });
+      });
     });
     describe('/streams/list', () => {
       const url = '/api/streams/list';
@@ -364,14 +391,34 @@ describe('Router', function () {
           done();
         });
 
+        // Has an inner request
         it("Allows 'language' to filter for certain languages", (done) => {
           commonRequest({
             url,
-            query: { game_id: passedIDs, language: 'es' },
+            query: { streams_count, game_id: passedIDs, language: 'es' },
             rejectErrors: true,
             done,
             onSuccess: (err2, innerResults) => {
               expect(results).to.not.deep.equal(innerResults.body);
+              done();
+            }
+          });
+        });
+
+        // Has an inner request
+        it("Allows 'exclude' to prevent certain streamers from showing up", (done) => {
+          const outerNames = results.map(stream => stream.name);
+
+          commonRequest({
+            url,
+            query: { streams_count, game_id: passedIDs, exclude: [outerNames[0]] },
+            rejectErrors: true,
+            done,
+            onSuccess: (err2, innerResults) => {
+              const innerNames = innerResults.body.map(stream => stream.name);
+
+              expect(innerNames).to.not.contain(outerNames[0]);
+
               done();
             }
           });
@@ -395,14 +442,14 @@ describe('Router', function () {
         }
       });
     });
-    it("Returns the top games, when passed 'include_top_games'", (done) => {
+    it("Returns the top games, when passed 'include_top'", (done) => {
       commonRequest({
         url,
-        query: { include_top_games: true },
+        query: { include_top: true },
         rejectErrors: true,
         done,
         onSuccess: (err, res) => {
-          res.body.games.should.have.lengthOf(20);
+          res.body.games.should.have.lengthOf.within(19, 20);
           done();
         }
       });
@@ -424,7 +471,7 @@ describe('Router', function () {
     it('Makes sure to obtain game information for streams before returning', (done) => {
       commonRequest({
         url,
-        query: { stream_name: 'rifftrax' },
+        query: { name: 'rifftrax' },
         rejectErrors: true,
         done,
         onSuccess: (err, res) => {
@@ -450,9 +497,9 @@ describe('Router', function () {
           url,
           query: {
             streams_count,
-            game_name: [commonGames.rimworld.name],
+            game: [commonGames.rimworld.name],
             game_id: [commonGames.deadCells.id],
-            stream_name: ['food'],
+            name: ['food'],
             stream_id: 7832442 // RiffTrax
           }
         });
@@ -478,17 +525,36 @@ describe('Router', function () {
         done();
       });
       it('Returns stream data when passed a username', (done) => {
-        results.streams.map(stream => stream.login).should.include('food');
+        results.streams.map(stream => stream.name).should.include('food');
         done();
       });
       it('Returns stream data when passed a user ID', (done) => {
-        results.streams.map(stream => stream.login).should.include('rifftrax');
+        results.streams.map(stream => stream.name).should.include('rifftrax');
         done();
       });
       it("Accepts 'streams_count' to specify the number of streams returned", (done) => {
         // Expected 2 extra because of 2 special users passed
         results.streams.should.have.lengthOf(streams_count + 2);
         done();
+      });
+      it("Accepts 'exclude' to remove specific streams from the results", async () => {
+        const outerNames = results.streams.map(stream => stream.name);
+
+        const innerResponse = await asyncCommonRequest({
+          url,
+          query: {
+            streams_count,
+            game: [commonGames.rimworld.name],
+            game_id: [commonGames.deadCells.id],
+            name: ['food'],
+            stream_id: 7832442, // RiffTrax,
+            exclude: outerNames[2]
+          }
+        });
+
+        const innerNames = innerResponse.body.streams.map(stream => stream.name);
+
+        expect(innerNames).to.not.include(outerNames[2]);
       });
     });
   });

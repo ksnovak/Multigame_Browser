@@ -8,13 +8,29 @@
   width: 100%;
 }
 
+/* Keep the links and generated data floating at the bottom of the screen */
 .floatBottom {
   position: fixed;
   width: 100%;
-  bottom: 0;
+  bottom: 4px;
 }
 
-.react-select__menu-list,
-#generatedAt {
-  color: #777777;
+@keyframes flashBackground {
+  from {
+    background-color: var(--secondary);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+
+.generatedTime {
+  padding: 3px 6px;
+  border-radius: 5px;
+}
+
+.generatedTime--animate {
+  animation-name: flashBackground;
+  animation-duration: 2s;
+  animation-timing-function: ease;
 }

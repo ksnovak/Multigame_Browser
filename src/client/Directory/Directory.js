@@ -2,26 +2,33 @@ import React, { Component } from 'react';
 import './Directory.css';
 import PropTypes from 'prop-types';
 import StreamCell from './StreamCell';
+import BottomLinks from './BottomLinks';
+import NoStreams from './NoStreams';
+import Loading from './Loading';
 
 export default class Directory extends Component {
   componentDidMount() {}
 
   render() {
-    const { streams, games } = this.props;
+    const { streams, games, loading } = this.props;
 
-    if (streams && streams.length && games && games.length) {
-      const gameIDs = games.map(game => game.id);
+    const gameIDs = games.map(game => game.id);
 
-      const streamCells = streams.map((stream) => {
-        const correctGameIndex = gameIDs.indexOf(stream.game_id);
-        const game = correctGameIndex > -1 ? games[correctGameIndex] : null;
+    const streamCells = streams.map((stream) => {
+      const correctGameIndex = gameIDs.indexOf(stream.game_id);
+      const game = correctGameIndex > -1 ? games[correctGameIndex] : null;
 
-        return <StreamCell key={stream.user_id} stream={stream} game={game} />;
-      });
+      return <StreamCell key={stream.name} stream={stream} game={game} />;
+    });
 
-      return <div className="directory col-sm-10 col-lg-9 row">{streamCells}</div>;
-    }
-    return <div className="directory col-sm-10 col-lg-9">Still loading</div>;
+    return (
+      <div className="col-sm-10 col-lg-9">
+        <Loading isLoading={loading} />
+        {streamCells.length ? <div className="directory row">{streamCells}</div> : <NoStreams />}
+        <br />
+        <BottomLinks />
+      </div>
+    );
   }
 }
 

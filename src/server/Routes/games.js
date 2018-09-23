@@ -29,7 +29,7 @@ router.get('/', (req, res) => {
 
 async function getTopGames(uri, params, next) {
   const options = QueryOptions.cleanIncomingQueryOptions('/games/top', params);
-  if (options.include_top_games === false) {
+  if (options.include_top === false) {
     return [];
   }
   const results = await RoutesUtils.commonTwitchRequest({
@@ -44,7 +44,7 @@ async function getTopGames(uri, params, next) {
 async function getSpecificGames(uri, params, next, isSelected = false) {
   const options = QueryOptions.cleanIncomingQueryOptions('/games/specific', params);
 
-  if (!options.game_name && !options.game_id) {
+  if (!options.game && !options.game_id) {
     return [];
   }
   const results = await RoutesUtils.commonTwitchRequest({
@@ -99,7 +99,7 @@ router.get('/combo', async (req, res, next) => {
   try {
     const options = QueryOptions.cleanIncomingQueryOptions('/games/combo', req.query);
 
-    if (!options.game_id && !options.game_name && !options.include_top_games) {
+    if (!options.game_id && !options.game && !options.include_top) {
       res.send([]);
     }
     else {

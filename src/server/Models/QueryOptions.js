@@ -10,17 +10,17 @@ const incomingOptions = {
     games_count: { type: 'number', outgoing: 'first' },
     games_before: { type: 'number', outgoing: 'before' },
     games_after: { type: 'number', outgoing: 'after' },
-    include_top_games: { type: 'boolean' }
+    include_top: { type: 'boolean' }
   },
   '/games/specific': {
     game_id: { type: 'number', duplicate: true, outgoing: 'id' },
-    game_name: { duplicate: true, outgoing: 'name' }
+    game: { duplicate: true, outgoing: 'name' }
   },
   '/games/combo': {
-    include_top_games: { type: 'boolean', default: false },
+    include_top: { type: 'boolean', default: false },
     games_count: { type: 'number' },
     game_id: { type: 'number', duplicate: true },
-    game_name: { duplicate: true }
+    game: { duplicate: true }
   },
   '/streams/list': {
     include_top_streams: { type: 'boolean', default: false },
@@ -29,7 +29,8 @@ const incomingOptions = {
     streams_after: { type: 'number', outgoing: 'after' },
     game_id: { type: 'number', duplicate: true, outgoing: 'game_id' },
     stream_id: { type: 'number', duplicate: true, outgoing: 'user_id' },
-    stream_name: { duplicate: true, outgoing: 'user_login' },
+    name: { duplicate: true, outgoing: 'user_login' },
+    exclude: { duplicate: true },
     language: { duplicate: true, outgoing: 'language' }
   },
   '/streams/top': {
@@ -38,17 +39,19 @@ const incomingOptions = {
     streams_after: { type: 'number', outgoing: 'after' },
     language: { duplicate: true, outgoing: 'language' },
     include_top_streams: { type: 'boolean' },
+    exclude: { duplicate: true },
   },
   '/combo': {
-    include_top_games: { type: 'boolean', default: false },
+    include_top: { type: 'boolean', default: false },
     include_top_streams: { type: 'boolean', default: false },
     games_count: { type: 'number' },
     streams_count: { type: 'number' },
     game_id: { type: 'number', duplicate: true }, // game ID
-    game_name: { duplicate: true }, // game name
+    game: { duplicate: true }, // game name
     stream_id: { type: 'number', duplicate: true },
-    stream_name: { duplicate: true },
-    language: { duplicate: true }
+    name: { duplicate: true },
+    language: { duplicate: true },
+    exclude: { duplicate: true },
   }
 };
 

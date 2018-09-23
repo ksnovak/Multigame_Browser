@@ -4,7 +4,6 @@ import queryString from 'query-string';
 import axios from 'axios';
 import OptionsPane from './OptionsPane/OptionsPane';
 import Directory from './Directory/Directory';
-import NoStreams from './Directory/NoStreams';
 import { version } from '../../package.json';
 
 function getArray(value) {
@@ -29,7 +28,8 @@ export default class App extends Component {
       exclude: [],
       language: [],
       includeTop: true,
-      generatedTime: null
+      generatedTime: null,
+      loading: false
     };
   }
 
@@ -51,9 +51,10 @@ export default class App extends Component {
   handleSubmit = event => {
     //Grab the important details from the state
     const details = {
-      include_top_games: this.state.includeTop,
-      game_name: this.state.includeGames,
-      stream_name: this.state.include,
+      include_top: this.state.includeTop,
+      game: this.state.includeGames,
+      name: this.state.include,
+      exclude: this.state.exclude,
       language: this.state.language
     };
 
@@ -61,7 +62,7 @@ export default class App extends Component {
     this.getStreams(details);
 
     // Update the querystring. Sorting just so that the less-spammy params get listed first
-    const order = ['include_top_games', 'language', 'stream_name', 'game_name'];
+    const order = ['include_top', 'language', 'name', 'exclude', 'game'];
     const newParams =
       '?' +
       queryString.stringify(details, {
@@ -124,6 +125,7 @@ export default class App extends Component {
   };
 
   getStreams(params) {
+    this.setState({ loading: true });
     axios
       .get('/api/combo', {
         params
@@ -133,8 +135,12 @@ export default class App extends Component {
           games: res.data.games,
           includeGames: res.data.games.filter(game => game.selected).map(game => game.name),
           streams: res.data.streams,
-          generatedTime: res.headers.date
+          generatedTime: res.headers.date,
+          loading: false
         });
+      })
+      .catch(err => {
+        this.setState({ loading: false });
       });
   }
 
@@ -149,18 +155,18 @@ export default class App extends Component {
     //Set the state based on querystring values as appropriate
     this.setState(
       {
-        includeTop: qs.include_top_games !== 'false',
+        includeTop: qs.include_top !== 'false',
         language: getArray(qs.language),
-        include: getArray(qs.stream_name),
-        exclude: getArray(qs.exclude_stream_name),
-        includeGames: getArray(qs.game_name)
+        include: getArray(qs.name),
+        exclude: getArray(qs.exclude),
+        includeGames: getArray(qs.game)
       },
       () => {
         //After the state values are set, make our initial query.
         this.getStreams({
-          include_top_games: this.state.includeTop,
-          game_name: this.state.includeGames,
-          stream_name: this.state.include,
+          include_top: this.state.includeTop,
+          game: this.state.includeGames,
+          name: this.state.include,
           language: this.state.language,
 
           //These two aren't stored in State. Not sure if they should be, since they're only used for passing to the server.
@@ -180,11 +186,12 @@ export default class App extends Component {
       exclude,
       language,
       includeTop,
-      generatedTime
+      generatedTime,
+      loading
     } = this.state;
 
     return (
-      <div id="home" className="row">
+      <div id="home" className="row py-1">
         <OptionsPane
           games={games}
           includeGames={includeGames}
@@ -200,8 +207,10 @@ export default class App extends Component {
           handleFavoritesClick={this.handleFavoritesClick}
           handleHomeClick={this.handleHomeClick}
           handleToggle={this.handleToggle}
+          loading={loading}
         />
-        {streams && streams.length ? <Directory streams={streams} games={games} /> : <NoStreams />}
+
+        <Directory streams={streams} games={games} loading={loading} />
       </div>
     );
   }

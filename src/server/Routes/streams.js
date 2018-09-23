@@ -6,12 +6,27 @@ import utils from '../../utils';
 
 const router = express.Router();
 
-function streamsFromData(body) {
+// Get an array of streams, from the raw Twitch data
+function streamsFromData(body, exclude) {
   try {
     if (body.error) throw body.error;
 
-    const streamsArray = body.data.map(stream => new Stream(stream));
-    return utils.removeArrayDuplicates(streamsArray, 'user_id');
+    const streamsArray = [];
+
+    // Go through each of the raw streams
+    body.data.forEach((stream) => {
+      const streamObj = new Stream(stream);
+
+      // Make sure that the stream isn't part of our Exclude list, and isn't already in the array
+      if (
+        !utils.isInExclude(streamObj.name, exclude)
+        && !utils.isAlreadyInArray(streamObj, 'name', streamsArray)
+      ) {
+        streamsArray.push(streamObj);
+      }
+    });
+
+    return streamsArray;
   }
   catch (ex) {
     throw ex;
@@ -22,16 +37,16 @@ async function getStreams(params, next) {
   const options = QueryOptions.cleanIncomingQueryOptions('/streams/list', params);
 
   // Make sure that a game or user was specified. If not, return early with nothing.
-  if (!(options.game_id || options.stream_id || options.stream_name)) {
+  if (!(options.game_id || options.stream_id || options.name)) {
     return [];
   }
 
   // Twitch's API requires you to ask for either game ID(s) xor user detail(s). Doing both acts like an inner join, which is what we don't want.
   // In this case, if the user wants both types, we'll make two calls and combine the results:
-  if (options.game_id && (options.stream_id || options.stream_name)) {
+  if (options.game_id && (options.stream_id || options.name)) {
     const gameOnlyOptions = Object.assign({}, options);
     gameOnlyOptions.stream_id = undefined;
-    gameOnlyOptions.stream_name = undefined;
+    gameOnlyOptions.name = undefined;
 
     const userOnlyOptions = Object.assign({}, options);
     userOnlyOptions.game_id = undefined;
@@ -41,10 +56,10 @@ async function getStreams(params, next) {
       await getStreams(gameOnlyOptions, next)
     ];
 
-    return utils.combineArraysWithoutDuplicates(userStreams, gameStreams, 'user_id');
+    return utils.combineArraysWithoutDuplicates(userStreams, gameStreams, 'name');
   }
   // If the user only requested one of the types, make a simpler request:
-  if (options.game_id || options.stream_id || options.stream_name) {
+  if (options.game_id || options.stream_id || options.name) {
     const results = await RoutesUtils.commonTwitchRequest({
       uri: '/helix/streams',
       options,
@@ -52,7 +67,7 @@ async function getStreams(params, next) {
       next
     });
 
-    return streamsFromData(results);
+    return streamsFromData(results, options.exclude);
   }
 
   // If none was requested, skip making a request entirely.
@@ -73,12 +88,16 @@ async function getTopStreams(params, next) {
     next
   });
 
-  return streamsFromData(results);
+  return streamsFromData(results, options.exclude);
 }
 
 async function getTopAndSpecificStreams(params, next) {
-  const [specificResult, topResult] = [await getStreams(params, next), await getTopStreams(params, next)];
-  return utils.combineArraysWithoutDuplicates(specificResult, topResult, 'user_id');
+  const [specificResult, topResult] = [
+    await getStreams(params, next),
+    await getTopStreams(params, next)
+  ];
+
+  return utils.combineArraysWithoutDuplicates(specificResult, topResult, 'name');
 }
 
 /* Get list of live streams, for either the specified game or specified users

@@ -3,7 +3,6 @@ import './OptionsPane.css';
 import PropTypes from 'prop-types';
 import TextList from './TextList';
 import TopButtons from './TopButtons';
-import BottomLinks from './BottomLinks';
 import OptionsButtons from './OptionsButtons';
 import GeneratedAt from './GeneratedAt';
 
@@ -35,7 +34,7 @@ export default class OptionsPane extends Component {
       handleToggle
     } = this.props;
 
-    const simplifiedStreamsList = streams ? streams.map(stream => stream.login) : [];
+    const simplifiedStreamsList = streams ? streams.map(stream => stream.name) : [];
 
     return (
       <div className="optionsPane col-sm-6 col-lg-3 form-group">
@@ -60,20 +59,20 @@ export default class OptionsPane extends Component {
             list={simplifiedStreamsList}
             defaultSelected={include}
           />
-          {/* <br />
+          <br />
           <TextList
             id="excludeList"
             label="Exclude these users: "
+            placeholder="Enter some names"
             handleListChange={this.handleListChange('exclude')}
             list={simplifiedStreamsList}
             defaultSelected={exclude}
-          /> */}
+          />
           <br />
           <br />
         </form>
 
         <div className="floatBottom">
-          <BottomLinks />
           <GeneratedAt generatedTime={generatedTime} version={version} />
         </div>
       </div>
