@@ -9,7 +9,6 @@
     "client": "webpack-dev-server --mode development --devtool inline-source-map --hot",
     "server": "nodemon src/server/server.js --exec babel-node",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "herokuDeploy": "npm run start",
     "test": "mocha",
     "test:min": "mocha -R mocha-fivemat-reporter",
     "test:watch": "mocha --watch",
