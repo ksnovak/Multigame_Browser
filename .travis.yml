@@ -1,7 +1,7 @@
 language: node_js
 
 node_js:
-  - 8
+  - 8.12
 
 script:
   - npm test && npm run build
@@ -14,3 +14,14 @@ branches:
   only:
     - development
     - master
+    - DeploymentChanges
+
+deploy:
+  provider: heroku
+  run: npm run herokuDeploy
+  skip_cleanup: true
+  app:
+    master: multigame-browser
+    DeploymentChanges: multigame-browser-test
+  api_key:
+    secure: penTRSbX0SffLqYHinHUWhL9+biAAqskIZQB7hBVH1al1NoNclKZ4zpHkCrr/kLMWHPBpvs+fChur6Oy9BCzqoI397mLMAw2647mNY1W7Gi/KMBhkby2n5BcZNwAuAMVZ+FvRUJF8Q/ehUg3u5NH5kISzqzf7UsB2GLaKMuHQnmxTg+uibaxNp7Sk+asj+S8ZhxkoBqU4UaMSmkkBaS0xD/k2uuCapSYLMUOJOQS+m5oQZ4TKxaznVXDrPkZKItwJ7oZl0xXTMCSLfNmqbRYv0Fa2MoZSQkuXW2F+OL2vLTW9zHFKLjUYnApq69JOL9aBryF0/GZM7KvjttZ85FJ5RKt3n7LSGV6Uti6uRNUYUVxmQ0iifgf1yByHFMQGIMCbzm2Xu9plVuZChFk/Oa14vvOC9f5+bTJSuzgv9NhOse/XQYzH2LobSWojhGcLrqUierafPqrV1ZF/VGJMR32EFrv6V/dtT0XCKIOSzkTXetvhohQmI1lxpYdWneQT6LyrhWGXsIi1BJM14lUp3ADp8Vk1xqdbVMBIipKSkhsHIsZXE0FR6EdzA3cuEtG5NKcMYFf+LQoeC/SFZxGsylMimX6q7JVZ1LlPtnjzwr0pgHXSDK8YKLWF0KEdXXj79810Rhp3HmKiU2dWhuY9qadNDOErv58DkLQyJr4FuQFFJM=
