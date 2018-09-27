@@ -10,7 +10,7 @@ branches:
   only:
     - development
     - master
-    - deploymentchanges
+    - DeploymentChanges
 
 deploy:
   provider: heroku
@@ -18,4 +18,4 @@ deploy:
     secure: rNyJgwnowA92g1+0cNqNbNwg+3KasNWHGtTaZwH2/68rhzAgD62uWwYCrTNIX626Xaq5Ap08bKvYw8gFHHo2My3nw/xN2bIDKnKPQQoKo8fW8xQ13QYfZ7RH82yXN5HOoDb+XYFjG5yTXK9SoYSVCLIQN8sNQFIrDVoGYWxgUfFGXOB/8oHAyHejp6r+MQgRymcl9Xh/4Nc71p1rfrUl6I6pedHsW9Ryf6gO9vGf2sN7HFBZlg9A/loVFUqD615YJaw1F0av6kRcN84CAOpe89Gf68fJvPb31vNETm+eX3ANkDM3kikWvi/k0/fIUaf4HS1Q9j7Nr2vM5ojn8hI/ps9EGRZPDJ7Ds1X2oBJKaHVeqwktXllWcy0OXG1ggPPbS7ektruFk9Pm+onIDcBPxy89vTd88rQFJ/sBFVlrFou/BGXr3yb9OGeL+4Eus31czzrkl79uMwid+kLKfMsnDds0mozjpQbufO+1SmkY3fWPxEvjvkyAc/7wjA0j5MPSTW44YZBcTuP3mKg5uREGYtQlF3DHE+dCnufRVey5xSaZJa4CKXRIOWthLGgRiGLeDm0v2Mw2cBdW0kY1xS57exOsTBEcN7rUUWONUVSbLpF1iT24Oa7Le/BopRf7cFNel9H+bwBRjK5UIMCnZ0jCFFMxt700cgZuCXJEc6PGcS0=
   run: npm run herokuDeploy
   app: multigame-browser-test
-  on: deploymentchanges
+  on: DeploymentChanges
