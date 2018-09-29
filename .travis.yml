@@ -1,16 +1,25 @@
 language: node_js
-
 node_js:
-  - 8
-
+  - 8.12
 script:
   - npm test && npm run build
-
 cache:
   directories:
     - node_modules
-
 branches:
   only:
-    - development
     - master
+    - /^dev.*$/
+
+deploy:
+  - provider: heroku
+    api_key:
+      secure: Vev6N5K0HEibmt2dJaP8mVGOhvhjgNpFVh0oWuxW7x7zcyu03uVn/U2MNdTRQ6E3s+OO1MoX206gppvVUTdCMX7DmvI/AB6Fgos6D8Edl4rum+vfAscNRIGx2wP7jO+Sf02/KM7Nt4Cj/4vn4txEGFNA+jH6kU6xegn85ARYOX6mQa4OmFDOEBzj0hYMMtqNG+zwSZD0reYPJsgz9FS0ykrLF+TpQEO1ksVSxoT3u+9lqVd7RDZ4a6LzsWzh5rLf3uNz/IzHTkgNPHKX9Txx2mOvnfpL+xCGKNt1Z3JJioNJ25DmMVhBprQWQrvQuOTgp/KDQSdQ2mEF7nmq23xdWw8GRiBjL9tU+C4xFJaNxdBCzatws8rxemqz/58co/n4sW8Djd1siVOQmnIhvbwlL7fKpeb0mnEDNy/J2WtwxBXvJnbSrzQmm1JJGjkg0QyLiyOeh/HhZ8n9sKmluDAC9KBBPsBA8O63F72mlMBDJC5JBzR0IJmiyX9nOglHRJU8TSJRyVDeIOMqv8cNLlasqhyyfSjS3HI4nThx4E44FiJa4h/+Wnzx9ahBoLmUP0S+fZNGupMkESU7MCNfP//Vo/T+sUf3BJuxpz5afWFxWigRmS+na6G71Q06cIXjkRNT9RUsK4CF9YXLwB0dFCunoBBKW4ERev8yxVkYSekPD48=
+    app: multigame-browser
+    on: master
+  - provider: heroku
+    api_key:
+      secure: Vev6N5K0HEibmt2dJaP8mVGOhvhjgNpFVh0oWuxW7x7zcyu03uVn/U2MNdTRQ6E3s+OO1MoX206gppvVUTdCMX7DmvI/AB6Fgos6D8Edl4rum+vfAscNRIGx2wP7jO+Sf02/KM7Nt4Cj/4vn4txEGFNA+jH6kU6xegn85ARYOX6mQa4OmFDOEBzj0hYMMtqNG+zwSZD0reYPJsgz9FS0ykrLF+TpQEO1ksVSxoT3u+9lqVd7RDZ4a6LzsWzh5rLf3uNz/IzHTkgNPHKX9Txx2mOvnfpL+xCGKNt1Z3JJioNJ25DmMVhBprQWQrvQuOTgp/KDQSdQ2mEF7nmq23xdWw8GRiBjL9tU+C4xFJaNxdBCzatws8rxemqz/58co/n4sW8Djd1siVOQmnIhvbwlL7fKpeb0mnEDNy/J2WtwxBXvJnbSrzQmm1JJGjkg0QyLiyOeh/HhZ8n9sKmluDAC9KBBPsBA8O63F72mlMBDJC5JBzR0IJmiyX9nOglHRJU8TSJRyVDeIOMqv8cNLlasqhyyfSjS3HI4nThx4E44FiJa4h/+Wnzx9ahBoLmUP0S+fZNGupMkESU7MCNfP//Vo/T+sUf3BJuxpz5afWFxWigRmS+na6G71Q06cIXjkRNT9RUsK4CF9YXLwB0dFCunoBBKW4ERev8yxVkYSekPD48=
+    app: multigame-browser-test
+    on:
+      all_branches: true

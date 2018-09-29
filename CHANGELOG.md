@@ -12,6 +12,28 @@
 
 ### Personal
 
+## 0.5.2 - Sat, Sept 22, 2018 - Battling the beast of Travis and Heroku
+
+### Overview
+
+While trying to deploy 0.5.1, suddenly, the deploy proccess... broke. The main push here is to fix that and optimize the deploy process.
+
+It seems that something got messed up with devDependencies vs. dependencies -- Heroku was suddenly saying that certain packages (which had _always_ been in devDependencies) couldn't be found, and the only way to fix it was to move them to dependencies.
+I had been discontent with the deploy process for a while, so I wanted to tackle that while fixing the big issue.
+
+### Changed
+
+- Deploying to Heroku is now done through Travis, instead of going Github -> Travis -> Github -> Heroku
+- Fixed the giant issue of slow bootup after Heroku sleeps. Now the whole webpack process only gets done on a new deploy; restarts just force a new "npm start" call.
+- Shifted around a lot of dependencies; removed unneeded ones; updated all possible ones
+
+### Personal
+
+This was really frustrating, because I only have a very thin film of knowledge regarding Travis, Heroku, Webpack, Babel.... and once things were working, I was afraid of breaking them.
+Some things were a very painstaking process, and reminded me of my old job where I'd have to wait 10 minutes for a build to run, just to realize I messed something up. In this case, I was literally testing things with the Travis/Heroku integrations, so it was necessary to wait the ~5 minutes for that entire process to run. Additionally, since I was testing the "Heroku sleeping" case, I had to put everything on hold for 30 minutes a couple of times to see how the sleep interacted with everything else.
+
+Also in the meanwhile, Twitch released a brand new feature: tags for streams and games; You can classify your stream with things like, "Hard mode" or "Casual playthrough". Games have genre tags (e.g. RPG, Battle Royale). I'm really excited to implement this in the app, but it is a bit daunting.
+
 ## 0.5.1 - Fri, Sept 21, 2018 - Exclude, and usability changes
 
 ### Overview
