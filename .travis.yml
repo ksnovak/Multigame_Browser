@@ -8,8 +8,9 @@ cache:
     - node_modules
 branches:
   only:
-    - /^dev*$/
     - master
+    - development
+    - /^dev.*$/
 
 deploy:
   provider: heroku
