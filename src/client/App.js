@@ -79,6 +79,7 @@ export default class App extends Component {
       {
         includeGames: [],
         include: [],
+        exclude: [],
         language: [],
         includeTop: undefined
       },
@@ -117,6 +118,7 @@ export default class App extends Component {
           'cilantrogamer'
         ],
         language: ['en']
+        exclude: ['twitchpresents2', 'food'],
       },
       () => {
         this.handleSubmit();
