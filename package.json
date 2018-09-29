@@ -1,6 +1,6 @@
 {
   "name": "multigame_browser",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Directory for streams of multiple games on Twitch.",
   "main": "src/server/server.js",
   "scripts": {
