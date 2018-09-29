@@ -89,40 +89,51 @@ export default class App extends Component {
     );
   };
 
-  //
+  // Load up the user's favorite search. If one isn't defined yet, use some predefined details
   handleFavoritesClick = event => {
-    this.setState(
-      {
-        includeTop: false,
-        includeGames: [
-          'Cities: Skylines',
-          'Stardew Valley',
-          'Guild Wars 2',
-          'Into the Breach',
-          'RimWorld',
-          'Terraria',
-          'Dungeon of the Endless',
-          'Slay the Spire',
-          'Dead Cells'
-        ],
-        include: [
-          'aphromoo',
-          'lethalfrag',
-          'scarra',
-          'meteos',
-          'day9tv',
-          'dismaid',
-          'scarizardplays',
-          'kitboga',
-          'albinoliger',
-          'cilantrogamer'
-        ],
-        language: ['en']
-        exclude: ['twitchpresents2', 'food'],
-      },
-      () => {
-        this.handleSubmit();
-      }
+    const defaults = {
+      includeTop: false,
+      includeGames: [
+        'Cities: Skylines',
+        'Stardew Valley',
+        'Guild Wars 2',
+        'Into the Breach',
+        'RimWorld',
+        'Terraria',
+        'Dungeon of the Endless',
+        'Slay the Spire',
+        'Dead Cells'
+      ],
+      include: [
+        'aphromoo',
+        'lethalfrag',
+        'scarra',
+        'meteos',
+        'day9tv',
+        'dismaid',
+        'scarizardplays',
+        'kitboga',
+        'albinoliger',
+        'cilantrogamer'
+      ],
+      exclude: ['twitchpresents2', 'food'],
+      language: ['en']
+    };
+
+    const userFaves = JSON.parse(localStorage.getItem('favorites'));
+
+    this.setState(userFaves || defaults, () => {
+      this.handleSubmit();
+    });
+  };
+
+  // Save the current search details in localStorage, as the user's favorites.
+  saveFavoritesClick = event => {
+    const { includeGames, include, exclude, language, includeTop } = this.state;
+
+    localStorage.setItem(
+      'favorites',
+      JSON.stringify({ includeGames, include, exclude, language, includeTop })
     );
   };
 
@@ -209,6 +220,7 @@ export default class App extends Component {
           handleFavoritesClick={this.handleFavoritesClick}
           handleHomeClick={this.handleHomeClick}
           handleToggle={this.handleToggle}
+          saveFavoritesClick={this.saveFavoritesClick}
           loading={loading}
         />
 

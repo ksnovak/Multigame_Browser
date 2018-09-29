@@ -7,7 +7,7 @@ export default class MajorButton extends Component {
   }
 
   render() {
-    const { handleHomeClick, handleFavoritesClick } = this.props;
+    const { handleHomeClick, handleFavoritesClick, saveFavoritesClick } = this.props;
 
     return (
       <div id="topButtons" className="buttonSet">
@@ -23,7 +23,15 @@ export default class MajorButton extends Component {
           type="button"
           onClick={handleFavoritesClick}
         >
-          My favorites
+          Faves
+        </button>
+        <button
+          id="saveFaves"
+          className="btn btn-warning"
+          type="button"
+          onClick={saveFavoritesClick}
+        >
+          Save search
         </button>
       </div>
     );
