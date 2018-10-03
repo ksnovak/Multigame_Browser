@@ -7,7 +7,12 @@ export default class MajorButton extends Component {
   }
 
   render() {
-    const { handleHomeClick, handleFavoritesClick, saveFavoritesClick } = this.props;
+    const {
+      handleHomeClick,
+      handleFavoritesClick,
+      saveFavoritesClick,
+      searchHasDetails
+    } = this.props;
 
     return (
       <div id="topButtons" className="buttonSet">
@@ -30,6 +35,11 @@ export default class MajorButton extends Component {
           className="btn btn-warning"
           type="button"
           onClick={saveFavoritesClick}
+          disabled={!searchHasDetails}
+          title={
+            searchHasDetails
+            || 'Disabled because you have no games or streams selected in your search'
+          }
         >
           Save search
         </button>

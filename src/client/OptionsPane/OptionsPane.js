@@ -44,6 +44,7 @@ export default class OptionsPane extends Component {
             handleFavoritesClick={handleFavoritesClick}
             handleHomeClick={handleHomeClick}
             saveFavoritesClick={saveFavoritesClick}
+            searchHasDetails={includeGames.length + include.length > 0}
           />
           <OptionsButtons language={language} includeTop={includeTop} handleToggle={handleToggle} />
           <TextList
