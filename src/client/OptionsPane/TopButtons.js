@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import './OptionsPane.css';
+import PropTypes from 'prop-types';
 
-export default class MajorButton extends Component {
+export default class TopButtons extends Component {
   componentDidMount() {
     // asdf
   }
@@ -47,3 +48,14 @@ export default class MajorButton extends Component {
     );
   }
 }
+
+TopButtons.propTypes = {
+  handleHomeClick: PropTypes.func.isRequired,
+  handleFavoritesClick: PropTypes.func.isRequired,
+  saveFavoritesClick: PropTypes.func.isRequired,
+  searchHasDetails: PropTypes.bool
+};
+
+TopButtons.defaultProps = {
+  searchHasDetails: false
+};
