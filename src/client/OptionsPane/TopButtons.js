@@ -1,13 +1,19 @@
 import React, { Component } from 'react';
 import './OptionsPane.css';
+import PropTypes from 'prop-types';
 
-export default class MajorButton extends Component {
+export default class TopButtons extends Component {
   componentDidMount() {
     // asdf
   }
 
   render() {
-    const { handleHomeClick, handleFavoritesClick } = this.props;
+    const {
+      handleHomeClick,
+      handleFavoritesClick,
+      saveFavoritesClick,
+      searchHasDetails
+    } = this.props;
 
     return (
       <div id="topButtons" className="buttonSet">
@@ -23,9 +29,33 @@ export default class MajorButton extends Component {
           type="button"
           onClick={handleFavoritesClick}
         >
-          My favorites
+          Faves
+        </button>
+        <button
+          id="saveFaves"
+          className="btn btn-warning"
+          type="button"
+          onClick={saveFavoritesClick}
+          disabled={!searchHasDetails}
+          title={
+            searchHasDetails
+            || 'Disabled because you have no games or streams selected in your search'
+          }
+        >
+          Save search
         </button>
       </div>
     );
   }
 }
+
+TopButtons.propTypes = {
+  handleHomeClick: PropTypes.func.isRequired,
+  handleFavoritesClick: PropTypes.func.isRequired,
+  saveFavoritesClick: PropTypes.func.isRequired,
+  searchHasDetails: PropTypes.bool
+};
+
+TopButtons.defaultProps = {
+  searchHasDetails: false
+};

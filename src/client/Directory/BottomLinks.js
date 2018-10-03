@@ -21,7 +21,7 @@ export default class BottomLinks extends Component {
       <div className="bottomLinks text-center">
         <span>Helpful Links: </span>
         {links.map(link => (
-          <a href={link.url} rel="noopener noreferrer" target="_blank">
+          <a href={link.url} rel="noopener noreferrer" target="_blank" key={link.name}>
             {link.name}
           </a>
         ))}

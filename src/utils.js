@@ -26,7 +26,7 @@ export default {
 
     // If exclude is an array, check if the name is somewhere within
     if (Array.isArray(exclude)) {
-      return !exclude.contains(name);
+      return exclude.indexOf(name) > -1;
     }
 
     return false;
