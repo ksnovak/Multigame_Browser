@@ -131,10 +131,18 @@ export default class App extends Component {
   saveFavoritesClick = event => {
     const { includeGames, include, exclude, language, includeTop } = this.state;
 
-    localStorage.setItem(
-      'favorites',
-      JSON.stringify({ includeGames, include, exclude, language, includeTop })
-    );
+    if (
+      confirm(
+        `Are you sure you want to update your Favorites? \nThis new search has ${
+          includeGames.length
+        } games and ${include.length} streams, plus ${exclude.length} excluded`
+      )
+    ) {
+      localStorage.setItem(
+        'favorites',
+        JSON.stringify({ includeGames, include, exclude, language, includeTop })
+      );
+    }
   };
 
   getStreams(params) {
