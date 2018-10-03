@@ -41,7 +41,12 @@ export default class GeneratedAt extends Component {
         >
           {new Date(generatedTime).toLocaleTimeString()}
         </AnimateOnChange>
-        <div id="version">version {version}</div>
+        <div id="version">
+          version{' '}
+          <a href="https://github.com/ksnovak/Multigame_Browser/blob/master/CHANGELOG.md">
+            {version}
+          </a>
+        </div>
       </div>
     );
   }
