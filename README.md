@@ -14,13 +14,10 @@ This effectively replaces the main Twitch directory, by giving you a combination
 
 An example use case:
 
-There are a few streamers whom I follow and really like to watch (Albinoliger, Aphromoo, Day9tv, Kitboga, Lethalfrag, Scarizardplays). On Twitch, of course, you have your Following list to make this easy to see.
+I follow a few streamers (Albinoliger, Aphromoo, Day9tv, Kitboga, Lethalfrag, Scarizardplays), and am interested in a few games (Stardew Valley, Dead Cells, Rimworld, Cities: Skylines). There are also a few people who regularly stream those games that I'm not interested in viewing.
+I can have a single search that gets exactly those results: https://multigame-browser.herokuapp.com/?include_top=false&language=en&name=albinoliger&name=aphromoo&name=day9tv&name=kitboga&name=lethalfrag&name=scarizardplays&exclude=tynansylvester&exclude=concernedape&exclude=colossalorder&exclude=motiontwin&game=Stardew%20Valley&game=RimWorld&game=Cities%3A%20Skylines&game=Dead%20Cells
 
-However, there are a few specific games that I am interested in seeing too (Stardew Valley, Dead Cells, Rimworld, Cities: Skylines). On Twitch, I would have to visit each of these games' individual directories to see who's streaming those games.
-
-Additionally, there are a few people who regularly stream those games that I'm not interested in viewing. On Twitch, there is no way to hide those users.
-
-This app, however, can combine all of these into a single search: https://multigame-browser.herokuapp.com/?include_top=false&language=en&name=albinoliger&name=aphromoo&name=day9tv&name=kitboga&name=lethalfrag&name=scarizardplays&exclude=tynansylvester&exclude=concernedape&exclude=colossalorder&exclude=motiontwin&game=Stardew%20Valley&game=RimWorld&game=Cities%3A%20Skylines&game=Dead%20Cells
+When browsing Twitch directly, I would need to look at my list of followed streamers, and also individually visit each of those games' directories in order to see all of that information. And Twitch has no way to hide users that you are uninterested in.
 
 ## How to use the browser
 
