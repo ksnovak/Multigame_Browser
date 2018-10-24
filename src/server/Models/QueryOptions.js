@@ -39,7 +39,7 @@ const incomingOptions = {
     streams_after: { type: 'number', outgoing: 'after' },
     language: { duplicate: true, outgoing: 'language' },
     include_top_streams: { type: 'boolean' },
-    exclude: { duplicate: true },
+    exclude: { duplicate: true }
   },
   '/combo': {
     include_top: { type: 'boolean', default: false },
@@ -51,7 +51,7 @@ const incomingOptions = {
     stream_id: { type: 'number', duplicate: true },
     name: { duplicate: true },
     language: { duplicate: true },
-    exclude: { duplicate: true },
+    exclude: { duplicate: true }
   }
 };
 
@@ -59,6 +59,13 @@ const twitchEndpoints = {
   '/helix/games': '/games/specific',
   '/helix/games/top': '/games/top',
   '/helix/streams': '/streams/list'
+};
+
+const languages = {
+  en: ['en', 'en-gb'],
+  pt: ['pt', 'pt-br'],
+  zh: ['zh', 'zh-tw', 'zh-cn'],
+  es: ['es', 'es-mx']
 };
 
 module.exports = {
@@ -214,6 +221,11 @@ module.exports = {
     return cleanedParams;
   },
 
+  // Some languages have multiple versions (e.g. "English" has "en" as well as "en-gb"). We want the full set of these.
+  getAcceptableLanguages(languageCode) {
+    return languages[languageCode] || languageCode;
+  },
+
   // Convert the internal parameters to the Twitch-appropriate param name
   getOutgoingOptions(twitchEndpoint, params) {
     const optionSet = this.getOptionSetFromTwitchEndpoint(twitchEndpoint);
@@ -226,7 +238,12 @@ module.exports = {
     Object.keys(params).forEach((paramName) => {
       const option = optionSet[paramName];
       if (option.outgoing !== undefined) {
-        outgoing[option.outgoing] = params[paramName];
+        if (option.outgoing === 'language') {
+          outgoing[option.outgoing] = this.getAcceptableLanguages(params[paramName]);
+        }
+        else {
+          outgoing[option.outgoing] = params[paramName];
+        }
       }
     });
 

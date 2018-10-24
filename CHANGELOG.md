@@ -1,16 +1,16 @@
 # Changelog
 
-## [Unreleased]
+## 0.5.3 - Tues, Oct 23, 2018 - A shiny new readme
 
 ### Overview
 
-### Added
+Biggest thing here is an updated Readme and usage gif. Other things in life came up so this project got put on the backburner, but those things needed to be updated for recruiters/job application purposes.
 
 ### Changed
 
-### Removed
-
-### Personal
+- Greatly updated the Readme. Now more time is spent talking about what this app is, rather than what Twitch is.
+- Updated the usage gif in the Readme to match the newer visuals
+- Search results for a certain language now show more proper results, fixing an edge case where streamers set their language to something like "en-gb" or "pt-br". See [#93](https://github.com/ksnovak/Multigame_Browser/issues/93).
 
 ## 0.5.2 - Sat, Sept 22, 2018 - Battling the beast of Travis and Heroku
 
@@ -342,3 +342,13 @@ I had previously spent a bunch of time trying to build this directory, but ran i
 ### Personal
 
 - Started learning how to use Heroku
+
+## [Unreleased]
+
+### Overview
+
+### Added
+
+### Changed
+
+### Removed
