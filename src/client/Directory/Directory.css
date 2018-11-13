@@ -1,31 +1,3 @@
-.streamThumbnail img {
-  width: 100%;
-}
-
-.gameThumbnail {
-  max-width: 90px;
-  width: 100%;
-}
-
-.centeredText {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.name {
-  font-weight: bold;
-}
-
-.streamTitle {
-  font-style: italic;
-  white-space: normal;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  max-height: 68px;
-}
-
 #loadingIndicator {
   /* Display this on top of the Directory */
   position: absolute;
@@ -60,4 +32,11 @@
 .bottomLinks * {
   padding: 4px;
   margin: 4px;
+}
+
+.directory {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-gap: 10px;
+  grid-auto-rows: minmax(100px, auto);
 }
