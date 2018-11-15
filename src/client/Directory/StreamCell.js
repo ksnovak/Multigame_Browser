@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import './Directory.css';
+// import './Directory.css';
+import './StreamCell.css';
 import PropTypes from 'prop-types';
 
 const StreamWidth = 230;
@@ -39,34 +40,31 @@ export default class StreamCell extends Component {
     const { stream, game } = this.props;
 
     return (
-      <div className="streamCell col-sm-2 m-1">
-        <div className="row">
-          <a className="streamThumbnail" href={`https://twitch.tv/${stream.name}`}>
+      <div className="streamCell">
+        <div className="streamThumbnail">
+          <a href={`https://twitch.tv/${stream.name}`}>
             <img src={this.getStreamThumbnail(stream.name)} alt={`${stream.name}'s thumbnail`} />
           </a>
         </div>
-        <div className="row py-1">
-          <div className="col-sm-2 p-0">
-            <a
-              href={`https://twitch.tv/directory/game/${game.name}`}
-              target="_blank"
-              rel="noopener"
-            >
-              <img
-                src={this.getGameThumbnail(game.name)}
-                className="gameThumbnail"
-                alt={game.name}
-              />
-            </a>
-          </div>
-          <div className="col-sm-10">
-            <span className="name">{stream.name}</span>
-            <br />
-            <span className="viewerCount">{stream.viewers} viewers</span>
-          </div>
-          <span className="streamGame">{game ? ` playing ${game.name}` : ''}</span>
-          <span className="streamTitle">{stream.title}</span>
+
+        <div className="gameThumbAndLink">
+          <a
+            href={`https://twitch.tv/directory/game/${game.name}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img src={this.getGameThumbnail(game.name)} className="gameThumbnail" alt={game.name} />
+          </a>
         </div>
+
+        <div className="streamBasicDetails">
+          <span className="name">{stream.name}</span>
+          <br />
+          <span className="viewerCount">{stream.viewers} viewers</span>
+        </div>
+
+        <span className="streamGame">{game ? ` playing ${game.name}` : ''}</span>
+        <span className="streamTitle">{stream.title}</span>
       </div>
     );
   }
