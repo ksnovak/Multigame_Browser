@@ -24,7 +24,7 @@ export default class Directory extends Component {
     return (
       <div className="col-sm-10 col-lg-9">
         <Loading isLoading={loading} />
-        {streamCells.length ? <div className="directory row">{streamCells}</div> : <NoStreams />}
+        {streamCells.length ? <div className="directory">{streamCells}</div> : <NoStreams />}
         <br />
         <BottomLinks />
       </div>
