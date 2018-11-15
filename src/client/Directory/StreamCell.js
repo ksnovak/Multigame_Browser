@@ -47,7 +47,7 @@ export default class StreamCell extends Component {
           </a>
         </div>
 
-        <div className="gameThumbnail">
+        <div className="gameThumbAndLink">
           <a
             href={`https://twitch.tv/directory/game/${game.name}`}
             target="_blank"
@@ -63,10 +63,8 @@ export default class StreamCell extends Component {
           <span className="viewerCount">{stream.viewers} viewers</span>
         </div>
 
-        <div className="streamExtraDetails">
-          <span className="streamGame">{game ? ` playing ${game.name}` : ''}</span>
-          <span className="streamTitle">{stream.title}</span>
-        </div>
+        <span className="streamGame">{game ? ` playing ${game.name}` : ''}</span>
+        <span className="streamTitle">{stream.title}</span>
       </div>
     );
   }

@@ -3,51 +3,46 @@
   grid-template-areas:
     "streamThumb streamThumb"
     "gameThumb basicDetails"
-    "extraDetails extraDetails";
-  grid-template-rows: 110px 45px 1fr;
+    "gameName gameName"
+    "streamTitle streamTitle";
+  grid-template-rows: fit-content(300px) 45px fit-content(300px) fit-content(
+      300px
+    );
   grid-template-columns: 30px 1fr;
   grid-column-gap: 8px;
-  grid-row-gap: 4px;
 }
-
 .streamThumbnail {
   grid-area: streamThumb;
-  margin-bottom: 30px;
 }
-
-.gameThumbnail {
+.gameThumbAndLink {
   grid-area: gameThumb;
 }
-
 .streamBasicDetails {
   grid-area: basicDetails;
 }
-
-.streamExtraDetails {
-  grid-area: extraDetails;
+.streamGame {
+  grid-area: gameName;
+  font-style: italic;
 }
-
+.streamTitle {
+  grid-area: streamTitle;
+}
 .streamThumbnail img {
   width: 100%;
 }
-
 .gameThumbnail {
   width: 100%;
 }
-
 .centeredText {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
 }
-
 .name {
   font-weight: bold;
 }
-
 .streamTitle {
-  font-style: italic;
   white-space: normal;
   text-overflow: ellipsis;
   overflow: hidden;
