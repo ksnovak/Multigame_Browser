@@ -30,11 +30,7 @@ async function getGamesAndStreams(options, next) {
 
   // If some were found, then get just those from Twitch
   if (neededGames.length > 0) {
-    const additionalGames = await Games.getSpecificGames(
-      '/helix/games',
-      { game_id: neededGames },
-      next
-    );
+    const additionalGames = await Games.getSpecificGames({ game_id: neededGames }, next);
     // Merge the results into the existing gamesResult array
     gamesResult = utils.combineArraysWithoutDuplicates(gamesResult, additionalGames, 'id');
   }
