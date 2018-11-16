@@ -27,13 +27,13 @@ router.get('/', (req, res) => {
   res.send('games home');
 });
 
-async function getTopGames(uri, params, next) {
+async function getTopGames(params, next) {
   const options = QueryOptions.cleanIncomingQueryOptions('/games/top', params);
   if (options.include_top === false) {
     return [];
   }
   const results = await RoutesUtils.commonTwitchRequest({
-    uri,
+    uri: '/helix/games/top',
     options,
     rejectErrors: true,
     next
@@ -41,18 +41,20 @@ async function getTopGames(uri, params, next) {
   return gamesFromData(results);
 }
 
-async function getSpecificGames(uri, params, next, isSelected = false) {
+async function getSpecificGames(params, next, isSelected = false) {
   const options = QueryOptions.cleanIncomingQueryOptions('/games/specific', params);
 
   if (!options.game && !options.game_id) {
     return [];
   }
   const results = await RoutesUtils.commonTwitchRequest({
-    uri,
+    uri: '/helix/games',
     options,
     rejectErrors: true,
     next
   });
+
+  console.log(results);
 
   return gamesFromData(results, isSelected);
 }
@@ -60,8 +62,8 @@ async function getSpecificGames(uri, params, next, isSelected = false) {
 async function getTopAndSpecificGames(options, next) {
   // Make the two separate calls to the Twitch API
   const [specificResult, topResult] = [
-    await getSpecificGames('/helix/games', options, next, true),
-    await getTopGames('/helix/games/top', options, next)
+    await getSpecificGames(options, next, true),
+    await getTopGames(options, next)
   ];
 
   return utils.combineArraysWithoutDuplicates(specificResult, topResult, 'id');
@@ -73,7 +75,7 @@ async function getTopAndSpecificGames(options, next) {
 */
 router.get('/top', async (req, res, next) => {
   try {
-    const results = await getTopGames('/helix/games/top', req.query, next);
+    const results = await getTopGames(req.query, next);
     res.send(results || []);
   }
   catch (err) {
@@ -87,7 +89,7 @@ router.get('/top', async (req, res, next) => {
 */
 router.get('/specific', async (req, res, next) => {
   try {
-    const results = await getSpecificGames('/helix/games', req.query, next, true);
+    const results = await getSpecificGames(req.query, next, true);
     res.send(results);
   }
   catch (err) {
