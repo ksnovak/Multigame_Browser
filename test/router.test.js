@@ -499,7 +499,7 @@ describe('Router', function () {
             streams_count,
             game: [commonGames.rimworld.name],
             game_id: [commonGames.deadCells.id],
-            name: ['food'],
+            name: ['hungry'],
             stream_id: 7832442 // RiffTrax
           }
         });
@@ -525,7 +525,7 @@ describe('Router', function () {
         done();
       });
       it('Returns stream data when passed a username', (done) => {
-        results.streams.map(stream => stream.name).should.include('food');
+        results.streams.map(stream => stream.name).should.include('hungry');
         done();
       });
       it('Returns stream data when passed a user ID', (done) => {
@@ -546,7 +546,7 @@ describe('Router', function () {
             streams_count,
             game: [commonGames.rimworld.name],
             game_id: [commonGames.deadCells.id],
-            name: ['food'],
+            name: ['hungry'],
             stream_id: 7832442, // RiffTrax,
             exclude: outerNames[2]
           }
