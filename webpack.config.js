@@ -37,7 +37,7 @@ module.exports = {
     }
   },
   plugins: [
-    new CleanWebpackPlugin([outputDirectory]),
+    new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       /* This decides where to go when someone visits the homepage */
       template: './public/index.html',
