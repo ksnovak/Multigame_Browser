@@ -54,8 +54,6 @@ async function getSpecificGames(params, next, isSelected = false) {
     next
   });
 
-  console.log(results);
-
   return gamesFromData(results, isSelected);
 }
 

@@ -1,5 +1,35 @@
 # Changelog
 
+## 0.5.4 - Sat, Mar 23, 2019 - CSS Grid, and It's been a while
+
+### Overview
+
+I converted a decent amount of the layout to be CSS grid rather than Bootstrap layout.
+I also made some monumental dependency updates, because this project has gone untouched for 5 months.
+
+### Changed
+
+- Bootstrap grid -> CSS Grid
+
+### Personal
+
+It's been exactly 5 months since the last version.
+Oct14 I got back from a vacation
+Oct17 I had an interview with an exciting company
+Oct23 My last update to this tool :)
+Nov06 I had another
+Nov13 I had another
+Nov20 I flew back east for Thanksgiving, and also had my 2-year anniversary with my partner
+Nov28 I flew back to California
+Nov30 I had another interview
+Dec06 I had yet another
+Dec10 I got a job offer
+Jan07 I started my job
+Feb02 I flew to Austria(!!!!!) to work for 2.5 weeks
+Feb21 I flew back to California
+
+So, a little bit has happened. But I've really wanted to get back into working on this tool. I'm excited to get back into the groove.
+
 ## 0.5.3 - Tues, Oct 23, 2018 - A shiny new readme
 
 ### Overview

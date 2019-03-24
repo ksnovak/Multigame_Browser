@@ -13,7 +13,7 @@
     "react/jsx-one-expression-per-line": "off",
     "react/destructuring-assessment": "off",
     "linebreak-style": ["error", "windows"],
-    "max-len": ["warn", { "code": 100 }],
+    "max-len": ["warn", { "code": 100, "ignoreComments": true }],
     "no-tabs": "off",
     "brace-style": ["warn", "stroustrup"],
     "object-curly-newline": "off",
