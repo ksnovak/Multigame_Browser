@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import Img from "react-image";
 // import './Directory.css';
 import "./StreamCell.css";
 import PropTypes from "prop-types";
@@ -21,7 +22,7 @@ export default class StreamCell extends Component {
   getStreamThumbnail(name) {
     return this.getThumbnail(
       "https://static-cdn.jtvnw.net/previews-ttv/live_user_",
-      name,
+      ["scarra", "novagw2", "abootgaming"].includes(name) ? "afdafd" : name,
       StreamWidth,
       StreamAspectRatio
     );
@@ -30,10 +31,26 @@ export default class StreamCell extends Component {
   getGameThumbnail(game) {
     return this.getThumbnail(
       "https://static-cdn.jtvnw.net/ttv-boxart/",
-      game,
+      ["Guild Wars 2", "RimWorld"].includes(game) ? "fasfda" : game,
       GameWidth,
       GameAspectRatio
     );
+  }
+
+  getMissingImage(type) {
+    let name, width, height;
+
+    if (type == "game") {
+      name = "boxart";
+      width = GameWidth;
+      height = parseInt(GameWidth / GameAspectRatio, 10);
+    } else {
+      name = "preview";
+      width = StreamWidth;
+      height = parseInt(StreamWidth / StreamAspectRatio, 10);
+    }
+
+    return `https://static-cdn.jtvnw.net/ttv-static/404_${name}-${width}x${height}.jpg`;
   }
 
   render() {
@@ -43,9 +60,12 @@ export default class StreamCell extends Component {
       <div className="streamCell">
         <div className="streamThumbnail">
           <a href={`https://twitch.tv/${stream.name}`}>
-            <img
-              src={this.getStreamThumbnail(stream.name)}
+            <Img
               alt={`${stream.name}'s thumbnail`}
+              src={[
+                this.getStreamThumbnail(stream.name),
+                this.getMissingImage("stream")
+              ]}
             />
           </a>
         </div>
@@ -56,8 +76,11 @@ export default class StreamCell extends Component {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <img
-              src={this.getGameThumbnail(game.name)}
+            <Img
+              src={[
+                this.getGameThumbnail(game.name),
+                this.getMissingImage("game")
+              ]}
               className="gameThumbnail"
               alt={game.name}
             />
