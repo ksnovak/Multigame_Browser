@@ -1,8 +1,8 @@
-import React, { Component } from "react";
-import Img from "react-image";
+import React, { Component } from 'react';
+import Img from 'react-image';
 // import './Directory.css';
-import "./StreamCell.css";
-import PropTypes from "prop-types";
+import './StreamCell.css';
+import PropTypes from 'prop-types';
 
 const StreamWidth = 230;
 const StreamAspectRatio = 1.75;
@@ -21,8 +21,8 @@ export default class StreamCell extends Component {
 
   getStreamThumbnail(name) {
     return this.getThumbnail(
-      "https://static-cdn.jtvnw.net/previews-ttv/live_user_",
-      ["scarra", "novagw2", "abootgaming"].includes(name) ? "afdafd" : name,
+      'https://static-cdn.jtvnw.net/previews-ttv/live_user_',
+      name,
       StreamWidth,
       StreamAspectRatio
     );
@@ -30,22 +30,25 @@ export default class StreamCell extends Component {
 
   getGameThumbnail(game) {
     return this.getThumbnail(
-      "https://static-cdn.jtvnw.net/ttv-boxart/",
-      ["Guild Wars 2", "RimWorld"].includes(game) ? "fasfda" : game,
+      'https://static-cdn.jtvnw.net/ttv-boxart/',
+      game,
       GameWidth,
       GameAspectRatio
     );
   }
 
   getMissingImage(type) {
-    let name, width, height;
+    let name;
+    let width;
+    let height;
 
-    if (type == "game") {
-      name = "boxart";
+    if (type == 'game') {
+      name = 'boxart';
       width = GameWidth;
       height = parseInt(GameWidth / GameAspectRatio, 10);
-    } else {
-      name = "preview";
+    }
+    else {
+      name = 'preview';
       width = StreamWidth;
       height = parseInt(StreamWidth / StreamAspectRatio, 10);
     }
@@ -62,10 +65,7 @@ export default class StreamCell extends Component {
           <a href={`https://twitch.tv/${stream.name}`}>
             <Img
               alt={`${stream.name}'s thumbnail`}
-              src={[
-                this.getStreamThumbnail(stream.name),
-                this.getMissingImage("stream")
-              ]}
+              src={[this.getStreamThumbnail(stream.name), this.getMissingImage('stream')]}
             />
           </a>
         </div>
@@ -77,10 +77,7 @@ export default class StreamCell extends Component {
             rel="noopener noreferrer"
           >
             <Img
-              src={[
-                this.getGameThumbnail(game.name),
-                this.getMissingImage("game")
-              ]}
+              src={[this.getGameThumbnail(game.name), this.getMissingImage('game')]}
               className="gameThumbnail"
               alt={game.name}
             />
@@ -93,9 +90,7 @@ export default class StreamCell extends Component {
           <span className="viewerCount">{stream.viewers} viewers</span>
         </div>
 
-        <span className="streamGame">
-          {game ? ` playing ${game.name}` : ""}
-        </span>
+        <span className="streamGame">{game ? ` playing ${game.name}` : ''}</span>
         <span className="streamTitle">{stream.title}</span>
       </div>
     );
