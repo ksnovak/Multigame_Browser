@@ -39,7 +39,8 @@ export default class TopButtons extends Component {
           disabled={!searchHasDetails}
           title={
             searchHasDetails
-            || 'Disabled because you have no games or streams selected in your search'
+              ? ''
+              : 'Disabled because you have no games or streams selected in your search'
           }
         >
           Save search
