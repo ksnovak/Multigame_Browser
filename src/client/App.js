@@ -189,6 +189,7 @@ export default class App extends Component {
           game: this.state.includeGames,
           name: this.state.include,
           language: this.state.language,
+          exclude: this.state.exclude,
 
           //These two aren't stored in State. Not sure if they should be, since they're only used for passing to the server.
           game_id: qs.game_id,
