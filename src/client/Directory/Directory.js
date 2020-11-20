@@ -4,13 +4,14 @@ import PropTypes from 'prop-types';
 import StreamCell from './StreamCell';
 import BottomLinks from './BottomLinks';
 import NoStreams from './NoStreams';
+import LoadMore from './LoadMore';
 import Loading from './Loading';
 
 export default class Directory extends Component {
   componentDidMount() {}
 
   render() {
-    const { streams, games, loading } = this.props;
+    const { streams, games, loading, handleLoadMore } = this.props;
 
     const gameIDs = games.map(game => game.id);
 
@@ -26,6 +27,7 @@ export default class Directory extends Component {
         <Loading isLoading={loading} />
         {streamCells.length ? <div className="directory">{streamCells}</div> : <NoStreams />}
         <br />
+        <LoadMore handleClick={handleLoadMore} />
         <BottomLinks />
       </div>
     );

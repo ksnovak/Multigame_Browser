@@ -29,7 +29,8 @@ export default class App extends Component {
       language: [],
       includeTop: true,
       generatedTime: null,
-      loading: false
+      loading: false,
+      page: 0
     };
   }
 
@@ -55,7 +56,8 @@ export default class App extends Component {
       game: this.state.includeGames,
       name: this.state.include,
       exclude: this.state.exclude,
-      language: this.state.language
+      language: this.state.language,
+      page: this.state.page
     };
 
     // Call the API to get the new games & streams
@@ -81,7 +83,8 @@ export default class App extends Component {
         include: [],
         exclude: [],
         language: [],
-        includeTop: undefined
+        includeTop: undefined,
+        page: 0
       },
       () => {
         this.handleSubmit();
@@ -143,6 +146,15 @@ export default class App extends Component {
         JSON.stringify({ includeGames, include, exclude, language, includeTop })
       );
     }
+  };
+
+  handleLoadMore = event => {
+    this.setState(
+      prevState => {
+        return { page: prevState.page + 1 };
+      },
+      () => this.handleSubmit()
+    );
   };
 
   getStreams(params) {
@@ -233,7 +245,12 @@ export default class App extends Component {
           loading={loading}
         />
 
-        <Directory streams={streams} games={games} loading={loading} />
+        <Directory
+          streams={streams}
+          games={games}
+          loading={loading}
+          handleLoadMore={this.handleLoadMore}
+        />
       </div>
     );
   }

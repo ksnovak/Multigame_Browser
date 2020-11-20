@@ -21,6 +21,7 @@
     "curly": "warn",
     "nonblock-statement-body-position": "off",
     "no-restricted-globals": "off",
-    "quotes": ["error", "single"]
+    "quotes": ["error", "single"],
+    "linebreak-style": "off"
   }
 }
