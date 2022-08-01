@@ -96,25 +96,20 @@ export default class App extends Component {
       includeGames: [
         'Cities: Skylines',
         'Stardew Valley',
-        'Guild Wars 2',
+        'Retro',
+        'Food & Drink',
+        'Makers & Crafting',
+        'Software and Game Development',
         'Into the Breach',
-        'RimWorld',
-        'Terraria',
-        'Dungeon of the Endless',
-        'Slay the Spire',
-        'Dead Cells'
+        'Rimworld',
+        'Animal Crossing: New Horizons'
       ],
       include: [
-        'aphromoo',
         'lethalfrag',
-        'scarra',
-        'meteos',
+        'SimCopter1',
         'day9tv',
-        'dismaid',
-        'scarizardplays',
-        'kitboga',
-        'albinoliger',
-        'cilantrogamer'
+        'GamesDoneQuick',
+        'ChewieMelodies'
       ],
       exclude: ['twitchpresents2', 'food'],
       language: ['en']
