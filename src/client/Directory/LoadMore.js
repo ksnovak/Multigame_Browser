@@ -5,10 +5,10 @@ export default class LoadMore extends Component {
   componentDidMount() {}
 
   render() {
-    const { handleClick } = this.props;
+    const { handleClick, disabled } = this.props;
 
     return (
-      <button id="loadMore" className="btn btn-success" type="button" onClick={handleClick}>
+      <button id="loadMore" className="btn btn-success" type="button" onClick={handleClick} disabled={disabled}>
         Load More
       </button>
     );

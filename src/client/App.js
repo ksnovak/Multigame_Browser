@@ -174,7 +174,7 @@ export default class App extends Component {
           includeGames: results.games.filter(game => game.selected).map(game => game.name),
           streams: this.mergeStreamResults(prevState.streams, results.streams),
           generatedTime: res.headers.date,
-          pagination: results.pagination,
+          pagination: results.pagination || undefined, //Upon reaching the final page from API, pagination returns as undefined
           loading: false
           }
         });
@@ -236,7 +236,8 @@ export default class App extends Component {
       language,
       includeTop,
       generatedTime,
-      loading
+      loading,
+      pagination
     } = this.state;
 
     return (
@@ -265,6 +266,7 @@ export default class App extends Component {
           games={games}
           loading={loading}
           handleLoadMore={this.handleLoadMore}
+          pagination={pagination}
         />
       </div>
     );

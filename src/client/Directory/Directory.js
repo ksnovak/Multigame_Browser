@@ -11,7 +11,7 @@ export default class Directory extends Component {
   componentDidMount() {}
 
   render() {
-    const { streams, games, loading, handleLoadMore } = this.props;
+    const { streams, games, loading, handleLoadMore, pagination } = this.props;
 
     const gameIDs = games.map(game => game.id);
 
@@ -27,7 +27,7 @@ export default class Directory extends Component {
         <Loading isLoading={loading} />
         {streamCells.length ? <div className="directory">{streamCells}</div> : <NoStreams />}
         <br />
-        <LoadMore handleClick={handleLoadMore} />
+        <LoadMore handleClick={handleLoadMore} disabled={!pagination} />
         <BottomLinks />
       </div>
     );
