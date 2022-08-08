@@ -26,7 +26,7 @@ function streamsFromData(body, exclude) {
       }
     });
 
-    return streamsArray;
+    return [ streamsArray, body.pagination.cursor ];
   }
   catch (ex) {
     throw ex;
@@ -67,7 +67,9 @@ async function getStreams(params, next) {
       next
     });
 
-    return streamsFromData(results, options.exclude);
+    const [streams, pagination] = streamsFromData(results, options.exclude);
+
+    return streams;
   }
 
   // If none was requested, skip making a request entirely.
@@ -88,7 +90,9 @@ async function getTopStreams(params, next) {
     next
   });
 
-  return streamsFromData(results, options.exclude);
+  const [streams, pagination] = streamsFromData(results, options.exclude);
+
+  return streams;
 }
 
 async function getTopAndSpecificStreams(params, next) {
