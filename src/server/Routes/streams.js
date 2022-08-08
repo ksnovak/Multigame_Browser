@@ -26,7 +26,7 @@ function streamsFromData(body, exclude) {
       }
     });
 
-    return [ streamsArray, body.pagination.cursor ];
+    return {streams: streamsArray, pagination: body.pagination.cursor };
   }
   catch (ex) {
     throw ex;
@@ -56,7 +56,11 @@ async function getStreams(params, next) {
       await getStreams(gameOnlyOptions, next)
     ];
 
-    return utils.combineArraysWithoutDuplicates(userStreams, gameStreams, 'name');
+    let results = utils.combineArraysWithoutDuplicates(userStreams.streams, gameStreams.streams, 'name');
+    results.userPagination = userStreams.pagination;
+    results.gamePagination = gameStreams.pagination;
+
+    return results;
   }
   // If the user only requested one of the types, make a simpler request:
   if (options.game_id || options.stream_id || options.name) {
@@ -67,9 +71,8 @@ async function getStreams(params, next) {
       next
     });
 
-    const [streams, pagination] = streamsFromData(results, options.exclude);
+    return streamsFromData(results, options.exclude);
 
-    return streams;
   }
 
   // If none was requested, skip making a request entirely.
@@ -101,7 +104,15 @@ async function getTopAndSpecificStreams(params, next) {
     await getTopStreams(params, next)
   ];
 
-  return utils.combineArraysWithoutDuplicates(specificResult, topResult, 'name');
+
+  // specificResult.forEach(stream => {
+  //   console.log(stream.name);
+  // })
+
+  let results = utils.combineArraysWithoutDuplicates(specificResult, topResult, 'name');
+  results.gamePagination = specificResult.gamePagination;
+
+  return results;
 }
 
 /* Get list of live streams, for either the specified game or specified users

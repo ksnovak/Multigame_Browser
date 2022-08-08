@@ -35,14 +35,12 @@ async function getGamesAndStreams(options, next) {
     gamesResult = utils.combineArraysWithoutDuplicates(gamesResult, additionalGames, 'id');
   }
 
-  return { games: gamesResult, streams: streamsResult };
+  return { games: gamesResult, streams: streamsResult, pagination: streamsResult.gamePagination };
 }
 
 router.get('/', async (req, res, next) => {
   try {
-    const options = QueryOptions.cleanIncomingQueryOptions('/combo', req.query);
-
-    const results = await getGamesAndStreams(options, next);
+    const results = await getGamesAndStreams(req.query, next);
 
     res.send(results);
   }

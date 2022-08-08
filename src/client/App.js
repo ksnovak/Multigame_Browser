@@ -57,7 +57,7 @@ export default class App extends Component {
       name: this.state.include,
       exclude: this.state.exclude,
       language: this.state.language,
-      page: this.state.page
+      streams_after: this.state.pagination
     };
 
     // Call the API to get the new games & streams
@@ -164,17 +164,31 @@ export default class App extends Component {
         params
       })
       .then(res => {
-        this.setState({
-          games: res.data.games,
-          includeGames: res.data.games.filter(game => game.selected).map(game => game.name),
-          streams: res.data.streams,
+
+        const results = res.data;
+
+
+        this.setState(prevState => {
+          return {
+          games: results.games,
+          includeGames: results.games.filter(game => game.selected).map(game => game.name),
+          streams: this.mergeStreamResults(prevState.streams, results.streams),
           generatedTime: res.headers.date,
+          pagination: results.pagination,
           loading: false
+          }
         });
       })
       .catch(err => {
         this.setState({ loading: false });
       });
+  }
+
+
+  //Upon receiving a new page of results, combine them into the existing page of results, in order
+  mergeStreamResults(prevState, newState) {
+    return [...prevState, ...newState];
+
   }
 
   pushNewState(newUrl) {
@@ -202,6 +216,7 @@ export default class App extends Component {
           name: this.state.include,
           language: this.state.language,
           exclude: this.state.exclude,
+          streams_after: this.state.pagination,
 
           //These two aren't stored in State. Not sure if they should be, since they're only used for passing to the server.
           game_id: qs.game_id,

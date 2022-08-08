@@ -26,7 +26,7 @@ const incomingOptions = {
     include_top_streams: { type: 'boolean', default: false },
     streams_count: { type: 'number', outgoing: 'first' },
     streams_before: { type: 'number', outgoing: 'before' },
-    streams_after: { type: 'number', outgoing: 'after' },
+    streams_after: { type: 'string', outgoing: 'after' },
     game_id: { type: 'number', duplicate: true, outgoing: 'game_id' },
     stream_id: { type: 'number', duplicate: true, outgoing: 'user_id' },
     name: { duplicate: true, outgoing: 'user_login' },
