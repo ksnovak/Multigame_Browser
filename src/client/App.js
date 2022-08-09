@@ -57,21 +57,21 @@ export default class App extends Component {
       name: this.state.include,
       exclude: this.state.exclude,
       language: this.state.language,
-      streams_after: this.state.pagination
     };
+    // Update the querystring. Sorting just so that the less-spammy params get listed first
+    const order = ['include_top', 'language', 'name', 'exclude', 'game'];
+    const newParams = '?' +
+    queryString.stringify(details, {
+      sort: (left, right) => order.indexOf(left) >= order.indexOf(right)
+    });
+    
+    this.pushNewState(newParams);
+
+    //We do not want to include pagination in the querystring, but do include it in the overall search.
+    details.streams_after = this.state.pagination;
 
     // Call the API to get the new games & streams
     this.getStreams(details);
-
-    // Update the querystring. Sorting just so that the less-spammy params get listed first
-    const order = ['include_top', 'language', 'name', 'exclude', 'game'];
-    const newParams =
-      '?' +
-      queryString.stringify(details, {
-        sort: (left, right) => order.indexOf(left) >= order.indexOf(right)
-      });
-
-    this.pushNewState(newParams);
 
     if (event) event.preventDefault();
   };
@@ -84,7 +84,8 @@ export default class App extends Component {
         exclude: [],
         language: [],
         includeTop: undefined,
-        page: 0
+        page: 0,
+        pagination: undefined
       },
       () => {
         this.handleSubmit();
@@ -174,7 +175,7 @@ export default class App extends Component {
           includeGames: results.games.filter(game => game.selected).map(game => game.name),
           streams: this.mergeStreamResults(prevState.streams, results.streams),
           generatedTime: res.headers.date,
-          pagination: results.pagination || undefined, //Upon reaching the final page from API, pagination returns as undefined
+          pagination: results.pagination || undefined,
           loading: false
           }
         });
@@ -185,7 +186,7 @@ export default class App extends Component {
   }
 
 
-  //Upon receiving a new page of results, combine them into the existing page of results, in order
+  //Upon receiving a new page of results, combine them into the existing page of results
   mergeStreamResults(prevState, newState) {
     return [...prevState, ...newState];
 
